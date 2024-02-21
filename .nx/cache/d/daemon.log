@@ -1,0 +1,106 @@
+[NX Daemon Server] - 2024-02-21T10:01:13.625Z - Started listening on: /tmp/7878fe1b54e94b3ef185/d.sock
+[NX Daemon Server] - 2024-02-21T10:01:13.627Z - [WATCHER]: Subscribed to changes within: /home/creek (native)
+[NX Daemon Server] - 2024-02-21T10:01:13.636Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-02-21T10:01:13.637Z - Established a connection. Number of open connections: 2
+[NX Daemon Server] - 2024-02-21T10:01:13.638Z - Closed a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-02-21T10:01:13.640Z - [REQUEST]: Client Request for Project Graph Received
+[NX Daemon Server] - 2024-02-21T10:01:13.640Z - [REQUEST]: Updated workspace context based on watched changes, recomputing project graph...
+[NX Daemon Server] - 2024-02-21T10:01:13.640Z - [REQUEST]: 
+[NX Daemon Server] - 2024-02-21T10:01:13.640Z - [REQUEST]: 
+
+> NX notify watch() error err=Error { kind: MaxFilesWatch, paths: ["/home/creek/node_modules/.pnpm/@ant-design+pro-utils@2.15.4_antd@5.14.1_react-dom@18.2.0_react@18.2.0/node_modules/antd/lib/color-picker/hooks"] }
+
+
+> NX runtime error err=Native fs watcher error
+
+
+> NX notify watch() error err=Error { kind: MaxFilesWatch, paths: ["/home/creek/node_modules/.pnpm/@ant-design+pro-utils@2.15.4_antd@5.14.1_react-dom@18.2.0_react@18.2.0/node_modules/antd/lib/color-picker"] }
+
+
+> NX runtime error err=Native fs watcher error
+
+[NX Daemon Server] - 2024-02-21T10:01:15.116Z - [REQUEST]: Responding to the client. project-graph
+[NX Daemon Server] - 2024-02-21T10:01:15.117Z - Time taken for 'total for creating and serializing project graph' 1476.594529ms
+[NX Daemon Server] - 2024-02-21T10:01:15.119Z - Done responding to the client project-graph
+[NX Daemon Server] - 2024-02-21T10:01:15.119Z - Handled REQUEST_PROJECT_GRAPH. Handling time: 1477. Response time: 3.
+[NX Daemon Server] - 2024-02-21T10:01:15.162Z - [REQUEST]: Responding to the client. handleHashTasks
+[NX Daemon Server] - 2024-02-21T10:01:15.162Z - Done responding to the client handleHashTasks
+[NX Daemon Server] - 2024-02-21T10:01:15.162Z - Handled HASH_TASKS. Handling time: 16. Response time: 0.
+[NX Daemon Server] - 2024-02-21T10:01:19.460Z - [REQUEST]: Responding to the client. recordOutputsHash
+[NX Daemon Server] - 2024-02-21T10:01:19.461Z - Done responding to the client recordOutputsHash
+[NX Daemon Server] - 2024-02-21T10:01:19.461Z - Handled RECORD_OUTPUTS_HASH. Handling time: 0. Response time: 1.
+[NX Daemon Server] - 2024-02-21T10:01:19.467Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-02-21T10:02:13.071Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2024-02-21T10:02:13.072Z - [WATCHER]: package.json was modified
+[NX Daemon Server] - 2024-02-21T10:02:13.173Z - [REQUEST]: Updated workspace context based on watched changes, recomputing project graph...
+[NX Daemon Server] - 2024-02-21T10:02:13.174Z - [REQUEST]: package.json
+[NX Daemon Server] - 2024-02-21T10:02:13.174Z - [REQUEST]: 
+[NX Daemon Server] - 2024-02-21T10:02:13.211Z - Time taken for 'hash changed files from watcher' 0.13167999999859603ms
+[NX Daemon Server] - 2024-02-21T10:02:13.397Z - [WATCHER]: package.json was modified
+[NX Daemon Server] - 2024-02-21T10:02:13.398Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2024-02-21T10:02:13.598Z - [REQUEST]: Updated workspace context based on watched changes, recomputing project graph...
+[NX Daemon Server] - 2024-02-21T10:02:13.598Z - [REQUEST]: package.json
+[NX Daemon Server] - 2024-02-21T10:02:13.598Z - [REQUEST]: 
+[NX Daemon Server] - 2024-02-21T10:02:13.629Z - Time taken for 'hash changed files from watcher' 0.12286300000414485ms
+[NX Daemon Server] - 2024-02-21T10:02:16.977Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-02-21T10:02:16.978Z - Established a connection. Number of open connections: 2
+[NX Daemon Server] - 2024-02-21T10:02:16.978Z - Closed a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-02-21T10:02:16.978Z - [REQUEST]: Client Request for Project Graph Received
+[NX Daemon Server] - 2024-02-21T10:02:16.979Z - [REQUEST]: Responding to the client. project-graph
+[NX Daemon Server] - 2024-02-21T10:02:16.979Z - Time taken for 'total for creating and serializing project graph' 0.13966200000140816ms
+[NX Daemon Server] - 2024-02-21T10:02:16.980Z - Done responding to the client project-graph
+[NX Daemon Server] - 2024-02-21T10:02:16.980Z - Handled REQUEST_PROJECT_GRAPH. Handling time: 1. Response time: 1.
+[NX Daemon Server] - 2024-02-21T10:02:17.017Z - [REQUEST]: Responding to the client. handleHashTasks
+[NX Daemon Server] - 2024-02-21T10:02:17.018Z - Done responding to the client handleHashTasks
+[NX Daemon Server] - 2024-02-21T10:02:17.018Z - Handled HASH_TASKS. Handling time: 18. Response time: 1.
+[NX Daemon Server] - 2024-02-21T10:02:21.077Z - [REQUEST]: Responding to the client. recordOutputsHash
+[NX Daemon Server] - 2024-02-21T10:02:21.077Z - Done responding to the client recordOutputsHash
+[NX Daemon Server] - 2024-02-21T10:02:21.077Z - Handled RECORD_OUTPUTS_HASH. Handling time: 0. Response time: 0.
+[NX Daemon Server] - 2024-02-21T10:02:21.082Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-02-21T10:31:26.898Z - Started listening on: /tmp/7878fe1b54e94b3ef185/d.sock
+[NX Daemon Server] - 2024-02-21T10:31:26.900Z - [WATCHER]: Subscribed to changes within: /home/creek (native)
+[NX Daemon Server] - 2024-02-21T10:31:26.904Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-02-21T10:31:26.905Z - Established a connection. Number of open connections: 2
+[NX Daemon Server] - 2024-02-21T10:31:26.908Z - [REQUEST]: Client Request for Project Graph Received
+[NX Daemon Server] - 2024-02-21T10:31:26.908Z - [REQUEST]: Updated workspace context based on watched changes, recomputing project graph...
+[NX Daemon Server] - 2024-02-21T10:31:26.909Z - [REQUEST]: 
+[NX Daemon Server] - 2024-02-21T10:31:26.909Z - [REQUEST]: 
+[NX Daemon Server] - 2024-02-21T10:31:27.043Z - [REQUEST]: Responding to the client. project-graph
+[NX Daemon Server] - 2024-02-21T10:31:27.045Z - Time taken for 'total for creating and serializing project graph' 135.52194299999974ms
+[NX Daemon Server] - 2024-02-21T10:31:27.045Z - Closed a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-02-21T10:31:27.046Z - Done responding to the client project-graph
+[NX Daemon Server] - 2024-02-21T10:31:27.046Z - Handled REQUEST_PROJECT_GRAPH. Handling time: 135. Response time: 3.
+[NX Daemon Server] - 2024-02-21T10:31:27.115Z - [REQUEST]: Responding to the client. handleHashTasks
+[NX Daemon Server] - 2024-02-21T10:31:27.115Z - Done responding to the client handleHashTasks
+[NX Daemon Server] - 2024-02-21T10:31:27.116Z - Handled HASH_TASKS. Handling time: 27. Response time: 1.
+[NX Daemon Server] - 2024-02-21T10:31:27.404Z - [REQUEST]: Responding to the client. recordOutputsHash
+[NX Daemon Server] - 2024-02-21T10:31:27.404Z - Done responding to the client recordOutputsHash
+[NX Daemon Server] - 2024-02-21T10:31:27.404Z - Handled RECORD_OUTPUTS_HASH. Handling time: 1. Response time: 0.
+[NX Daemon Server] - 2024-02-21T10:31:27.410Z - Closed a connection. Number of open connections: 0
+
+> NX notify watch() error err=Error { kind: MaxFilesWatch, paths: ["/home/creek/node_modules/.pnpm/@ant-design+pro-utils@2.15.4_antd@5.14.1_react-dom@18.2.0_react@18.2.0/node_modules/antd/lib/descriptions"] }
+
+
+> NX runtime error err=Native fs watcher error
+
+
+> NX notify watch() error err=Error { kind: MaxFilesWatch, paths: ["/home/creek/node_modules/.pnpm/@ant-design+pro-utils@2.15.4_antd@5.14.1_react-dom@18.2.0_react@18.2.0/node_modules/antd/lib/descriptions/hooks"] }
+
+
+> NX runtime error err=Native fs watcher error
+
+[NX Daemon Server] - 2024-02-21T10:32:20.501Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-02-21T10:32:20.502Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-02-21T10:32:20.502Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-02-21T10:32:20.504Z - [REQUEST]: Client Request for Project Graph Received
+[NX Daemon Server] - 2024-02-21T10:32:20.504Z - [REQUEST]: Responding to the client. project-graph
+[NX Daemon Server] - 2024-02-21T10:32:20.505Z - Time taken for 'total for creating and serializing project graph' 0.24295700000948273ms
+[NX Daemon Server] - 2024-02-21T10:32:20.506Z - Done responding to the client project-graph
+[NX Daemon Server] - 2024-02-21T10:32:20.506Z - Handled REQUEST_PROJECT_GRAPH. Handling time: 0. Response time: 2.
+[NX Daemon Server] - 2024-02-21T10:32:20.543Z - [REQUEST]: Responding to the client. handleHashTasks
+[NX Daemon Server] - 2024-02-21T10:32:20.543Z - Done responding to the client handleHashTasks
+[NX Daemon Server] - 2024-02-21T10:32:20.543Z - Handled HASH_TASKS. Handling time: 17. Response time: 0.
+[NX Daemon Server] - 2024-02-21T10:32:24.918Z - [REQUEST]: Responding to the client. recordOutputsHash
+[NX Daemon Server] - 2024-02-21T10:32:24.918Z - Done responding to the client recordOutputsHash
+[NX Daemon Server] - 2024-02-21T10:32:24.918Z - Handled RECORD_OUTPUTS_HASH. Handling time: 0. Response time: 0.
+[NX Daemon Server] - 2024-02-21T10:32:24.926Z - Closed a connection. Number of open connections: 0

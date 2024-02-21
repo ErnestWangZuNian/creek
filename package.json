@@ -1,0 +1,19 @@
+{
+  "name": "creek",
+  "version": "1.0.0",
+  "description": "React solution includes h5 applet pc version",
+  "private": true,
+  "scripts": {
+    "dev": "nx run-many --target=dev"
+  },
+  "keywords": [
+    "react",
+    "taro",
+    "h5"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nx": "^18.0.4"
+  }
+}
