@@ -4,7 +4,6 @@
   "author": "Ernestwang <997402405@qq.com>",
   "scripts": {
     "dev": "umi dev",
-    "build": "umi build",
     "postinstall": "umi setup",
     "setup": "umi setup",
     "start": "npm run dev"
