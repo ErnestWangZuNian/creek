@@ -1,6 +1,31 @@
-const { generateService } = require('@umijs/openapi')
+import swaggerOpenApi, { GenerateServiceProps } from '@umijs/openapi';
 
-generateService({
-    schemaPath: "http://10.113.75.223:30948/swagger/doc.json",
-    serversPath: './servers',
-})
+export enum OpenApiChannel {
+    swagger = 'swagger',
+    yapi = 'yapi'
+}
+
+export type BaseOpenApiGenerateServiceProps = GenerateServiceProps & {
+    openApiChannel?: OpenApiChannel
+}
+
+export type OpenApiGenerateServiceProps = BaseOpenApiGenerateServiceProps;
+
+const generateServiceMap = {
+    [OpenApiChannel.swagger]: swaggerOpenApi.generateService
+}
+
+export const generateService = (openApiGenerateServiceProps: OpenApiGenerateServiceProps | OpenApiGenerateServiceProps[]) => {
+    let arrayOpenApiGenerateService = Array.isArray(openApiGenerateServiceProps) ? openApiGenerateServiceProps : [openApiGenerateServiceProps];
+    
+    arrayOpenApiGenerateService = arrayOpenApiGenerateService.map(item => {
+        item.openApiChannel = item.openApiChannel || OpenApiChannel.swagger;
+        item.projectName = item.projectName || '';
+        const _item = item;
+        return _item;
+    });
+
+    arrayOpenApiGenerateService.forEach(generateservice => {
+        generateServiceMap[generateservice.openApiChannel](generateservice)
+    })
+}
