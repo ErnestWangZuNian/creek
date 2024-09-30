@@ -1,0 +1,27 @@
+{
+  "name": "@creek/lint",
+  "version": "0.0.1",
+  "description": "@creek/lint",
+  "files": [
+    "eslint",
+    "stylint",
+    "prettier"
+  ],
+  "scripts": {
+    "build": "father build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ErnestWangZuNian/creek.git"
+  },
+  "keywords": [
+    "eslint",
+    "stylint"
+  ],
+  "author": "ernestwang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ErnestWangZuNian/creek/issues"
+  },
+  "homepage": "https://github.com/ErnestWangZuNian/creek#readme"
+}

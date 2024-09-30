@@ -3,13 +3,13 @@
   "private": true,
   "author": "Ernestwang <997402405@qq.com>",
   "scripts": {
-    "dev": "umi dev",
-    "postinstall": "umi setup",
-    "setup": "umi setup",
-    "start": "npm run dev"
+    "dev": "max dev",
+    "postinstall": "max setup",
+    "setup": "max setup",
+    "start": "max run dev"
   },
   "dependencies": {
-    "umi": "^4.3.12"
+    "@umijs/max": "^4.3.24"
   },
   "devDependencies": {
     "@types/react": "^18.0.33",

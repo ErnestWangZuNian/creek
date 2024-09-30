@@ -29,3 +29,5 @@ export const generateService = (openApiGenerateServiceProps: OpenApiGenerateServ
         generateServiceMap[generateservice.openApiChannel](generateservice)
     })
 }
+
+
