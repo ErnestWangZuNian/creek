@@ -1,6 +1,10 @@
 {
   "name": "creek",
   "private": true,
+  "workspaces": [
+    "packages/**",
+    "apps/**"
+  ],
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
