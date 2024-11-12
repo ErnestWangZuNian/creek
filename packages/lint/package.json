@@ -23,5 +23,8 @@
   "bugs": {
     "url": "https://github.com/ErnestWangZuNian/creek/issues"
   },
-  "homepage": "https://github.com/ErnestWangZuNian/creek#readme"
+  "homepage": "https://github.com/ErnestWangZuNian/creek#readme",
+  "dependencies": {
+    "@umijs/lint": "^4.3.27"
+  }
 }

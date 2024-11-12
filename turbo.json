@@ -1,15 +1,14 @@
 {
-  "$schema": "https://turbo.build/schema.json",
-  "ui": "tui",
-  "tasks": {
-    "build": {
-      "dependsOn": [
-        "^build"
-      ]
-    },
-    "dev": {
-      "dependsOn": ["^dev"]
-    },
-    "test": {}
+    "$schema": "https://turbo.build/schema.json",
+    "ui": "tui",
+    "tasks": {
+      "build": {
+        "cache": false,
+        "dependsOn": ["^build"] 
+      },
+      "dev": {
+        "cache": false,
+        "dependsOn": ["build"]
+      }
+    }
   }
-}
