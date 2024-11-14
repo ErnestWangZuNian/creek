@@ -8,7 +8,7 @@
       },
       "dev": {
         "cache": false,
-        "dependsOn": ["build"]
+        "dependsOn": ["^dev"]
       }
     }
   }
