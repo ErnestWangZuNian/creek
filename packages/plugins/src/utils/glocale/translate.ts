@@ -49,7 +49,7 @@ export type BaiduTransLateErrorType = {
 async function freeTranslate(text: string, targetLanguage: string): Promise<string> {
   try {
     const response = await axios<FreeTranslateResultType>(
-      'http://gplus-translate.caas-cloud-test.geega.com/translate',
+      'http://creek-translate.caas-cloud-test.geega.com/translate',
       {
         method: 'POST',
         headers: {

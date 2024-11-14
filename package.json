@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@creek/lint": "workspace:^",
-    "@creek/openapi": "workspace:^"
+    "@creek/openapi": "workspace:^",
+    "@umijs/max": "^4.3.27"
   }
 }

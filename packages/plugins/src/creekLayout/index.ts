@@ -2,7 +2,7 @@ import { IApi, RUNTIME_TYPE_FILE_NAME } from '@umijs/max';
 import { lodash, winPath } from '@umijs/max/plugin-utils';
 import { existsSync, readFileSync } from 'fs';
 import { dirname, join } from 'path';
-import { withTmpPath } from './utils';
+import { withTmpPath } from '../utils';
 
 // 获取所有 icons
 const antIconsPath = winPath(dirname(require.resolve('@ant-design/icons/package')));
@@ -22,7 +22,6 @@ const getAllIcons = () => {
 const allIcons: Record<string, boolean> = getAllIcons();
 
 const TEMPLATE_DIR = join(__dirname, './template');
-
 export default (api: IApi) => {
     api.describe({
         key: 'glayout',
@@ -68,7 +67,7 @@ export default (api: IApi) => {
 
     const pkgPath = winPath(getPkgPath());
 
-    const gplusWebUiComponentsPath = winPath(dirname(require.resolve('@gplus-packages/web-ui-components/package.json')));
+    const creekWebUiComponentsPath = winPath(dirname(require.resolve('@creek-packages/web-ui-components/package.json')));
 
     api.modifyAppData((memo) => {
         const version = require(`${pkgPath}/package.json`).version;
@@ -100,7 +99,7 @@ export default (api: IApi) => {
             tplPath: join(TEMPLATE_DIR, 'glayout/layout.tpl'),
             context: {
                 PKG_TYPE_REFERENCE,
-                gplusWebUiComponentsPath,
+                creekWebUiComponentsPath,
                 pkgPath,
                 hasInitialStatePlugin,
                 access: api.config.access,

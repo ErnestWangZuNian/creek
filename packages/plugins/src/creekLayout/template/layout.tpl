@@ -9,7 +9,7 @@ import { ProLayout } from '{{{pkgPath}}}';
 {{^pkgPath}}
 import { ProLayout} from '@ant-design/pro-components';
 {{/pkgPath}}
-import {GPlusLayoutTpl} from '{{{gplusWebUiComponentsPath}}}';
+import {CreekLayout} from '{{{creekWebUiComponentsPath}}}';
 {{#hasInitialStatePlugin}}
 import { useModel } from '@@/plugin-model';
 {{/hasInitialStatePlugin}}
@@ -118,7 +118,7 @@ export default (props: any) => {
 
   return <>
   {runtimeConfig?.provider}
-   <GPlusLayoutTpl
+   <CreekLayout
     ProLayout={ProLayout}
     outlet={Outlet}
     location={location}

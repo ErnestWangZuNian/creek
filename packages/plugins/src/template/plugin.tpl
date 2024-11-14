@@ -45,11 +45,11 @@ let gucRoutes = []
 
 /** guc登录 */
 async function gucLogin() {
-  const authenticated = await gplusGuc.init(false);
+  const authenticated = await creekGuc.init(false);
   if (!authenticated) {
-    await gplusGuc.login();
+    await creekGuc.login();
   } else {
-    const token = await gplusGuc.getToken();
+    const token = await creekGuc.getToken();
     localStorage.setItem('GUC_TOKEN', token);
   }
 }
@@ -58,11 +58,11 @@ async function gucLogin() {
 async function gucInit() {
   try {
     await gucLogin();
-    return (await gplusGuc.getUserInfo()) || {};
+    return (await creekGuc.getUserInfo()) || {};
   } catch (error) {
     message.warning('用户登录过期');
     setTimeout(async () => {
-      await gplusGuc.logout();
+      await creekGuc.logout();
     }, 100);
     return {}
   }
@@ -127,7 +127,7 @@ export function getPlugins() {
   }
 
   const generateGucRoutes = async () => {
-    const gucInstance = window.gplusGuc
+    const gucInstance = window.creekGuc
     let menuList = []
     if (gucInstance) {
       try {
