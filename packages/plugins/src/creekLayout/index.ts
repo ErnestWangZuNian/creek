@@ -19,12 +19,49 @@ const getAllIcons = () => {
     }, {});
 };
 
+
+
 const allIcons: Record<string, boolean> = getAllIcons();
 
-const TEMPLATE_DIR = join(__dirname, './template');
+const TEMPLATE_DIR = join(__dirname, 'template');
+
 export default (api: IApi) => {
+
+    const getPkgHasDep = (depList: string[]) => {
+        const pkgHasDep = depList.find((dep) => {
+            const { pkg } = api;
+            if (pkg.dependencies?.[dep] || pkg.devDependencies?.[dep]) {
+                return true;
+            }
+            return false;
+        });
+        return pkgHasDep
+    };
+
+    const getPkgPath = (pkgName: string, depList?: string[]) => {
+        const _depList = depList && depList.length ? depList : [pkgName];
+
+        const pkgHasDep = getPkgHasDep(_depList || []);
+        if (pkgHasDep && existsSync(join(api.cwd, 'node_modules', pkgHasDep, 'package.json'))) {
+            return join(api.cwd, 'node_modules', pkgHasDep);
+        }
+
+        const cwd = process.cwd();
+        if (pkgHasDep && api.cwd !== cwd && existsSync(join(cwd, 'node_modules', pkgHasDep, 'package.json'))) {
+            return join(cwd, 'node_modules', pkgHasDep);
+        }
+        // 如果项目中没有去找插件依赖的
+        return dirname(require.resolve('@ant-design/pro-components/package.json'));
+    };
+
+    const defaultAntdProDeepList = ['@ant-design/pro-components', '@ant-design/pro-layout'];
+
+    const prolayoutPkgHasDep = getPkgHasDep(defaultAntdProDeepList);
+    const pkgPath = winPath(getPkgPath('@ant-design/pro-components', defaultAntdProDeepList));
+    const creekWebUiComponentsPath = winPath(getPkgPath('@ant-design/pro-components'));
+
     api.describe({
-        key: 'glayout',
+        key: 'creekLayout',
         config: {
             schema({ zod }) {
                 return zod
@@ -38,37 +75,6 @@ export default (api: IApi) => {
         enableBy: api.EnableBy.config,
     });
 
-    /**
-     * 优先去找 '@alipay/tech-ui'，内部项目优先
-     */
-    const depList = ['@alipay/tech-ui', '@ant-design/pro-components', '@ant-design/pro-layout'];
-
-    const pkgHasDep = depList.find((dep) => {
-        const { pkg } = api;
-        if (pkg.dependencies?.[dep] || pkg.devDependencies?.[dep]) {
-            return true;
-        }
-        return false;
-    });
-
-    const getPkgPath = () => {
-        // 如果techui， components 和 layout 至少有一个在，找到他们的地址
-        if (pkgHasDep && existsSync(join(api.cwd, 'node_modules', pkgHasDep, 'package.json'))) {
-            return join(api.cwd, 'node_modules', pkgHasDep);
-        }
-        const cwd = process.cwd();
-        // support APP_ROOT
-        if (pkgHasDep && api.cwd !== cwd && existsSync(join(cwd, 'node_modules', pkgHasDep, 'package.json'))) {
-            return join(cwd, 'node_modules', pkgHasDep);
-        }
-        // 如果项目中没有去找插件依赖的
-        return dirname(require.resolve('@ant-design/pro-components/package.json'));
-    };
-
-    const pkgPath = winPath(getPkgPath());
-
-    const creekWebUiComponentsPath = winPath(dirname(require.resolve('@creek-packages/web-ui-components/package.json')));
-
     api.modifyAppData((memo) => {
         const version = require(`${pkgPath}/package.json`).version;
         memo.pluginLayout = {
@@ -78,11 +84,10 @@ export default (api: IApi) => {
         return memo;
     });
 
+    // 只在没有自行依赖 @ant-design/pro-components 或 @alipay/tech-ui 时
+    // 才使用插件中提供的 @ant-design/pro-components
     api.modifyConfig((memo) => {
-        // 只在没有自行依赖 @ant-design/pro-components 或 @alipay/tech-ui 时
-        // 才使用插件中提供的 @ant-design/pro-components
-        if (!pkgHasDep) {
-            // 寻找到什么就用什么，在 '@alipay/tech-ui','@ant-design/pro-components','@ant-design/pro-layout' 中寻找
+        if (!prolayoutPkgHasDep) {
             const name = require(`${pkgPath}/package.json`).name;
             memo.alias[name] = pkgPath;
         }
@@ -90,29 +95,27 @@ export default (api: IApi) => {
     });
 
     api.onGenerateFiles(() => {
-        const PKG_TYPE_REFERENCE = `/// <reference types="${pkgPath || '@ant-design/pro-components'}" />`;
+        const PKG_TYPE_REFERENCE = `/// <reference types=${pkgPath || '@ant-design/pro-components'} />`;
         const hasInitialStatePlugin = api.config.initialState;
-        // Layout.tsx
 
         api.writeTmpFile({
             path: 'Layout.tsx',
-            tplPath: join(TEMPLATE_DIR, 'glayout/layout.tpl'),
+            tplPath: join(TEMPLATE_DIR, '/layout.tpl'),
             context: {
                 PKG_TYPE_REFERENCE,
                 creekWebUiComponentsPath,
                 pkgPath,
                 hasInitialStatePlugin,
                 access: api.config.access,
-                local: api.config.local,
-                glocaleConfig: api.config.glocale ? JSON.stringify(api.config.glocale, null, 2) : 'undefined',
-                userConfig: JSON.stringify(api.config.glayout, null, 2),
+                creekLocaleConfig: api.config.creekLocaleConfig ? JSON.stringify(api.config.glocale, null, 2) : 'undefined',
+                userConfig: JSON.stringify(api.config.creekLayout, null, 2),
             },
         });
         // 写入类型, RunTimeLayoutConfig 是 app.tsx 中 layout 配置的类型
         // 对于动态 layout 配置很有用
         api.writeTmpFile({
             path: 'types.d.ts',
-            tplPath: join(TEMPLATE_DIR, 'glayout/type.tpl'),
+            tplPath: join(TEMPLATE_DIR, '/type.tpl'),
             context: {
                 PKG_TYPE_REFERENCE,
                 pkgPath,

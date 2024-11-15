@@ -23,10 +23,6 @@ import { useAccessMarkedRoutes } from '@@/plugin-access';
 {{^access}}
 const useAccessMarkedRoutes = (r) => r;
 {{/access}}
-
-{{#local}}
-import { useIntl } from '@@/plugin-locale';
-{{/local}}
        
 // 过滤出需要显示的路由, 这里的filterFn 指 不希望显示的层级
 const filterRoutes = (
@@ -89,10 +85,7 @@ export default (props: any) => {
     setInitialState: null,
   };
   const userConfig = {{{userConfig}}};
-  const glocaleConfig = {{{glocaleConfig}}};
-  {{#local}}
-    import { useIntl } from '@@/plugin-locale';
-  {{/local}}
+  const creekLocaleConfig = {{{creekLocaleConfig}}};
   const formatMessage = undefined;
   const runtimeConfig = pluginManager.applyPlugins({
     key: 'layout',
@@ -127,7 +120,7 @@ export default (props: any) => {
     navigate={navigate}
     formatMessage={formatMessage}
     userConfig={userConfig}
-    glocaleConfig={glocaleConfig}
+    creekLocaleConfig={creekLocaleConfig}
     route={route}
     initialInfo={initialInfo}
   />
