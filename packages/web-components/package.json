@@ -1,0 +1,13 @@
+{
+  "name": "@creek/web-components",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "father dev",
+    "build": "father build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

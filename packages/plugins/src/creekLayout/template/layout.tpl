@@ -4,11 +4,6 @@ import { useLocation, useAppData, IRoute, matchRoutes, Outlet, useNavigate } fro
 import { useMemo } from 'react';
 import _ from 'lodash';
 {{#pkgPath}}
-import { ProLayout } from '{{{pkgPath}}}';
-{{/pkgPath}}
-{{^pkgPath}}
-import { ProLayout} from '@ant-design/pro-components';
-{{/pkgPath}}
 import {CreekLayout} from '{{{creekWebUiComponentsPath}}}';
 {{#hasInitialStatePlugin}}
 import { useModel } from '@@/plugin-model';
@@ -112,7 +107,6 @@ export default (props: any) => {
   return <>
   {runtimeConfig?.provider}
    <CreekLayout
-    ProLayout={ProLayout}
     outlet={Outlet}
     location={location}
     runtimeConfig={runtimeConfig}

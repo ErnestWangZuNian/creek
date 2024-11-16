@@ -11,6 +11,8 @@
   },
   "devDependencies": {
     "@types/node": "^22.7.7",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
     "father": "^4.5.1",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
@@ -22,8 +24,14 @@
     "node": ">=18"
   },
   "dependencies": {
+    "@ant-design/pro-components": "^2.7.18",
     "@creek/lint": "workspace:^",
     "@creek/openapi": "workspace:^",
-    "@umijs/max": "^4.3.27"
+    "@creek/web-components": "workspace:^",
+    "@umijs/max": "^4.3.27",
+    "ahooks": "^3.8.1",
+    "antd": "^5.21.4",
+    "classnames": "^2.5.1",
+    "lodash": "^4.17.21"
   }
 }

@@ -1,0 +1,15 @@
+{
+  "name": "@creek/plugins",
+  "version": "1.0.0",
+  "description": "",
+  "files": [
+    "creekLayout"
+  ],
+  "scripts": {
+    "dev": "father dev",
+    "build": "father build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
