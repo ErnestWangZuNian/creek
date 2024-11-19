@@ -6,7 +6,7 @@ export default defineConfig({
   model: {},
   initialState: {},
   request: {},
-  layout: {
+  creekLayout: {
     title: '@umijs/max',
   },
   routes: [
@@ -31,7 +31,7 @@ export default defineConfig({
     },
   ],
   mfsu: false,
-  // plugins: [require.resolve('@creek/umi-plugins/dist/creek-layout')],
+  plugins: [require.resolve('@creek/umi-plugins/dist/creek-layout')],
   npmClient: 'pnpm',
 });
 

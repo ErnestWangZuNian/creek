@@ -1,5 +1,4 @@
 
-{{{PKG_TYPE_REFERENCE}}}
 import { useLocation, useAppData, IRoute, matchRoutes, Outlet, useNavigate } from 'umi';
 import { useMemo } from 'react';
 import _ from 'lodash';

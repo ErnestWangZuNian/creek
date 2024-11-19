@@ -100,14 +100,12 @@ export default (api: IApi) => {
   });
 
   api.onGenerateFiles(() => {
-    const PKG_TYPE_REFERENCE = `/// <reference types=${creekWebComponentsPath} />`;
     const hasInitialStatePlugin = api.config.initialState;
 
     api.writeTmpFile({
       path: "Layout.tsx",
       tplPath: join(TEMPLATE_DIR, "/layout.tpl"),
       context: {
-        PKG_TYPE_REFERENCE,
         creekWebComponentsPath,
         hasInitialStatePlugin,
         access: api.config.access,
@@ -123,7 +121,6 @@ export default (api: IApi) => {
       path: "types.d.ts",
       tplPath: join(TEMPLATE_DIR, "/type.tpl"),
       context: {
-        PKG_TYPE_REFERENCE,
         creekWebComponentsPath,
         hasInitialStatePlugin,
         access: api.config.access,

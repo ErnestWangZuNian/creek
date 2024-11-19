@@ -1,11 +1,6 @@
-
-import { CreekLayout } from '@creek/web-components';
-
 const HomePage: React.FC = () => {
-  return <>
-    <CreekLayout />
-
-  </>
+  return <div>
+     HomePage
+  </div>
 };
-
 export default HomePage;

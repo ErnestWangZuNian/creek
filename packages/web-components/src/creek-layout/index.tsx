@@ -1,9 +1,8 @@
 import { ProLayout, ProLayoutProps } from "@ant-design/pro-components";
 import { theme } from "antd";
-import classnames from 'classnames';
+import classnames from "classnames";
 
-import { CollapsedButton } from "./CollapseButton";
-
+import { CollapsedButton, useCollapsedStore } from "./CollapseButton";
 
 export type LayoutProps = ProLayoutProps & {
   runtimeConfig: ProLayoutProps;
@@ -16,17 +15,14 @@ export type LayoutProps = ProLayoutProps & {
 };
 
 export const CreekLayout = (props: LayoutProps) => {
-  const {
-    route,
-    userConfig,
-    runtimeConfig,
-    children,
-    ...more
-  } = props;
+  const { route, userConfig, runtimeConfig, children, ...more } = props;
 
   const { useToken } = theme;
   const { token } = useToken();
 
+  const { collapsed } = useCollapsedStore();
+
+  console.log(collapsed, "1111");
 
   return (
     <ProLayout
@@ -57,17 +53,13 @@ export const CreekLayout = (props: LayoutProps) => {
       }}
       fixSiderbar
       fixedHeader
+      collapsed={collapsed}
       collapsedButtonRender={(collapsed) => {
-        return <CollapsedButton collapsed={collapsed} />
+        return <CollapsedButton collapsed={collapsed} />;
       }}
-      {
-      ...more
-      }
+      {...more}
     >
-
       {children}
     </ProLayout>
-
-
   );
 };
