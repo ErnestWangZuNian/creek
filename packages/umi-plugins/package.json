@@ -1,9 +1,11 @@
 {
-  "name": "@creek/plugins",
+  "name": "@creek/umi-plugins",
   "version": "1.0.0",
   "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
-    "creekLayout"
+    "dist"
   ],
   "scripts": {
     "dev": "father dev",

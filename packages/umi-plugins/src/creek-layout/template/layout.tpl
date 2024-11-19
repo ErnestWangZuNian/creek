@@ -3,8 +3,7 @@
 import { useLocation, useAppData, IRoute, matchRoutes, Outlet, useNavigate } from 'umi';
 import { useMemo } from 'react';
 import _ from 'lodash';
-{{#pkgPath}}
-import {CreekLayout} from '{{{creekWebUiComponentsPath}}}';
+import {CreekLayout} from '{{{creekWebComponentsPath}}}';
 {{#hasInitialStatePlugin}}
 import { useModel } from '@@/plugin-model';
 {{/hasInitialStatePlugin}}
@@ -81,7 +80,6 @@ export default (props: any) => {
   };
   const userConfig = {{{userConfig}}};
   const creekLocaleConfig = {{{creekLocaleConfig}}};
-  const formatMessage = undefined;
   const runtimeConfig = pluginManager.applyPlugins({
     key: 'layout',
     type: 'modify',
@@ -104,20 +102,19 @@ export default (props: any) => {
 
   const matchedRoute = useMemo(() => matchRoutes(route.children, location.pathname)?.pop?.()?.route, [location.pathname]);
 
-  return <>
-  {runtimeConfig?.provider}
-   <CreekLayout
-    outlet={Outlet}
+  return <CreekLayout
     location={location}
     runtimeConfig={runtimeConfig}
     matchedRoute={matchedRoute}
     navigate={navigate}
-    formatMessage={formatMessage}
     userConfig={userConfig}
-    creekLocaleConfig={creekLocaleConfig}
     route={route}
     initialInfo={initialInfo}
+    children={
+      runtimeConfig.childrenRender
+        ? runtimeConfig.childrenRender(<Outlet />, props)
+        : <Outlet />
+    }
   />
-  </>
 }
         

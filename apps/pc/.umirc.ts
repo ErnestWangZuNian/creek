@@ -20,7 +20,7 @@ export default defineConfig({
       component: './Home',
     },
     {
-      name: '权限演示',
+      name: '权限演示权限演示权限演示权限演示',
       path: '/access',
       component: './Access',
     },
@@ -30,6 +30,8 @@ export default defineConfig({
       component: './Table',
     },
   ],
+  mfsu: false,
+  // plugins: [require.resolve('@creek/umi-plugins/dist/creek-layout')],
   npmClient: 'pnpm',
 });
 

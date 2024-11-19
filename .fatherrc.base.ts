@@ -3,7 +3,7 @@
 import { defineConfig } from 'father';
 
 export default defineConfig({
-  esm: {
+  cjs: {
     input: 'src',
     output: 'dist'
   },

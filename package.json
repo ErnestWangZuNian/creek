@@ -10,6 +10,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.13",
     "@types/node": "^22.7.7",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
@@ -27,6 +28,7 @@
     "@ant-design/pro-components": "^2.7.18",
     "@creek/lint": "workspace:^",
     "@creek/openapi": "workspace:^",
+    "@creek/umi-plugins": "workspace:^",
     "@creek/web-components": "workspace:^",
     "@umijs/max": "^4.3.27",
     "ahooks": "^3.8.1",

@@ -64,7 +64,7 @@ export default (api: IApi) => {
   };
 
   const creekWebComponentsPath = winPath(
-    getPkgPath("@ant-design/pro-components")
+    getPkgPath("@creek/web-components")
   );
 
   api.describe({
@@ -109,7 +109,6 @@ export default (api: IApi) => {
       context: {
         PKG_TYPE_REFERENCE,
         creekWebComponentsPath,
-        pkgPath: creekWebComponentsPath,
         hasInitialStatePlugin,
         access: api.config.access,
         creekLocaleConfig: api.config.creekLocaleConfig
@@ -125,7 +124,7 @@ export default (api: IApi) => {
       tplPath: join(TEMPLATE_DIR, "/type.tpl"),
       context: {
         PKG_TYPE_REFERENCE,
-        pkgPath: creekWebComponentsPath,
+        creekWebComponentsPath,
         hasInitialStatePlugin,
         access: api.config.access,
       },
@@ -161,10 +160,10 @@ export interface IRuntimeConfig {
       path: "icons.tsx",
       content: `
 ${icons
-  .map((icon) => {
-    return `import ${icon} from '${antIconsPath}/es/icons/${icon}';`;
-  })
-  .join("\n")}
+          .map((icon) => {
+            return `import ${icon} from '${antIconsPath}/es/icons/${icon}';`;
+          })
+          .join("\n")}
 export default { ${icons.join(", ")} };
       `,
     });

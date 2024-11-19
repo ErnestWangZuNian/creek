@@ -1,36 +1,32 @@
 import { ProLayout, ProLayoutProps } from "@ant-design/pro-components";
 import { theme } from "antd";
-import classnames from "classnames";
+import classnames from 'classnames';
 
-const { useToken } = theme;
+import { CollapsedButton } from "./CollapseButton";
 
-export type LayoutProps = {
-  route?: any[];
-  location: Location;
-  outlet?: any;
-  navigate: any;
-  matchedRoute: any;
-  runtimeConfig: Record<string, any>;
-  userConfig?: Record<string, any>;
+
+export type LayoutProps = ProLayoutProps & {
+  runtimeConfig: ProLayoutProps;
+  userConfig?: ProLayoutProps;
   initialInfo?: {
     initialState: any;
     loading: boolean;
     setInitialState: () => void;
   };
-  formatMessage?: ProLayoutProps["formatMessage"];
 };
 
 export const CreekLayout = (props: LayoutProps) => {
   const {
     route,
-    userConfig = {},
-    formatMessage,
-    location,
-    navigate,
+    userConfig,
     runtimeConfig,
+    children,
+    ...more
   } = props;
 
+  const { useToken } = theme;
   const { token } = useToken();
+
 
   return (
     <ProLayout
@@ -40,13 +36,6 @@ export const CreekLayout = (props: LayoutProps) => {
       location={location}
       title={userConfig?.title}
       siderWidth={212}
-      onMenuHeaderClick={(e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        navigate("/");
-      }}
-      formatMessage={userConfig?.formatMessage || formatMessage}
-      menu={{ autoClose: false }}
       token={{
         header: {
           colorBgHeader: "#2c2c2c",
@@ -68,7 +57,17 @@ export const CreekLayout = (props: LayoutProps) => {
       }}
       fixSiderbar
       fixedHeader
-      {...runtimeConfig}
-    />
+      collapsedButtonRender={(collapsed) => {
+        return <CollapsedButton collapsed={collapsed} />
+      }}
+      {
+      ...more
+      }
+    >
+
+      {children}
+    </ProLayout>
+
+
   );
 };
