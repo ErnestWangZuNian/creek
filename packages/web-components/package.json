@@ -4,8 +4,8 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "father dev",
-    "build": "father build"
+    "father:build": "father build",
+    "father:dev": "father dev"
   },
   "keywords": [],
   "author": "",

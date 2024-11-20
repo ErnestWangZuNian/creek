@@ -8,8 +8,8 @@
     "prettier"
   ],
   "scripts": {
-    "build": "father build",
-    "dev": "father dev"
+    "father:build": "father build",
+    "father:dev": "father dev"
   },
   "repository": {
     "type": "git",

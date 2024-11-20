@@ -5,8 +5,8 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "father build",
-    "test": "npm run build && node dist/index.js"
+    "father:build": "father build",
+      "father:dev": "father dev"
   },
   "keywords": [],
   "author": "",

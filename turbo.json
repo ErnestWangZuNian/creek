@@ -1,14 +1,28 @@
 {
-    "$schema": "https://turbo.build/schema.json",
-    "ui": "tui",
-    "tasks": {
-      "build": {
-        "cache": false,
-        "dependsOn": ["^build"] 
-      },
-      "dev": {
-        "cache": false,
-        "dependsOn": ["^dev"]
-      }
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "father:build": {
+      "cache": false,
+      "dependsOn": [
+        "^father:build"
+      ]
+    },
+    "father:dev": {
+      "cache": false,
+      "dependsOn": [
+        "@creek/lint#father:build",
+        "@creek/web-components#father:build",
+        "@creek/umi-plugins#father:build",
+        "^father:dev"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": [
+        "father:dev"
+      ]
     }
   }
+}
