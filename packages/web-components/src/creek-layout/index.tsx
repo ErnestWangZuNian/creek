@@ -4,7 +4,8 @@ import { theme } from "antd";
 import classnames from "classnames";
 
 import { CollapsedButton, useCollapsedStore } from "./CollapseButton";
-import { HeaderContent } from './HeaderContent';
+import { Exception } from "./Exception";
+import { HeaderContent } from "./HeaderContent";
 
 export type LayoutProps = ProLayoutProps & {
   runtimeConfig: ProLayoutProps;
@@ -18,22 +19,38 @@ export type LayoutProps = ProLayoutProps & {
 };
 
 export const CreekLayout = (props: LayoutProps) => {
-  const { route, userConfig, runtimeConfig, children, location, navigate, ...more } = props;
+  const {
+    route,
+    userConfig,
+    runtimeConfig,
+    children,
+    location,
+    navigate,
+    ...more
+  } = props;
 
   const { useToken } = theme;
   const { token } = useToken();
 
   const { collapsed } = useCollapsedStore();
 
-  const menuItemRender: ProLayoutProps['menuItemRender'] = useMemoizedFn((itemProps, defaultDom) => {
-    return <span onClick={() => {
-      if (navigate) {
-        navigate(itemProps.path)
-      }
-    }}>
-      {defaultDom}
-    </span>
-  })
+  const menuItemRender: ProLayoutProps["menuItemRender"] = useMemoizedFn(
+    (itemProps, defaultDom) => {
+      return (
+        <span
+          onClick={() => {
+            if (navigate) {
+              navigate(itemProps.path);
+            }
+          }}
+        >
+          {defaultDom}
+        </span>
+      );
+    }
+  );
+
+  console.log(more, "1111");
 
   return (
     <ProLayout
@@ -45,14 +62,14 @@ export const CreekLayout = (props: LayoutProps) => {
       location={location}
       menuItemRender={menuItemRender}
       headerContentRender={() => {
-        return <HeaderContent />
+        return <HeaderContent />;
       }}
       token={{
         header: {
           colorBgHeader: "#2c2c2c",
           colorHeaderTitle: "#fff",
           colorTextMenuSelected: "#fff",
-          heightLayoutHeader: 48
+          heightLayoutHeader: 48,
         },
         sider: {
           colorMenuBackground: "#fff",
@@ -75,7 +92,7 @@ export const CreekLayout = (props: LayoutProps) => {
       }}
       {...more}
     >
-      {children}
+      <Exception>{children}</Exception>
     </ProLayout>
   );
 };
