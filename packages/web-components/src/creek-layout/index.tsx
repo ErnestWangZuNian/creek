@@ -1,12 +1,15 @@
 import { ProLayout, ProLayoutProps } from "@ant-design/pro-components";
+import { useMemoizedFn } from "ahooks";
 import { theme } from "antd";
 import classnames from "classnames";
 
 import { CollapsedButton, useCollapsedStore } from "./CollapseButton";
+import { HeaderContent } from './HeaderContent';
 
 export type LayoutProps = ProLayoutProps & {
   runtimeConfig: ProLayoutProps;
   userConfig?: ProLayoutProps;
+  navigate?: (path?: string | number) => void;
   initialInfo?: {
     initialState: any;
     loading: boolean;
@@ -15,28 +18,41 @@ export type LayoutProps = ProLayoutProps & {
 };
 
 export const CreekLayout = (props: LayoutProps) => {
-  const { route, userConfig, runtimeConfig, children, ...more } = props;
+  const { route, userConfig, runtimeConfig, children, location, navigate, ...more } = props;
 
   const { useToken } = theme;
   const { token } = useToken();
 
   const { collapsed } = useCollapsedStore();
 
-  console.log(collapsed, "1111");
+  const menuItemRender: ProLayoutProps['menuItemRender'] = useMemoizedFn((itemProps, defaultDom) => {
+    return <span onClick={() => {
+      if (navigate) {
+        navigate(itemProps.path)
+      }
+    }}>
+      {defaultDom}
+    </span>
+  })
 
   return (
     <ProLayout
       className={classnames("creek-layout-container", userConfig?.className)}
       layout="mix"
       route={route}
-      location={location}
       title={userConfig?.title}
       siderWidth={212}
+      location={location}
+      menuItemRender={menuItemRender}
+      headerContentRender={() => {
+        return <HeaderContent />
+      }}
       token={{
         header: {
           colorBgHeader: "#2c2c2c",
           colorHeaderTitle: "#fff",
           colorTextMenuSelected: "#fff",
+          heightLayoutHeader: 48
         },
         sider: {
           colorMenuBackground: "#fff",

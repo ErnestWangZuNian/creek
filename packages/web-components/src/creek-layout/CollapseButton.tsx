@@ -27,20 +27,17 @@ const useStyles = createStyles(({ token }) => ({
   },
 }));
 
-const createCollapsedStore = (initialCollapsed = false) =>
-  create<CollapsedButtonStore>((set, get) => {
-    return {
-      collapsed: initialCollapsed,
-      changeCollapsed: () => {
-        const _collapsed = get().collapsed;
-        set({
-          collapsed: !_collapsed,
-        });
-      },
-    };
-  });
-  
-export const useCollapsedStore = createCollapsedStore(false);
+export const useCollapsedStore = create<CollapsedButtonStore>((set, get) => {
+  return {
+    collapsed: false,
+    changeCollapsed: () => {
+      const _collapsed = get().collapsed;
+      set({
+        collapsed: !_collapsed,
+      });
+    },
+  };
+});
 
 export const CollapsedButton = (props: CollapsedButtonProps) => {
   const { collapsed: defaultCollapsed = false } = props;
@@ -49,7 +46,7 @@ export const CollapsedButton = (props: CollapsedButtonProps) => {
   const { collapsed, changeCollapsed } = useCollapsedStore.getState();
 
   useEffect(() => {
-    if (defaultCollapsed !== useCollapsedStore.getState().collapsed) {
+    if (defaultCollapsed !== collapsed) {
       useCollapsedStore.setState({ collapsed: defaultCollapsed });
     }
   }, [defaultCollapsed]);
