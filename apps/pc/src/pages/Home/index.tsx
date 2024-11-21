@@ -1,9 +1,6 @@
-import { CreekTable } from '@creek/web-components';
+import { NotFound } from '@creek/web-components';
 
 const HomePage: React.FC = () => {
-  return <div>
-    HomePage
-    <CreekTable />
-  </div>
+  return  <NotFound />
 };
 export default HomePage;
