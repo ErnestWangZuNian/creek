@@ -25,6 +25,7 @@
       childrenRender?: (dom: JSX.Element, props: ProLayoutProps) => React.ReactNode;
       unAccessible?: JSX.Element;
       logout?: (initialState: InitDataType['initialState']) => Promise<void> | void;
+      iconfontCNs?: string[];
       rightRender?: (
         initialState: InitDataType['initialState'],
         setInitialState: InitDataType['setInitialState'],

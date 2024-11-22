@@ -2,7 +2,7 @@
 import { useLocation, useAppData, IRoute, matchRoutes, Outlet, useNavigate } from 'umi';
 import { useMemo } from 'react';
 import _ from 'lodash';
-import {CreekLayout} from '{{{creekWebComponentsPath}}}';
+import {CreekLayout, CreekLayoutProps} from '{{{creekWebComponentsPath}}}';
 {{#hasInitialStatePlugin}}
 import { useModel } from '@@/plugin-model';
 {{/hasInitialStatePlugin}}
@@ -67,8 +67,11 @@ const mapRoutes = (routes: IRoute[]) => {
     return newRoute;
   });
 };
+
+
+
       
-export default (props: any) => {
+const Layout = (props: CreekLayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { clientRoutes, pluginManager } = useAppData();
@@ -115,5 +118,7 @@ export default (props: any) => {
         : <Outlet />
     }
   />
-}
+};
+
+export default Layout;
         

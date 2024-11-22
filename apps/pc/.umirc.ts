@@ -3,11 +3,12 @@ import { defineConfig } from '@umijs/max';
 export default defineConfig({
   antd: {},
   access: {},
-  model: {},
   initialState: {},
   request: {},
+  model:{},
   creekLayout: {
-    title: '@umijs/max',
+    title: 'creekjs',
+    iconfontCNs: ['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js']
   },
   routes: [
     {
@@ -24,6 +25,7 @@ export default defineConfig({
       name: '权限演示权限演示权限演示权限演示',
       path: '/access',
       component: './Access',
+      icon: 'icon-auth'
     },
     {
       name: ' CRUD 示例',

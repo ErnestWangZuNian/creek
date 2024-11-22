@@ -2,6 +2,7 @@ import { IApi, IRoute, RUNTIME_TYPE_FILE_NAME } from '@umijs/max';
 import { lodash, winPath } from '@umijs/max/plugin-utils';
 import { existsSync, readFileSync } from 'fs';
 import { dirname, join } from 'path';
+
 import { withTmpPath } from '../utils';
 
 const getPkgHasDep = (api: IApi, depList: string[]) => {
@@ -79,6 +80,7 @@ export default (api: IApi) => {
   const TEMPLATE_DIR = join(__dirname, 'template');
 
   const creekWebComponentsPath = winPath(getPkgPath(api, '@creek/web-components'));
+  const creekIconPath = require.resolve(`${creekWebComponentsPath}/dist/creek-icon`);
 
   api.describe({
     key: 'creekLayout',
@@ -87,6 +89,7 @@ export default (api: IApi) => {
         return zod
           .object({
             title: zod.string(),
+            iconfontCNs: zod.string().array(),
           })
           .partial();
       },
@@ -111,15 +114,17 @@ export default (api: IApi) => {
 
     const routes = memo.routes as IRoute[];
     const hasNotFoundPage = routes?.find((item) => [item.name, item.path].includes('404'));
+    const defaultRoutes = [
+      {
+        name: '404',
+        path: '*',
+        hideInMenu: true,
+        component: require.resolve(`${creekWebComponentsPath}/dist/creek-layout/Exception/NotFoundPage`),
+      },
+    ];
+
     if (!hasNotFoundPage) {
-      memo.routes = [
-        ...routes,
-        {
-          name: '404',
-          path: '*',
-          component: require.resolve(`${creekWebComponentsPath}/dist/creek-layout/Exception/NotFoundPage`),
-        },
-      ];
+      memo.routes = [...routes, ...defaultRoutes];
     }
 
     return memo;
@@ -129,7 +134,7 @@ export default (api: IApi) => {
     const hasInitialStatePlugin = api.config.initialState;
     const iconsInfo = getIconsInfoForRoutes(api);
 
-    console.log(iconsInfo.icons, 'cijcssss');
+    console.log(api.userConfig.creekLayout?.iconfontCNs, '11111');
 
     api.writeTmpFile({
       path: 'Layout.tsx',
@@ -165,6 +170,7 @@ export default (api: IApi) => {
       context: {
         icons: iconsInfo.icons,
         antIconsPath: iconsInfo.antIconsPath,
+        creekIconPath,
       },
     });
 
@@ -172,7 +178,9 @@ export default (api: IApi) => {
     api.writeTmpFile({
       path: 'runtime.tsx',
       tplPath: join(TEMPLATE_DIR, '/runtime.tpl'),
-      context: {},
+      context: {
+        iconfontCNs: `${api.userConfig.creekLayout?.iconfontCNs}`,
+      },
     });
   });
 

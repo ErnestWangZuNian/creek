@@ -1,12 +1,6 @@
 
+import {CreekIcon} from '{{{creekIconPath}}}';
 {{#icons}}
-const icons =  {{{icons}}};
-const antIconsPath= '{{{antIconsPath}}}';
-
-{{{icons}}}.map((icon) => {
-    return `import ${icon} from '${antIconsPath}/es/icons/${icon}';`;
-  })
-  .join("\n");
-
-export default {icons.join(", ") };
+import {{.}} from '{{{antIconsPath}}}/es/icons/{{.}}';
 {{/icons}}
+export default {CreekIcon,{{#icons}}{{.}}, {{/icons}} };

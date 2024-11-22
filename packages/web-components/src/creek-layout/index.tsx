@@ -50,8 +50,6 @@ export const CreekLayout = (props: LayoutProps) => {
     }
   );
 
-  console.log(more, "1111");
-
   return (
     <ProLayout
       className={classnames("creek-layout-container", userConfig?.className)}
