@@ -21,9 +21,10 @@ export function patchRoutes({ routes }) {
       {{#iconfontCNs }}
        else{
          const CreekIcon = icons.CreekIcon;
-          routes[key].icon = <CreekIcon type={icon} iconfontCNs={ {{iconfontCNs}} }/>
+          routes[key].icon = <CreekIcon type={icon} iconfontCNs={['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js']}/>
         {{/iconfontCNs }}
       }
+    }
   });
 
 }
