@@ -1,6 +1,20 @@
-import { NotFound } from '@creek/web-components';
+import { Button } from 'antd';
+
+const store = require('store.js');
 
 const HomePage: React.FC = () => {
-  return  <NotFound />
+  return (
+    <>
+      <Button
+        type="primary"
+        onClick={() => {
+          store.set("user", {name: 'wzn'})
+        }}
+      >
+        点我存数据
+      </Button>
+
+    </>
+  );
 };
 export default HomePage;

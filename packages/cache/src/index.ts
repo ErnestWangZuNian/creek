@@ -1,5 +1,18 @@
-import CreekWebCacheManager from './adapater/web';
+import { StorageOptions } from "./common";
+import { localStorage } from './localStorage';
+import { sessionStorage } from './sessionStorage';
+import { createCreekStore } from './storeEngine';
 
-const CreekCacheManager = CreekWebCacheManager;
+export type storageType = 'localStorage' | 'sessionStorage' | 'lruCache';
 
-export default CreekCacheManager;
+export function createStore<T>(storage: storageType = 'localStorage', options: StorageOptions = {}) {
+
+    switch (storage) {
+        case 'localStorage':
+            return createCreekStore<T>(localStorage, options);
+        case 'sessionStorage':
+            return createCreekStore(sessionStorage, options);
+
+    }
+
+}
