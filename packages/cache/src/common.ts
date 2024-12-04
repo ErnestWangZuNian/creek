@@ -1,13 +1,19 @@
 // 类型定义
-export interface CreekStorage<T> {
-    read(key: string): T | undefined;
+
+import { LRUCache } from 'lru-cache';
+
+export type LRUCacheOptions<T> = LRUCache.Options<string, T, any>;
+
+export interface CreekStorage {
+    read(key: string): string | null;
     write(key: string, value: string): void;
     remove(key: string): void;
     clearAll(): void;
-    each(callback: (key: string, value: T) => void): void;
+    each(callback: (key: string, value: string) => void): void;
+    lruCache?: LRUCache<{},{}, unknown>
 }
 
-export interface StorageOptions {
+export type StorageOptions<T> = Partial<LRUCacheOptions<T>> & {
     namespace?: string;
 }
 
@@ -16,7 +22,8 @@ export interface Store<T> {
     set: (key: string, value: T) => void;
     remove: (key: string) => void;
     clearAll: () => void;
-    each: (callback: (key: string, value: T) => void) => void;
+    each: (callback: (key: string, value: string) => void) => void;
+    storage: CreekStorage
 }
 
 export const CREEK_STORE = 'CREEK_STORE';

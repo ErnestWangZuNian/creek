@@ -1,9 +1,7 @@
+import { userLruCache } from '@/storage';
 import { PageContainer } from '@ant-design/pro-components';
 import { Access, useAccess } from '@umijs/max';
 import { Button } from 'antd';
-
-
-const store = require('store.js');
 
 const AccessPage: React.FC = () => {
   const access = useAccess();
@@ -20,8 +18,12 @@ const AccessPage: React.FC = () => {
       <Button
         type="primary"
         onClick={() => {
-          const a = store.get('user');
-          console.log(a, '1111');
+          const a = userLruCache.get('user');
+          if (userLruCache.storage.lruCache && userLruCache.storage.lruCache.dispose) {
+            userLruCache.storage.lruCache.dispose((value, key) => {
+              console.log(key, value, '1111');
+            });
+          }
         }}
       >
         点我取数据

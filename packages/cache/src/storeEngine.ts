@@ -19,10 +19,12 @@ function serialize<V>(value: V) {
     return JSON.stringify(value);
 };
 
-function deserialize<V>(value: V) {
+function deserialize<V>(value: string | null) {
+    if (!value) {
+        return value as unknown as V;
+    }
     try {
-        const _value = value as string;
-        return JSON.parse(_value) as V;
+        return JSON.parse(value) as V;
     } catch {
         return value as unknown as V;
     }
@@ -30,7 +32,7 @@ function deserialize<V>(value: V) {
 
 
 // 主函store
-export function createCreekStore<T>(storage: CreekStorage<T>, options: StorageOptions = {}) {
+export function createCreekStore<T>(storage: CreekStorage, options: StorageOptions<T> = {}) {
 
     const namespace = options.namespace || '';
 
@@ -38,6 +40,7 @@ export function createCreekStore<T>(storage: CreekStorage<T>, options: StorageOp
     const result: Store<T> = {
         get: (key: string) => {
             const value = storage.read(generateKeyByNamespace(key, namespace));
+            console.log(value, deserialize(value), 'value');
             return deserialize(value);
         },
 
@@ -57,11 +60,12 @@ export function createCreekStore<T>(storage: CreekStorage<T>, options: StorageOp
             storage.clearAll();
         },
 
-        each: (callback: (key: string, value: T) => void) => {
+        each: (callback: (key: string, value: string) => void) => {
             storage.each((key, value) => {
                 callback(key, value)
             });
         },
+        storage
     };
 
     return result;

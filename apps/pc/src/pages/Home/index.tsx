@@ -1,6 +1,5 @@
+import { userLruCache } from '@/storage';
 import { Button } from 'antd';
-
-const store = require('store.js');
 
 const HomePage: React.FC = () => {
   return (
@@ -8,7 +7,7 @@ const HomePage: React.FC = () => {
       <Button
         type="primary"
         onClick={() => {
-          store.set("user", {name: 'wzn'})
+          userLruCache.set("user", {name: 'wzn', age: 29})
         }}
       >
         点我存数据
