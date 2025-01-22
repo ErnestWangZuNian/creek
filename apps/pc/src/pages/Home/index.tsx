@@ -1,4 +1,4 @@
-import { userLruCache } from '@/storage';
+import { userStore } from '@/storage';
 import { Button } from 'antd';
 
 const HomePage: React.FC = () => {
@@ -7,7 +7,7 @@ const HomePage: React.FC = () => {
       <Button
         type="primary"
         onClick={() => {
-          userLruCache.set("user", {name: 'wzn', age: 29})
+          userStore.set("user", 'wzn')
         }}
       >
         点我存数据

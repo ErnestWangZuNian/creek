@@ -1,7 +1,6 @@
 
 import { createStore } from '@creek/cache';
 
-export const userLruCache = createStore<{ name: string, age: number }>('lruCache', {
+export const userStore = createStore<string>("sessionStorage", {
     namespace: 'user',
-    ttl: 1000 * 60
 })

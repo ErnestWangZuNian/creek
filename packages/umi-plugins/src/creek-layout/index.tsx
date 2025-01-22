@@ -92,7 +92,7 @@ export default (api: IApi) => {
             iconfontCNs: zod.string().array(),
           })
           .partial();
-      },
+      }, 
       onChange: api.ConfigChangeType.regenerateTmpFiles,
     },
     enableBy: api.EnableBy.config,

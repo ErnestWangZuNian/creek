@@ -19,5 +19,6 @@ export function createStore<T>(storage: storageType = 'localStorage', options: S
         }
 
     }
-
 }
+
+export * from './common';

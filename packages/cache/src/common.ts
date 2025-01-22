@@ -10,7 +10,7 @@ export interface CreekStorage {
     remove(key: string): void;
     clearAll(): void;
     each(callback: (key: string, value: string) => void): void;
-    lruCache?: LRUCache<{},{}, unknown>
+    lruCache?: LRUCache<{}, {}, unknown>
 }
 
 export type StorageOptions<T> = Partial<LRUCacheOptions<T>> & {
@@ -23,9 +23,14 @@ export interface Store<T> {
     remove: (key: string) => void;
     clearAll: () => void;
     each: (callback: (key: string, value: string) => void) => void;
-    storage: CreekStorage
+    lruCache?: LRUCache<{}, {}, unknown>
 }
 
 export const CREEK_STORE = 'CREEK_STORE';
 
 export const Global = (typeof window !== 'undefined' ? window : global);
+
+
+export function toUpperCase(input: string) {
+    return input.toUpperCase();
+}

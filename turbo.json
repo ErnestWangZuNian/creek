@@ -12,6 +12,7 @@
       "cache": false,
       "dependsOn": [
         "@creek/lint#father:build",
+        "@creek/openapi#father:build",
         "@creek/web-components#father:build",
         "@creek/umi-plugins#father:build",
         "^father:dev"

@@ -1,5 +1,5 @@
 
-import { CREEK_STORE, CreekStorage, StorageOptions, Store } from './common';
+import { CREEK_STORE, CreekStorage, StorageOptions, Store, toUpperCase } from './common';
 
 // 生成key
 function generateKeyByNamespace(key: string, namespace?: string) {
@@ -12,7 +12,8 @@ function generateKeyByNamespace(key: string, namespace?: string) {
             throw new Error('@creek/store namespaces can only have alphanumerics + underscores and dashes');
         }
     }
-    return `${namespacePrefix}_${key}`;
+    const _namespacePrefix = toUpperCase(namespacePrefix);
+    return `${_namespacePrefix}_${key}`;
 }
 
 function serialize<V>(value: V) {
@@ -65,8 +66,11 @@ export function createCreekStore<T>(storage: CreekStorage, options: StorageOptio
                 callback(key, value)
             });
         },
-        storage
     };
+
+    if (storage.lruCache) {
+        result.lruCache = storage.lruCache;
+    }
 
     return result;
 };

@@ -2,11 +2,10 @@
   "name": "@creek/openapi",
   "version": "0.0.1",
   "description": "",
-  "type": "module",
   "main": "dist/index.js",
   "scripts": {
     "father:build": "father build",
-      "father:dev": "father dev"
+    "father:dev": "father dev"
   },
   "keywords": [],
   "author": "",

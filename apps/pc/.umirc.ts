@@ -5,10 +5,14 @@ export default defineConfig({
   access: {},
   initialState: {},
   request: {},
-  model:{},
+  model: {},
   creekLayout: {
     title: 'creekjs',
     iconfontCNs: ['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js']
+  },
+  openApi: {
+    schemaPath: 'https://petstore.swagger.io/v2/swagger.json',
+    requestLibPath: "import { request } from '@umijs/max'",
   },
   routes: [
     {
@@ -26,15 +30,16 @@ export default defineConfig({
       path: '/access',
       component: './Access',
       icon: 'icon-auth'
-    },
-    {
-      name: ' CRUD 示例',
-      path: '/table',
-      component: './Table',
-    },
+    }
   ],
   mfsu: false,
-  plugins: [require.resolve('@creek/umi-plugins/dist/creek-layout')],
+  plugins: [require.resolve('@creek/umi-plugins/dist/creek-layout'), require.resolve('@creek/umi-plugins/dist/open-api')],
   npmClient: 'pnpm',
+  proxy: {
+    '/': {
+      target: 'https://api.tvmaze.com/',
+      changeOrigin: true,
+    },
+  },
 });
 

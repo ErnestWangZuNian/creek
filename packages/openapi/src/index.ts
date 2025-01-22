@@ -1,4 +1,7 @@
-import swaggerOpenApi, { GenerateServiceProps } from '@umijs/openapi';
+
+const swaggerOpenApi = require('@umijs/openapi');
+
+import type { GenerateServiceProps } from '@umijs/openapi';
 
 export enum OpenApiChannel {
     swagger = 'swagger',
@@ -17,7 +20,7 @@ const generateServiceMap = {
 
 export const generateService = (openApiGenerateServiceProps: OpenApiGenerateServiceProps | OpenApiGenerateServiceProps[]) => {
     let arrayOpenApiGenerateService = Array.isArray(openApiGenerateServiceProps) ? openApiGenerateServiceProps : [openApiGenerateServiceProps];
-    
+
     arrayOpenApiGenerateService = arrayOpenApiGenerateService.map(item => {
         item.openApiChannel = item.openApiChannel || OpenApiChannel.swagger;
         item.projectName = item.projectName || '';
