@@ -1,5 +1,6 @@
 // 运行时配置
-import { DuplicatePlugin, request } from '@creek/request';
+import { DuplicatePlugin, LoadingPlugin, request } from '@creek/request';
+import { Loading } from '@creek/web-components';
 import { RunTimeLayoutConfig } from '@umijs/max';
 
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
@@ -18,4 +19,18 @@ export const layout: RunTimeLayoutConfig = (props) => {
   };
 };
 
-request.createInstance({}).pluginManager.use(new DuplicatePlugin()).use(new DuplicatePlugin());
+request
+  .createInstance({})
+  .pluginManager.use(new DuplicatePlugin())
+  .use(
+    new LoadingPlugin({
+      showLoading() {
+        Loading.open({
+          tip: '正在加载数据，请您耐心等待'
+        })
+      },
+      hideLoading() {
+        Loading.close();
+      },
+    }),
+  );
