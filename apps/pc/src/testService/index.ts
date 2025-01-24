@@ -1,14 +1,8 @@
-import { AxiosPluginManager, DuplicatePlugin } from '@creek/request';
-import axios from 'axios';
+import { request } from '@creek/request';
 
-const instance = axios.create();
-
-const pluginManager = new AxiosPluginManager(instance);
-pluginManager.use(new DuplicatePlugin());
 
 export const getStoreService = () => {
-  return instance({
-    url: '/v2/store/inventory',
+  return request('/v2/store/inventory', {
     method: 'get',
   });
 };

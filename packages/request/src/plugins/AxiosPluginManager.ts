@@ -3,8 +3,8 @@ import { AxiosPlugin } from "./AxiosPlugin";
 
 // 插件管理器
 export class AxiosPluginManager {
-    private axios: AxiosInstance;
-    private plugins: AxiosPlugin[];
+   private  axios: AxiosInstance;
+   private  plugins: AxiosPlugin[];
 
     constructor(axios: AxiosInstance) {
         this.axios = axios;

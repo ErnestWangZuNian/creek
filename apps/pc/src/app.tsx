@@ -1,4 +1,5 @@
 // 运行时配置
+import { DuplicatePlugin, request } from '@creek/request';
 import { RunTimeLayoutConfig } from '@umijs/max';
 
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
@@ -13,8 +14,8 @@ export const layout: RunTimeLayoutConfig = (props) => {
     menu: {
       locale: false,
     },
-    iconfontCNs: [
-      '//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js'
-    ]
+    iconfontCNs: ['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js'],
   };
 };
+
+request.createInstance({}).pluginManager.use(new DuplicatePlugin()).use(new DuplicatePlugin());

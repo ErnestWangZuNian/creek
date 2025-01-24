@@ -1,4 +1,5 @@
 import { userStore } from '@/storage';
+import { getStoreService } from '@/testService';
 import { PageContainer } from '@ant-design/pro-components';
 import { Access, useAccess } from '@umijs/max';
 import { Button } from 'antd';
@@ -17,7 +18,8 @@ const AccessPage: React.FC = () => {
       </Access>
       <Button
         type="primary"
-        onClick={() => {
+        onClick={async () => {
+            await getStoreService();
           const a = userStore.get('user');
           console.log(a, '1111');
         }}
