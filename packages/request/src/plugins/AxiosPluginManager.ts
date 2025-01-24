@@ -42,7 +42,7 @@ export class AxiosPluginManager {
             },
             async (error) => {
                 for (const plugin of this.plugins) {
-                    error = await plugin.onError(error);
+                    await plugin.onError(error);
                 }
                 return Promise.reject(error);
             }

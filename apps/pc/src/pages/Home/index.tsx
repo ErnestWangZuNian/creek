@@ -1,18 +1,22 @@
-import { userStore } from '@/storage';
 import { Button } from 'antd';
+
+import { getStoreService } from '@/testService';
 
 const HomePage: React.FC = () => {
   return (
     <>
       <Button
         type="primary"
-        onClick={() => {
-          userStore.set("user", 'wzn')
+        onClick={async () => {
+          try {
+            await getStoreService();
+          } catch (error) {
+            console.log(error, 'error');
+          }
         }}
       >
         点我存数据
       </Button>
-
     </>
   );
 };

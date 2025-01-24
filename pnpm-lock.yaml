@@ -11,9 +11,6 @@ importers:
       '@ant-design/pro-components':
         specifier: ^2.7.18
         version: 2.8.2(antd@5.22.1(date-fns@2.30.0)(moment@2.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(rc-field-form@2.5.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@creek/axios':
-        specifier: workspace:^
-        version: link:packages/axios
       '@creek/cache':
         specifier: workspace:^
         version: link:packages/cache
@@ -23,6 +20,9 @@ importers:
       '@creek/openapi':
         specifier: workspace:^
         version: link:packages/openapi
+      '@creek/request':
+        specifier: workspace:^
+        version: link:packages/request
       '@creek/umi-plugins':
         specifier: workspace:^
         version: link:packages/umi-plugins
@@ -93,6 +93,9 @@ importers:
       antd:
         specifier: ^5.21.4
         version: 5.22.1(date-fns@2.30.0)(moment@2.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      axios:
+        specifier: 1.7.9
+        version: 1.7.9
       store.js:
         specifier: ^1.0.4
         version: 1.0.4
@@ -119,12 +122,6 @@ importers:
         specifier: ^5.6.3
         version: 5.6.3
 
-  packages/axios:
-    dependencies:
-      axios:
-        specifier: 1.7.9
-        version: 1.7.9
-
   packages/cache:
     dependencies:
       lru-cache:
@@ -142,6 +139,12 @@ importers:
       '@umijs/openapi':
         specifier: ^1.12.1
         version: 1.13.0(chokidar@3.6.0)(encoding@0.1.13)(typescript@5.6.3)
+
+  packages/request:
+    dependencies:
+      axios:
+        specifier: 1.7.9
+        version: 1.7.9
 
   packages/umi-plugins: {}
 

@@ -31,7 +31,7 @@
     "@creek/umi-plugins": "workspace:^",
     "@creek/web-components": "workspace:^",
     "@creek/cache": "workspace:^",
-    "@creek/axios": "workspace:^",
+    "@creek/request": "workspace:^",
     "@tarojs/taro": "^4.0.7",
     "@umijs/max": "^4.3.27",
     "ahooks": "^3.8.1",

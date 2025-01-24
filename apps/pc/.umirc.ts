@@ -36,9 +36,10 @@ export default defineConfig({
   plugins: [require.resolve('@creek/umi-plugins/dist/creek-layout'), require.resolve('@creek/umi-plugins/dist/open-api')],
   npmClient: 'pnpm',
   proxy: {
-    '/': {
-      target: 'https://api.tvmaze.com/',
+    '/v2/': {
+      target: 'https://petstore.swagger.io',
       changeOrigin: true,
+      secure: false,
     },
   },
 });

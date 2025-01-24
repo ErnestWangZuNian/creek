@@ -2,7 +2,7 @@ import { AxiosPlugin, AxiosPluginConfigType, AxiosPluginErrorType, AxiosPluginRe
 
 
 export type DuplicatePluginConfigType = {
-    noDuplicate?: boolean
+    closeDuplicate?: boolean
 }
 
 // 防重复提交插件
@@ -10,29 +10,29 @@ export class DuplicatePlugin extends AxiosPlugin {
 
     private pending: Map<string, boolean>;
 
-    private controller = new AbortController();
-
     constructor() {
         super();
         this.pending = new Map();
     }
 
     beforeRequest(config: AxiosPluginConfigType<DuplicatePluginConfigType>) {
-        if (config.noDuplicate) {
+        if (!config.closeDuplicate) {
             const key = this.getRequestKey(config);
+            // 检查是否有相同且未取消的请求
             if (this.pending.has(key)) {
-                return {
-                    ...config,
-                    signal: this.controller.signal
-                };
+                return Promise.reject(`${key}是一个重复的请求，已经拦截了`);
             }
             this.pending.set(key, true);
+            return {
+                ...config,
+
+            };
         }
         return config;
     }
 
     afterRequest(response: AxiosPluginResponseType<DuplicatePluginConfigType>) {
-        if (response.config.noDuplicate) {
+        if (!response.config.closeDuplicate) {
             const key = this.getRequestKey(response.config);
             this.pending.delete(key);
         }
@@ -40,7 +40,7 @@ export class DuplicatePlugin extends AxiosPlugin {
     }
 
     onError(error: AxiosPluginErrorType<DuplicatePluginConfigType>) {
-        if (error.config && error.config.noDuplicate) {
+        if (error.config && !error.config.closeDuplicate) {
             const key = this.getRequestKey(error.config);
             this.pending.delete(key);
         }
