@@ -20,7 +20,9 @@ export class DuplicatePlugin extends AxiosPlugin {
             const key = this.getRequestKey(config);
             // 检查是否有相同且未取消的请求
             if (this.pending.has(key)) {
-                return Promise.reject(`${key}是一个重复的请求，已经拦截了`);
+                return Promise.reject({
+                    config
+                });
             }
             this.pending.set(key, true);
             return {

@@ -6,3 +6,14 @@ export const getStoreService = () => {
     method: 'get',
   });
 };
+
+
+export const getStoreIdService = () => {
+  return request('/v2/pet/findByStatus', {
+    method: 'get',
+    data: {
+      status: 'available'
+    }
+  });
+};
+

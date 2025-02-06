@@ -2,8 +2,6 @@ import { Spin } from 'antd';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 
-import { BgCenter } from '../bg-center';
-
 export class Loading {
   private static container: HTMLDivElement | null = null;
   private static root: ReturnType<typeof createRoot> | null = null;
@@ -20,11 +18,7 @@ export class Loading {
   static open(config?: React.ComponentProps<typeof Spin>) {
     this.createContainer();
 
-    this.root?.render(
-      <BgCenter>
-        <Spin {...config} />
-      </BgCenter>,
-    );
+    this.root?.render(<Spin {...config} fullscreen></Spin>);
   }
 
   static close() {

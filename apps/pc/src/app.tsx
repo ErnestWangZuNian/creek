@@ -21,7 +21,7 @@ export const layout: RunTimeLayoutConfig = (props) => {
 
 request
   .createInstance({})
-  .pluginManager.use(new DuplicatePlugin())
+  .pluginManager
   .use(
     new LoadingPlugin({
       showLoading() {
@@ -33,4 +33,5 @@ request
         Loading.close();
       },
     }),
-  );
+  )
+ .use(new DuplicatePlugin())

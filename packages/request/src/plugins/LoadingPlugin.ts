@@ -2,7 +2,7 @@ import { AxiosPlugin, AxiosPluginConfigType, AxiosPluginErrorType, AxiosPluginRe
 
 
 export type LoadingPluginConfigType = {
-    closeLoading?: boolean
+    openLoading?: boolean
 }
 
 export type LoadingPluginOptions = {
@@ -25,7 +25,7 @@ export class LoadingPlugin extends AxiosPlugin {
     }
 
     beforeRequest(config: AxiosPluginConfigType<LoadingPluginConfigType>) {
-        if (!config.closeLoading) {
+        if (config.openLoading) {
 
             this.count++;
             this.showLoading();
@@ -34,7 +34,7 @@ export class LoadingPlugin extends AxiosPlugin {
     }
 
     afterRequest(response: AxiosPluginResponseType<LoadingPluginConfigType>) {
-        if (!response.config.closeLoading) {
+        if (response.config.openLoading) {
             this.count--;
             if (this.count === 0) {
                 this.hideLoading();
@@ -45,7 +45,7 @@ export class LoadingPlugin extends AxiosPlugin {
 
 
     onError(error: AxiosPluginErrorType<LoadingPluginConfigType>) {
-        if (error.config && !error.config.closeLoading) {
+        if (error.config && error.config.openLoading) {
             this.count--;
             if (this.count === 0) {
                 this.hideLoading();

@@ -1,8 +1,14 @@
 import { Button } from 'antd';
+import { useEffect } from 'react';
 
-import { getStoreService } from '@/testService';
+import { getStoreIdService, getStoreService } from '@/testService';
 
 const HomePage: React.FC = () => {
+  useEffect(() => {
+    getStoreService();
+    getStoreIdService();
+  });
+
   return (
     <>
       <Button
@@ -20,4 +26,5 @@ const HomePage: React.FC = () => {
     </>
   );
 };
+
 export default HomePage;
