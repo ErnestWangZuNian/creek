@@ -6,55 +6,45 @@ export type LoadingPluginConfigType = {
 }
 
 export type LoadingPluginOptions = {
-    showLoading?: () => void;
-    hideLoading?: () => void;
+    showLoading: (config: AxiosPluginConfigType<LoadingPluginConfigType>) => void;
+    hideLoading: (config: AxiosPluginConfigType<LoadingPluginConfigType>) => void;
 }
 
 // 防重复提交插件
 export class LoadingPlugin extends AxiosPlugin {
 
     private count: number;
-    private showLoading: () => void
-    private hideLoading: () => void
+    private showLoading: LoadingPluginOptions["showLoading"]
+    private hideLoading: LoadingPluginOptions['hideLoading']
 
-    constructor(options: LoadingPluginOptions = {}) {
+    constructor(options: LoadingPluginOptions) {
         super();
         this.count = 0;
-        this.showLoading = options.showLoading || (() => { });
-        this.hideLoading = options.hideLoading || (() => { });
+        this.showLoading = options.showLoading;
+        this.hideLoading = options.hideLoading;
     }
 
     beforeRequest(config: AxiosPluginConfigType<LoadingPluginConfigType>) {
-        if (config.openLoading) {
-
-            this.count++;
-            this.showLoading();
-        }
+        this.count++;
+        this.showLoading(config);
         return config;
     }
 
     afterRequest(response: AxiosPluginResponseType<LoadingPluginConfigType>) {
-        if (response.config.openLoading) {
-            this.count--;
-            if (this.count === 0) {
-                this.hideLoading();
-            }
+        this.count--;
+        if (this.count === 0) {
+            this.hideLoading(response.config);
         }
         return response;
     }
 
 
     onError(error: AxiosPluginErrorType<LoadingPluginConfigType>) {
-        if (error.config && error.config.openLoading) {
-            this.count--;
-            if (this.count === 0) {
-                this.hideLoading();
-            }
+        this.count--;
+        if (this.count === 0) {
+            this.hideLoading(error.config);
         }
         return Promise.reject(error);
     }
-
-
-
 
 }   

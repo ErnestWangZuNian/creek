@@ -1,7 +1,8 @@
 // 运行时配置
+import { RunTimeLayoutConfig } from '@umijs/max';
+
 import { DuplicatePlugin, LoadingPlugin, request } from '@creek/request';
 import { Loading } from '@creek/web-components';
-import { RunTimeLayoutConfig } from '@umijs/max';
 
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
 // 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate
@@ -21,17 +22,18 @@ export const layout: RunTimeLayoutConfig = (props) => {
 
 request
   .createInstance({})
-  .pluginManager
-  .use(
+  .pluginManager.use(
     new LoadingPlugin({
-      showLoading() {
-        Loading.open({
-          tip: '正在加载数据，请您耐心等待'
-        })
+      showLoading(config) {
+        if (config.openLoading) {
+          Loading.open();
+        }
       },
-      hideLoading() {
-        Loading.close();
+      hideLoading(config) {
+        if (config.openLoading) {
+          Loading.close();
+        }
       },
     }),
   )
- .use(new DuplicatePlugin())
+  .use(new DuplicatePlugin());

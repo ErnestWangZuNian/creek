@@ -1,6 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
-import { request } from '@umijs/max';
+import { request } from '@creek/request';
 
 /** Create user This can only be done by the logged in user. 返回值: successful operation POST /user */
 export async function createUser(body: API.User, options?: { [key: string]: any }) {

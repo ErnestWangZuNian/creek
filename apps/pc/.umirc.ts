@@ -12,7 +12,7 @@ export default defineConfig({
   },
   openApi: {
     schemaPath: 'https://petstore.swagger.io/v2/swagger.json',
-    requestLibPath: "import { request } from '@umijs/max'",
+    requestLibPath: "import { request } from '@creek/request';",
   },
   routes: [
     {

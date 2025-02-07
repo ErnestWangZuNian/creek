@@ -7,12 +7,14 @@ import { AxiosPluginManager } from './plugins/AxiosPluginManager';
 
 let requestInstance = axios.create();
 
-type RequestFunction = {
-    (url: string, config: AxiosPluginConfigType): Promise<any>;
+
+interface RequestFunction {
+    <T = any>(url: string, config: AxiosPluginConfigType): Promise<T>;
     instance: AxiosInstance;
     pluginManager: AxiosPluginManager;
     createInstance: (config?: AxiosRequestConfig) => RequestFunction;
 }
+
 
 export const request: RequestFunction = (url: string, config: AxiosPluginConfigType) => {
     return requestInstance({
