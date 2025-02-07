@@ -1,51 +1,36 @@
-// Types
-type AxiosResponseType = 'success' | 'fail';
-type SettledResult<T> = {
-    status: AxiosResponseType;
-    value?: T;
-    reason?: any;
-};
 
-export class AxiosError extends Error {
-    constructor(
-        message: string,
-        public code?: string,
-        public config?: any,
-        public request?: any,
-        public response?: any
-    ) {
-        super(message);
-        this.name = 'AxiosError';
-    }
-}
+import { AxiosError } from 'axios';
+
+import * as rawTaro from '@tarojs/taro';
+
 
 export function merge(...args: any[]): any {
     const result: Record<string, any> = {};
-  
+
     function assignValue(val: any, key: string) {
-      if (isObject(result[key]) && isObject(val)) {
-        result[key] = merge(result[key], val);
-      } else if (isObject(val)) {
-        result[key] = merge({}, val);
-      } else if (Array.isArray(val)) {
-        result[key] = val.slice();
-      } else {
-        result[key] = val;
-      }
-    }
-  
-    for (const obj of args) {
-      if (isObject(obj)) {
-        for (const key in obj) {
-          if (Object.prototype.hasOwnProperty.call(obj, key)) {
-            assignValue(obj[key], key);
-          }
+        if (isObject(result[key]) && isObject(val)) {
+            result[key] = merge(result[key], val);
+        } else if (isObject(val)) {
+            result[key] = merge({}, val);
+        } else if (Array.isArray(val)) {
+            result[key] = val.slice();
+        } else {
+            result[key] = val;
         }
-      }
     }
-  
+
+    for (const obj of args) {
+        if (isObject(obj)) {
+            for (const key in obj) {
+                if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                    assignValue(obj[key], key);
+                }
+            }
+        }
+    }
+
     return result;
-  }
+}
 
 export function isString(val: unknown): val is string {
     return typeof val === 'string';
@@ -166,7 +151,7 @@ export function settle<T>(resolve: (value: T) => void, reject: (reason: any) => 
 }
 
 
-export function getTaro() {
+export function getTaro(): typeof rawTaro  {
     const Taro = require('@tarojs/taro') as any
 
     return Taro && (Taro as any).default || Taro

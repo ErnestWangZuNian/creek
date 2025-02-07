@@ -7,7 +7,7 @@ const Taro = getTaro()
 export const taroAdapter: AxiosAdapter = config => {
     return new Promise((resolve, reject) => {
         const requestMethod: string = (isString(config.method) ? config.method : 'GET').toUpperCase()
-        const requestUrl: string = buildUrl(buildFullPath(config.baseURL, config.url || ''), config.params, config.paramsSerializer)
+        const requestUrl: string = buildUrl(buildFullPath(config.baseURL, config.url || ''), config.params, config.paramsSerializer as any)
         const requestHeaders: Record<string, string> = isObject(config.headers) ? config.headers : {}
 
         // 请求数据
@@ -35,7 +35,7 @@ export const taroAdapter: AxiosAdapter = config => {
                 })
                 abortRequestTask = request.abort
                 if (typeof config.onUploadProgress === 'function') {
-                    request.progress(e => {
+                    request.progress((e) => {
                         config.onUploadProgress!(
                             merge(
                                 e,
@@ -48,7 +48,7 @@ export const taroAdapter: AxiosAdapter = config => {
                         )
                     })
                 }
-                requestTask = request.then(res => {
+                requestTask = request.then((res) => {
                     let data = res.data
                     if (config.responseType === 'json') {
                         try {
@@ -84,7 +84,7 @@ export const taroAdapter: AxiosAdapter = config => {
                 dataType: config.responseType === 'json' ? 'json' : config.responseType,
             })
             abortRequestTask = (request as any).abort
-            requestTask = request.then(res => {
+            requestTask = request.then((res) => {
                 return {
                     data: res.data,
                     status: res.statusCode,
