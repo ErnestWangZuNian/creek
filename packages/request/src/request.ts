@@ -27,6 +27,7 @@ request.instance = requestInstance;
 request.pluginManager = new AxiosPluginManager(requestInstance);
 
 request.createInstance = (config?: AxiosRequestConfig) => {
+    console.log(config, 'config');
     requestInstance = axios.create(config);
     request.instance = requestInstance;
     request.pluginManager = new AxiosPluginManager(requestInstance);

@@ -1,0 +1,17 @@
+{
+  "name": "@creek/taro-adapter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "father:build": "father build",
+    "father:dev": "father dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tarojs/taro": "^4.0.9",
+    "axios": "^1.7.9"
+  }
+}

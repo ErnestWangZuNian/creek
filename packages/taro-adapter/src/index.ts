@@ -1,10 +1,10 @@
+import * as Taro from '@tarojs/taro';
 import { AxiosAdapter, AxiosError, AxiosResponse } from 'axios';
 
-import { PostData, buildFullPath, buildUrl, getTaro, isObject, isString, merge, settle } from '../utils';
+import { PostData, buildFullPath, buildUrl, isObject, isString, merge, settle } from './utils';
 
-const Taro = getTaro()
 
-export const taroAdapter: AxiosAdapter = config => {
+export const taroAdapter: AxiosAdapter = (config) => {
     return new Promise((resolve, reject) => {
         const requestMethod: string = (isString(config.method) ? config.method : 'GET').toUpperCase()
         const requestUrl: string = buildUrl(buildFullPath(config.baseURL, config.url || ''), config.params, config.paramsSerializer as any)
@@ -72,6 +72,7 @@ export const taroAdapter: AxiosAdapter = config => {
 
         // 普通请求
         if (!requestTask) {
+            console.log(Taro, Taro.request, 'Taro1111');
             const request = Taro.request({
                 method: requestMethod as any,
                 url: requestUrl,

@@ -23,15 +23,15 @@ importers:
       '@creek/request':
         specifier: workspace:^
         version: link:packages/request
+      '@creek/taro-adapter':
+        specifier: workspace:^
+        version: link:packages/taro-adapter
       '@creek/umi-plugins':
         specifier: workspace:^
         version: link:packages/umi-plugins
       '@creek/web-components':
         specifier: workspace:^
         version: link:packages/web-components
-      '@tarojs/taro':
-        specifier: ^4.0.7
-        version: 4.0.7(@tarojs/components@4.0.9(@tarojs/helper@4.0.9(@swc/helpers@0.5.1))(@types/react@18.3.12)(html-webpack-plugin@5.6.3(webpack@5.96.1))(postcss@8.4.49)(react@18.3.1)(rollup@3.29.5)(webpack-chain@6.5.1)(webpack-dev-server@4.15.2(webpack@5.96.1))(webpack@5.96.1))(@tarojs/helper@4.0.9(@swc/helpers@0.5.1))(@tarojs/shared@4.0.9)(@types/react@18.3.12)(html-webpack-plugin@5.6.3(webpack@5.96.1))(postcss@8.4.49)(rollup@3.29.5)(webpack-chain@6.5.1)(webpack-dev-server@4.15.2(webpack@5.96.1))(webpack@5.96.1)
       '@umijs/max':
         specifier: ^4.3.27
         version: 4.3.34(@babel/core@7.26.0)(@types/node@22.9.0)(@types/react-dom@18.3.1)(@types/react@18.3.12)(dva@2.5.0-beta.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(lightningcss@1.29.1)(prettier@3.3.3)(rc-field-form@2.5.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@3.29.5)(sass@1.84.0)(stylus@0.64.0)(terser@5.36.0)(type-fest@2.19.0)(typescript@5.6.3)(webpack-dev-server@4.15.2(webpack@5.96.1))(webpack@5.96.1)
@@ -81,12 +81,12 @@ importers:
 
   apps/mobile:
     dependencies:
+      '@antmjs/vantui':
+        specifier: ^3.5.4
+        version: 3.5.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@babel/runtime':
         specifier: ^7.21.5
         version: 7.26.0
-      '@nutui/nutui-react-taro':
-        specifier: ^2.6.14
-        version: 2.7.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tarojs/components':
         specifier: 4.0.9
         version: 4.0.9(@tarojs/helper@4.0.9(@swc/helpers@0.5.1))(@types/react@18.3.12)(html-webpack-plugin@5.6.3(webpack@5.78.0(@swc/core@1.3.96(@swc/helpers@0.5.1))))(postcss@8.4.49)(react@18.3.1)(rollup@3.29.5)(webpack-chain@6.5.1)(webpack-dev-server@4.15.2(webpack@5.78.0(@swc/core@1.3.96(@swc/helpers@0.5.1))))(webpack@5.78.0(@swc/core@1.3.96(@swc/helpers@0.5.1)))
@@ -285,6 +285,15 @@ importers:
         specifier: 1.7.9
         version: 1.7.9
 
+  packages/taro-adapter:
+    dependencies:
+      '@tarojs/taro':
+        specifier: ^4.0.9
+        version: 4.0.9(@tarojs/components@4.0.9(@tarojs/helper@4.0.9(@swc/helpers@0.5.1))(@types/react@18.3.12)(html-webpack-plugin@5.6.3(webpack@5.96.1))(postcss@8.4.49)(react@18.3.1)(rollup@3.29.5)(webpack-chain@6.5.1)(webpack-dev-server@4.15.2(webpack@5.96.1))(webpack@5.96.1))(@tarojs/helper@4.0.9(@swc/helpers@0.5.1))(@tarojs/shared@4.0.9)(@types/react@18.3.12)(html-webpack-plugin@5.6.3(webpack@5.96.1))(postcss@8.4.49)(rollup@3.29.5)(webpack-chain@6.5.1)(webpack-dev-server@4.15.2(webpack@5.96.1))(webpack@5.96.1)
+      axios:
+        specifier: ^1.7.9
+        version: 1.7.9
+
   packages/umi-plugins: {}
 
   packages/web-components:
@@ -452,6 +461,10 @@ packages:
 
   '@antfu/utils@0.7.10':
     resolution: {integrity: sha512-+562v9k4aI80m1+VuMHehNJWLOFjBnXn3tdOitzD0il5b7smkSBal4+a3oKiQTbrwMmN/TBUMDvbdoWDehgOww==, tarball: https://registry.npmmirror.com/@antfu/utils/-/utils-0.7.10.tgz}
+
+  '@antmjs/vantui@3.5.4':
+    resolution: {integrity: sha512-Gixo36VFapUnBgVpFVmQxfcjBUIL1roGpH4zMCferpzjhJrSaiDybPI2hE2rM9YuZ36m4mGHLO9EN+pft+H0Wg==, tarball: https://registry.npmmirror.com/@antmjs/vantui/-/vantui-3.5.4.tgz}
+    engines: {node: '>=12', npm: '>=6.4', yarn: '>=1.22'}
 
   '@asamuzakjp/css-color@2.8.3':
     resolution: {integrity: sha512-GIc76d9UI1hCvOATjZPyHFmE5qhRccp3/zGfMPapK3jBi+yocEzp6BBB0UnfRYP9NP4FANqUZYb0hnfs3TM3hw==, tarball: https://registry.npmmirror.com/@asamuzakjp/css-color/-/css-color-2.8.3.tgz}
@@ -2072,20 +2085,6 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==, tarball: https://registry.npmmirror.com/@nodelib/fs.walk/-/fs.walk-1.2.8.tgz}
     engines: {node: '>= 8'}
 
-  '@nutui/icons-react-taro@1.0.5':
-    resolution: {integrity: sha512-p7dCW29wASH/qQ1OaUGGKA6PRV33wDPb80+qrHnWtT40syIb0W+e92mpplbULWM01s+GYVGyUU3i8b7Iy7qfvw==, tarball: https://registry.npmmirror.com/@nutui/icons-react-taro/-/icons-react-taro-1.0.5.tgz}
-
-  '@nutui/jdesign-icons-react-taro@1.0.6-beta.2':
-    resolution: {integrity: sha512-2Scz5c9o14gA7Mw5JdiEkc/KEbNlNWMcJMuqVyFVipYeeYN/118N/fvHVpocmJviN0Gc4P+u3ZB3dIQSA2j4Fw==, tarball: https://registry.npmmirror.com/@nutui/jdesign-icons-react-taro/-/jdesign-icons-react-taro-1.0.6-beta.2.tgz}
-
-  '@nutui/nutui-react-taro@2.7.7':
-    resolution: {integrity: sha512-KqiMTTy32aWzxDDd5tzt3ZOAVFyju7oS0xR4yROY8ZbnDNpH2jBgla5JpbRlUs/IeDdO+q3YN8hv2Y7enNxtMQ==, tarball: https://registry.npmmirror.com/@nutui/nutui-react-taro/-/nutui-react-taro-2.7.7.tgz}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-
-  '@nutui/touch-emulator@1.0.0':
-    resolution: {integrity: sha512-k2hvI/9LlRA7Ph1Chni27pTuvPmKPt+/I10sWWd2sWzqiCOYRerD79eIwCMRGUF/q6WVDEKVnv00t9CEUL4sPA==, tarball: https://registry.npmmirror.com/@nutui/touch-emulator/-/touch-emulator-1.0.0.tgz}
-
   '@parcel/watcher-android-arm64@2.5.1':
     resolution: {integrity: sha512-KF8+j9nNbUN8vzOFDpRMsaKBHZ/mcjEjMToVMJOhTozkDonQFFrRcfdLWn6yWKCmJKmdVxSgHiYvTCef4/qcBA==, tarball: https://registry.npmmirror.com/@parcel/watcher-android-arm64/-/watcher-android-arm64-2.5.1.tgz}
     engines: {node: '>= 10.0.0'}
@@ -2266,33 +2265,6 @@ packages:
     peerDependencies:
       react: '>=16.9.0'
       react-dom: '>=16.9.0'
-
-  '@react-spring/animated@9.6.1':
-    resolution: {integrity: sha512-ls/rJBrAqiAYozjLo5EPPLLOb1LM0lNVQcXODTC1SMtS6DbuBCPaKco5svFUQFMP2dso3O+qcC4k9FsKc0KxMQ==, tarball: https://registry.npmmirror.com/@react-spring/animated/-/animated-9.6.1.tgz}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-
-  '@react-spring/core@9.6.1':
-    resolution: {integrity: sha512-3HAAinAyCPessyQNNXe5W0OHzRfa8Yo5P748paPcmMowZ/4sMfaZ2ZB6e5x5khQI8NusOHj8nquoutd6FRY5WQ==, tarball: https://registry.npmmirror.com/@react-spring/core/-/core-9.6.1.tgz}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-
-  '@react-spring/rafz@9.6.1':
-    resolution: {integrity: sha512-v6qbgNRpztJFFfSE3e2W1Uz+g8KnIBs6SmzCzcVVF61GdGfGOuBrbjIcp+nUz301awVmREKi4eMQb2Ab2gGgyQ==, tarball: https://registry.npmmirror.com/@react-spring/rafz/-/rafz-9.6.1.tgz}
-
-  '@react-spring/shared@9.6.1':
-    resolution: {integrity: sha512-PBFBXabxFEuF8enNLkVqMC9h5uLRBo6GQhRMQT/nRTnemVENimgRd+0ZT4yFnAQ0AxWNiJfX3qux+bW2LbG6Bw==, tarball: https://registry.npmmirror.com/@react-spring/shared/-/shared-9.6.1.tgz}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-
-  '@react-spring/types@9.6.1':
-    resolution: {integrity: sha512-POu8Mk0hIU3lRXB3bGIGe4VHIwwDsQyoD1F394OK7STTiX9w4dG3cTLljjYswkQN+hDSHRrj4O36kuVa7KPU8Q==, tarball: https://registry.npmmirror.com/@react-spring/types/-/types-9.6.1.tgz}
-
-  '@react-spring/web@9.6.1':
-    resolution: {integrity: sha512-X2zR6q2Z+FjsWfGAmAXlQaoUHbPmfuCaXpuM6TcwXPpLE1ZD4A1eys/wpXboFQmDkjnrlTmKvpVna1MjWpZ5Hw==, tarball: https://registry.npmmirror.com/@react-spring/web/-/web-9.6.1.tgz}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
 
   '@rnx-kit/babel-preset-metro-react-native@1.1.8':
     resolution: {integrity: sha512-8DotuBK1ZgV0H/tmCmtW/3ofA7JR/8aPqSu9lKnuqwBfq4bxz+w1sMyfFl89m4teWlkhgyczWBGD6NCLqTgi9A==, tarball: https://registry.npmmirror.com/@rnx-kit/babel-preset-metro-react-native/-/babel-preset-metro-react-native-1.1.8.tgz}
@@ -2558,13 +2530,6 @@ packages:
       react-native:
         optional: true
 
-  '@tarojs/api@4.0.7':
-    resolution: {integrity: sha512-hUZoOdAwjqBws1hpvf/edc0X6n+5yTfKXDi09dUuGeOyc6/3p7pgrdNWYQL3Yt0aYoX19FsmFNAID6h4jnCCXg==, tarball: https://registry.npmmirror.com/@tarojs/api/-/api-4.0.7.tgz}
-    engines: {node: '>= 18'}
-    peerDependencies:
-      '@tarojs/runtime': 4.0.7
-      '@tarojs/shared': 4.0.7
-
   '@tarojs/api@4.0.9':
     resolution: {integrity: sha512-yoMXfEsz5vQ9Dki+QnsmSCX30p8yXSbMwTPjK/LpsqbyOsfhurll3O2HhIPymCpixCXlTgf7jqSNTcnVhgNDpQ==, tarball: https://registry.npmmirror.com/@tarojs/api/-/api-4.0.9.tgz}
     engines: {node: '>= 18'}
@@ -2812,20 +2777,12 @@ packages:
     resolution: {integrity: sha512-MRY7mGrMFdPtVL6iajO2a/2Oc7RVN1wGHzoR2ywDiyr5zWX6BSKo35HZuaCsmNg71wbVVBR5Ax4SiLe5dsQrjg==, tarball: https://registry.npmmirror.com/@tarojs/runner-utils/-/runner-utils-4.0.9.tgz}
     engines: {node: '>= 18'}
 
-  '@tarojs/runtime@4.0.7':
-    resolution: {integrity: sha512-oScnP3IAv3pQmJonzBSN6/NytKz4StRZzFFmxmcAkqsF4gT7dVPVF++E4vPG7OWh+zmowQUhs7P1qVdSCuQFDw==, tarball: https://registry.npmmirror.com/@tarojs/runtime/-/runtime-4.0.7.tgz}
-    engines: {node: '>= 18'}
-
   '@tarojs/runtime@4.0.9':
     resolution: {integrity: sha512-79DzsMyo+BZbTVKfY7yXXc0MfqrDhoWhYazr0PV+UJeuloQ/DUXU5Uq9Y7kXh9Q42Sk2NvM25ilavVidneRLZQ==, tarball: https://registry.npmmirror.com/@tarojs/runtime/-/runtime-4.0.9.tgz}
     engines: {node: '>= 18'}
 
   '@tarojs/service@4.0.9':
     resolution: {integrity: sha512-Nwb6/pdVttM1GLOJ4OKxcBeNwcYoPQNvSxvkGSyc5iH10BItT5fRv+/pkBABbHCWs/eMMGLHIzI3HzNUVYq9SA==, tarball: https://registry.npmmirror.com/@tarojs/service/-/service-4.0.9.tgz}
-    engines: {node: '>= 18'}
-
-  '@tarojs/shared@4.0.7':
-    resolution: {integrity: sha512-DaVXA02Ctze6c+INSS5pDxCBKOX2XIa2CtZtpmrSLKYUZjEvGH3IiHjegoyjldpBS0s9jZ3KLzOetHDuiScESg==, tarball: https://registry.npmmirror.com/@tarojs/shared/-/shared-4.0.7.tgz}
     engines: {node: '>= 18'}
 
   '@tarojs/shared@4.0.9':
@@ -2842,37 +2799,6 @@ packages:
     engines: {node: '>= 18'}
     peerDependencies:
       webpack: 5.91.0
-
-  '@tarojs/taro@4.0.7':
-    resolution: {integrity: sha512-FxkpoH97lpiHugevac0YttYFwvHzJS/aE8ptQwxEe5I1f8dWbvbmrMorVRyxaFQPvAawx98XIHA6JBLFigdE3g==, tarball: https://registry.npmmirror.com/@tarojs/taro/-/taro-4.0.7.tgz}
-    engines: {node: '>= 18'}
-    peerDependencies:
-      '@tarojs/components': 4.0.7
-      '@tarojs/helper': 4.0.7
-      '@tarojs/shared': 4.0.7
-      '@types/react': ^18
-      html-webpack-plugin: ^5
-      postcss: ^8
-      rollup: ^3
-      vue: ^3
-      webpack: ^5
-      webpack-chain: ^6
-      webpack-dev-server: ^4
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-      html-webpack-plugin:
-        optional: true
-      rollup:
-        optional: true
-      vue:
-        optional: true
-      webpack:
-        optional: true
-      webpack-chain:
-        optional: true
-      webpack-dev-server:
-        optional: true
 
   '@tarojs/taro@4.0.9':
     resolution: {integrity: sha512-61Y0lmFu9fjrpBSdeI2gKPx0gtQPk4ulQ1RAUkiCusP9XrgpgV37dJRbV/tULXG3ajdG0qt5my99gfjGVZdvAA==, tarball: https://registry.npmmirror.com/@tarojs/taro/-/taro-4.0.9.tgz}
@@ -3525,13 +3451,8 @@ packages:
   '@umijs/zod2ts@4.3.34':
     resolution: {integrity: sha512-wUVAz3/SAL1KvZge/uiEPEv5LC8ZhAlYET98xz2CjqVV6knWRGXcSy5OKr52CJmneJlXNcarV23waREXs3zyCw==, tarball: https://registry.npmmirror.com/@umijs/zod2ts/-/zod2ts-4.3.34.tgz}
 
-  '@use-gesture/core@10.2.20':
-    resolution: {integrity: sha512-4lFhHc8so4yIHkBEs641DnEsBxPyhJ5GEjB4PURFDH4p/FcZriH6w99knZgI63zN/MBFfylMyb8+PDuj6RIXKQ==, tarball: https://registry.npmmirror.com/@use-gesture/core/-/core-10.2.20.tgz}
-
-  '@use-gesture/react@10.2.20':
-    resolution: {integrity: sha512-KnJq9ZSqprWA6uNhWTUHZqTCh+rfa0j8ehTzqeBhktUPrmTj7yVOBvEQ/vSFU/7d72cGgWSsJ0f5T6GQCHXnvg==, tarball: https://registry.npmmirror.com/@use-gesture/react/-/react-10.2.20.tgz}
-    peerDependencies:
-      react: '>= 16.8.0'
+  '@vant/icons@1.8.0':
+    resolution: {integrity: sha512-sKfEUo2/CkQFuERxvkuF6mGQZDKu3IQdj5rV9Fm0weJXtchDSSQ+zt8qPCNUEhh9Y8shy5PzxbvAfOOkCwlCXg==, tarball: https://registry.npmmirror.com/@vant/icons/-/icons-1.8.0.tgz}
 
   '@vercel/ncc@0.33.3':
     resolution: {integrity: sha512-JGZ11QV+/ZcfudW2Cz2JVp54/pJNXbsuWRgSh2ZmmZdQBKXqBtIGrwI1Wyx8nlbzAiEFe7FHi4K1zX4//jxTnQ==, tarball: https://registry.npmmirror.com/@vercel/ncc/-/ncc-0.33.3.tgz}
@@ -4817,6 +4738,10 @@ packages:
     resolution: {integrity: sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==, tarball: https://registry.npmmirror.com/depd/-/depd-2.0.0.tgz}
     engines: {node: '>= 0.8'}
 
+  dequal@2.0.3:
+    resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==, tarball: https://registry.npmmirror.com/dequal/-/dequal-2.0.3.tgz}
+    engines: {node: '>=6'}
+
   des.js@1.1.0:
     resolution: {integrity: sha512-r17GxjhUCjSRy8aiJpr8/UadFIzMzJGexI3Nmz4ADi9LYSFx4gTBp80+NaX/YsXWWLhpZ7v/v/ubEc/bCNfKwg==, tarball: https://registry.npmmirror.com/des.js/-/des.js-1.1.0.tgz}
 
@@ -4876,9 +4801,6 @@ packages:
 
   dom-converter@0.2.0:
     resolution: {integrity: sha512-gd3ypIPfOMr9h5jIKq8E3sHOTCjeirnl0WK5ZdS1AW0Odt0b1PaWaHdJ4Qk4klv+YB9aJBS7mESXjFoDQPu6DA==, tarball: https://registry.npmmirror.com/dom-converter/-/dom-converter-0.2.0.tgz}
-
-  dom-helpers@5.2.1:
-    resolution: {integrity: sha512-nRCa7CK3VTrM2NmGkIy4cbK7IZlgBE/PYMn55rrXefr5xXDP0LdtfPnblFDoVdcAfslJ7or6iqAUnx0CCGIWQA==, tarball: https://registry.npmmirror.com/dom-helpers/-/dom-helpers-5.2.1.tgz}
 
   dom-serializer@1.4.1:
     resolution: {integrity: sha512-VHwB3KfrcOOkelEG2ZOfxqLZdfkil8PtJi4P8N2MMXucZq2yLp75ClViUlOVwyoHEDjYU433Aq+5zWP61+RGag==, tarball: https://registry.npmmirror.com/dom-serializer/-/dom-serializer-1.4.1.tgz}
@@ -6715,9 +6637,6 @@ packages:
     resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==, tarball: https://registry.npmmirror.com/lodash.isequal/-/lodash.isequal-4.5.0.tgz}
     deprecated: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
 
-  lodash.kebabcase@4.1.1:
-    resolution: {integrity: sha512-N8XRTIMMqqDgSy4VLKPnJ/+hpGZN+PHQiJnSenYqPaVV/NCqEogTnAdZLQiGKhxX+JCs8waWq2t1XHWKOmlY8g==, tarball: https://registry.npmmirror.com/lodash.kebabcase/-/lodash.kebabcase-4.1.1.tgz}
-
   lodash.memoize@4.1.2:
     resolution: {integrity: sha512-t7j+NzmgnQzTAYXcsHYLgimltOV1MXHtlOWf6GjL9Kj8GK5FInw5JotxvbOs+IvV1/Dzo04/fCGfLVs7aXb4Ag==, tarball: https://registry.npmmirror.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz}
 
@@ -7439,6 +7358,9 @@ packages:
   pend@1.2.0:
     resolution: {integrity: sha512-F3asv42UuXchdzt+xXqfW1OGlVBe+mxa2mqI0pg5yAHZPvFmY3Y6drSf/GQ1A86WgWEN9Kzh/WrgKa6iGcHXLg==, tarball: https://registry.npmmirror.com/pend/-/pend-1.2.0.tgz}
 
+  performance-now@2.1.0:
+    resolution: {integrity: sha512-7EAHlyLHI56VEIdK57uwHdHKIaAGbnXPiw0yWbarQZOKaKpvUIgW0jWRVLiatnM+XXlSwsanIBH/hzGMJulMow==, tarball: https://registry.npmmirror.com/performance-now/-/performance-now-2.1.0.tgz}
+
   picocolors@0.2.1:
     resolution: {integrity: sha512-cMlDqaLEqfSaW8Z7N5Jw+lyIW869EzT73/F5lhtY9cLGoVxSXznfgfXMO0Z5K0o0Q2TkTXq+0KFsdnSe3jDViA==, tarball: https://registry.npmmirror.com/picocolors/-/picocolors-0.2.1.tgz}
 
@@ -8143,6 +8065,9 @@ packages:
     resolution: {integrity: sha512-ARhCpm70fzdcvNQfPoy49IaanKkTlRWF2JMzqhcJbhSFRZv7nPTvZJdcY7301IPmvW+/p0RgIWnQDLJxifsQ7g==, tarball: https://registry.npmmirror.com/quick-lru/-/quick-lru-4.0.1.tgz}
     engines: {node: '>=8'}
 
+  raf@3.4.1:
+    resolution: {integrity: sha512-Sq4CW4QhwOHE8ucn6J34MqtZCeWFP2aQSmrlroYgqAV1PjStIhJXxYuTgUIfkEk7zTLjmIjLmU5q+fbD1NnOJA==, tarball: https://registry.npmmirror.com/raf/-/raf-3.4.1.tgz}
+
   ramda@0.28.0:
     resolution: {integrity: sha512-9QnLuG/kPVgWvMQ4aODhsBUFKOUmnbUnsSXACv+NCQZcHbeb+v8Lodp8OVxtRULN1/xOyYLLaL6npE6dMq5QTA==, tarball: https://registry.npmmirror.com/ramda/-/ramda-0.28.0.tgz}
 
@@ -8706,12 +8631,6 @@ packages:
     resolution: {integrity: sha512-7Wh1DzVQ+tlFjkeo+ujvjSqSJmkt1+8JO+T5xklPlgrh70y7ogx75ODRW0ThWhY7S+6yEDks8TYrtQe/aoboBQ==, tarball: https://registry.npmmirror.com/react-router/-/react-router-6.3.0.tgz}
     peerDependencies:
       react: '>=16.8'
-
-  react-transition-group@4.4.5:
-    resolution: {integrity: sha512-pZcd1MCJoiKiBR2NRxeCRg13uCXbydPnmB4EOeRrY7480qNWO8IIgQG6zlDkm6uRMsURXPuKq0GWtiM59a5Q6g==, tarball: https://registry.npmmirror.com/react-transition-group/-/react-transition-group-4.4.5.tgz}
-    peerDependencies:
-      react: '>=16.6.0'
-      react-dom: '>=16.6.0'
 
   react@18.3.1:
     resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==, tarball: https://registry.npmmirror.com/react/-/react-18.3.1.tgz}
@@ -9969,6 +9888,12 @@ packages:
     resolution: {integrity: sha512-oCwdVC7mTuWiPyjLUz/COz5TLk6wgp0RCsN+wHZ2Ekneac9w8uuV0njcbbie2ME+Vs+d6duwmYuR3HgQXs1fOg==, tarball: https://registry.npmmirror.com/url/-/url-0.11.4.tgz}
     engines: {node: '>= 0.4'}
 
+  use-deep-compare-effect@1.8.1:
+    resolution: {integrity: sha512-kbeNVZ9Zkc0RFGpfMN3MNfaKNvcLNyxOAAd9O4CBZ+kCBXXscn9s/4I+8ytUER4RDpEYs5+O6Rs4PqiZ+rHr5Q==, tarball: https://registry.npmmirror.com/use-deep-compare-effect/-/use-deep-compare-effect-1.8.1.tgz}
+    engines: {node: '>=10', npm: '>=6'}
+    peerDependencies:
+      react: '>=16.13'
+
   use-isomorphic-layout-effect@1.1.2:
     resolution: {integrity: sha512-49L8yCO3iGT/ZF9QttjwLF/ZD9Iwto5LnH5LmEdk/6cFmXddqi2ulF0edxTwjj+7mqvpVVGQWvbXZdn32wRSHA==, tarball: https://registry.npmmirror.com/use-isomorphic-layout-effect/-/use-isomorphic-layout-effect-1.1.2.tgz}
     peerDependencies:
@@ -10875,6 +10800,19 @@ snapshots:
       find-up: 5.0.0
 
   '@antfu/utils@0.7.10': {}
+
+  '@antmjs/vantui@3.5.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@swc/helpers': 0.5.1
+      '@vant/icons': 1.8.0
+      classnames: 2.5.1
+      dayjs: 1.11.13
+      raf: 3.4.1
+      rc-util: 5.43.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      use-deep-compare-effect: 1.8.1(react@18.3.1)
+    transitivePeerDependencies:
+      - react
+      - react-dom
 
   '@asamuzakjp/css-color@2.8.3':
     dependencies:
@@ -12601,29 +12539,6 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.17.1
 
-  '@nutui/icons-react-taro@1.0.5': {}
-
-  '@nutui/jdesign-icons-react-taro@1.0.6-beta.2': {}
-
-  '@nutui/nutui-react-taro@2.7.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
-    dependencies:
-      '@babel/runtime': 7.26.0
-      '@nutui/icons-react-taro': 1.0.5
-      '@nutui/jdesign-icons-react-taro': 1.0.6-beta.2
-      '@nutui/touch-emulator': 1.0.0
-      '@react-spring/web': 9.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@use-gesture/react': 10.2.20(react@18.3.1)
-      async-validator: 4.2.5
-      classnames: 2.5.1
-      lodash.isequal: 4.5.0
-      lodash.kebabcase: 4.1.1
-      react: 18.3.1
-      react-transition-group: 4.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-    transitivePeerDependencies:
-      - react-dom
-
-  '@nutui/touch-emulator@1.0.0': {}
-
   '@parcel/watcher-android-arm64@2.5.1':
     optional: true
 
@@ -12780,39 +12695,6 @@ snapshots:
       rc-motion: 2.9.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       rc-resize-observer: 1.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       rc-util: 5.43.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-
-  '@react-spring/animated@9.6.1(react@18.3.1)':
-    dependencies:
-      '@react-spring/shared': 9.6.1(react@18.3.1)
-      '@react-spring/types': 9.6.1
-      react: 18.3.1
-
-  '@react-spring/core@9.6.1(react@18.3.1)':
-    dependencies:
-      '@react-spring/animated': 9.6.1(react@18.3.1)
-      '@react-spring/rafz': 9.6.1
-      '@react-spring/shared': 9.6.1(react@18.3.1)
-      '@react-spring/types': 9.6.1
-      react: 18.3.1
-
-  '@react-spring/rafz@9.6.1': {}
-
-  '@react-spring/shared@9.6.1(react@18.3.1)':
-    dependencies:
-      '@react-spring/rafz': 9.6.1
-      '@react-spring/types': 9.6.1
-      react: 18.3.1
-
-  '@react-spring/types@9.6.1': {}
-
-  '@react-spring/web@9.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
-    dependencies:
-      '@react-spring/animated': 9.6.1(react@18.3.1)
-      '@react-spring/core': 9.6.1(react@18.3.1)
-      '@react-spring/shared': 9.6.1(react@18.3.1)
-      '@react-spring/types': 9.6.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
@@ -13047,11 +12929,6 @@ snapshots:
       use-sync-external-store: 1.2.2(react@18.3.1)
     optionalDependencies:
       react-dom: 18.3.1(react@18.3.1)
-
-  '@tarojs/api@4.0.7(@tarojs/runtime@4.0.7)(@tarojs/shared@4.0.9)':
-    dependencies:
-      '@tarojs/runtime': 4.0.7
-      '@tarojs/shared': 4.0.9
 
   '@tarojs/api@4.0.9(@tarojs/runtime@4.0.9)(@tarojs/shared@4.0.9)':
     dependencies:
@@ -13427,11 +13304,6 @@ snapshots:
       - '@swc/helpers'
       - supports-color
 
-  '@tarojs/runtime@4.0.7':
-    dependencies:
-      '@tarojs/shared': 4.0.7
-      tslib: 2.8.1
-
   '@tarojs/runtime@4.0.9':
     dependencies:
       '@tarojs/shared': 4.0.9
@@ -13451,8 +13323,6 @@ snapshots:
     transitivePeerDependencies:
       - '@swc/helpers'
       - supports-color
-
-  '@tarojs/shared@4.0.7': {}
 
   '@tarojs/shared@4.0.9': {}
 
@@ -13484,23 +13354,6 @@ snapshots:
     transitivePeerDependencies:
       - '@swc/helpers'
       - supports-color
-
-  '@tarojs/taro@4.0.7(@tarojs/components@4.0.9(@tarojs/helper@4.0.9(@swc/helpers@0.5.1))(@types/react@18.3.12)(html-webpack-plugin@5.6.3(webpack@5.96.1))(postcss@8.4.49)(react@18.3.1)(rollup@3.29.5)(webpack-chain@6.5.1)(webpack-dev-server@4.15.2(webpack@5.96.1))(webpack@5.96.1))(@tarojs/helper@4.0.9(@swc/helpers@0.5.1))(@tarojs/shared@4.0.9)(@types/react@18.3.12)(html-webpack-plugin@5.6.3(webpack@5.96.1))(postcss@8.4.49)(rollup@3.29.5)(webpack-chain@6.5.1)(webpack-dev-server@4.15.2(webpack@5.96.1))(webpack@5.96.1)':
-    dependencies:
-      '@tarojs/api': 4.0.7(@tarojs/runtime@4.0.7)(@tarojs/shared@4.0.9)
-      '@tarojs/components': 4.0.9(@tarojs/helper@4.0.9(@swc/helpers@0.5.1))(@types/react@18.3.12)(html-webpack-plugin@5.6.3(webpack@5.96.1))(postcss@8.4.49)(react@18.3.1)(rollup@3.29.5)(webpack-chain@6.5.1)(webpack-dev-server@4.15.2(webpack@5.96.1))(webpack@5.96.1)
-      '@tarojs/helper': 4.0.9(@swc/helpers@0.5.1)
-      '@tarojs/runtime': 4.0.7
-      '@tarojs/shared': 4.0.9
-      '@types/postcss-url': 10.0.4
-      postcss: 8.4.49
-    optionalDependencies:
-      '@types/react': 18.3.12
-      html-webpack-plugin: 5.6.3(webpack@5.96.1)
-      rollup: 3.29.5
-      webpack: 5.96.1
-      webpack-chain: 6.5.1
-      webpack-dev-server: 4.15.2(webpack@5.96.1)
 
   '@tarojs/taro@4.0.9(@tarojs/components@4.0.9(@tarojs/helper@4.0.9(@swc/helpers@0.5.1))(@types/react@18.3.12)(html-webpack-plugin@5.6.3(webpack@5.78.0(@swc/core@1.3.96(@swc/helpers@0.5.1))))(postcss@8.4.49)(react@18.3.1)(rollup@3.29.5)(webpack-chain@6.5.1)(webpack-dev-server@4.15.2(webpack@5.78.0(@swc/core@1.3.96(@swc/helpers@0.5.1))))(webpack@5.78.0(@swc/core@1.3.96(@swc/helpers@0.5.1))))(@tarojs/helper@4.0.9(@swc/helpers@0.5.1))(@tarojs/shared@4.0.9)(@types/react@18.3.12)(html-webpack-plugin@5.6.3(webpack@5.78.0(@swc/core@1.3.96(@swc/helpers@0.5.1))))(postcss@8.4.49)(rollup@3.29.5)(webpack-chain@6.5.1)(webpack-dev-server@4.15.2(webpack@5.78.0(@swc/core@1.3.96(@swc/helpers@0.5.1))))(webpack@5.78.0(@swc/core@1.3.96(@swc/helpers@0.5.1)))':
     dependencies:
@@ -14692,12 +14545,7 @@ snapshots:
 
   '@umijs/zod2ts@4.3.34': {}
 
-  '@use-gesture/core@10.2.20': {}
-
-  '@use-gesture/react@10.2.20(react@18.3.1)':
-    dependencies:
-      '@use-gesture/core': 10.2.20
-      react: 18.3.1
+  '@vant/icons@1.8.0': {}
 
   '@vercel/ncc@0.33.3': {}
 
@@ -16378,6 +16226,8 @@ snapshots:
 
   depd@2.0.0: {}
 
+  dequal@2.0.3: {}
+
   des.js@1.1.0:
     dependencies:
       inherits: 2.0.4
@@ -16433,11 +16283,6 @@ snapshots:
   dom-converter@0.2.0:
     dependencies:
       utila: 0.4.0
-
-  dom-helpers@5.2.1:
-    dependencies:
-      '@babel/runtime': 7.26.0
-      csstype: 3.1.3
 
   dom-serializer@1.4.1:
     dependencies:
@@ -18771,8 +18616,6 @@ snapshots:
 
   lodash.isequal@4.5.0: {}
 
-  lodash.kebabcase@4.1.1: {}
-
   lodash.memoize@4.1.2: {}
 
   lodash.merge@4.6.2: {}
@@ -19536,6 +19379,8 @@ snapshots:
 
   pend@1.2.0: {}
 
+  performance-now@2.1.0: {}
+
   picocolors@0.2.1: {}
 
   picocolors@1.1.1: {}
@@ -20182,6 +20027,10 @@ snapshots:
   quick-format-unescaped@4.0.4: {}
 
   quick-lru@4.0.1: {}
+
+  raf@3.4.1:
+    dependencies:
+      performance-now: 2.1.0
 
   ramda@0.28.0: {}
 
@@ -20965,15 +20814,6 @@ snapshots:
     dependencies:
       history: 5.3.0
       react: 18.3.1
-
-  react-transition-group@4.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
-    dependencies:
-      '@babel/runtime': 7.26.0
-      dom-helpers: 5.2.1
-      loose-envify: 1.4.0
-      prop-types: 15.8.1
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
 
   react@18.3.1:
     dependencies:
@@ -22418,6 +22258,12 @@ snapshots:
       punycode: 1.4.1
       qs: 6.13.0
 
+  use-deep-compare-effect@1.8.1(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.26.0
+      dequal: 2.0.3
+      react: 18.3.1
+
   use-isomorphic-layout-effect@1.1.2(@types/react@18.3.12)(react@18.3.1):
     dependencies:
       react: 18.3.1
@@ -22728,7 +22574,7 @@ snapshots:
       '@webassemblyjs/wasm-edit': 1.14.1
       '@webassemblyjs/wasm-parser': 1.14.1
       acorn: 8.14.0
-      browserslist: 4.24.2
+      browserslist: 4.24.4
       chrome-trace-event: 1.0.4
       enhanced-resolve: 5.17.1
       es-module-lexer: 1.5.4

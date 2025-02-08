@@ -27,12 +27,12 @@
   "dependencies": {
     "@ant-design/pro-components": "^2.7.18",
     "@creek/lint": "workspace:^",
+    "@creek/taro-adapter": "workspace:^",
     "@creek/openapi": "workspace:^",
     "@creek/umi-plugins": "workspace:^",
     "@creek/web-components": "workspace:^",
     "@creek/cache": "workspace:^",
     "@creek/request": "workspace:^",
-    "@tarojs/taro": "^4.0.7",
     "@umijs/max": "^4.3.27",
     "ahooks": "^3.8.1",
     "antd": "^5.21.4",

@@ -147,10 +147,3 @@ export function settle<T>(resolve: (value: T) => void, reject: (reason: any) => 
         );
     }
 }
-
-
-export function getTaro() {
-    const Taro = require('@tarojs/taro') as any
-
-    return Taro && (Taro as any).default || Taro
-}
