@@ -10,7 +10,13 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
   const baseConfig: UserConfigExport<'webpack5'> = {
     projectName: 'mobile',
     date: '2025-2-8',
-    designWidth: 375,
+    designWidth(input) {
+console.log(input, 'input');
+      // if (input?.file?.replace(/\+/g, '/').indexOf('@antmjs/vantui') > -1) {
+      //   return 750
+      // }
+      return 375
+    },
     deviceRatio: {
       640: 2.34 / 2,
       750: 1,

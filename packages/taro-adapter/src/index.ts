@@ -72,7 +72,6 @@ export const taroAdapter: AxiosAdapter = (config) => {
 
         // 普通请求
         if (!requestTask) {
-            console.log(Taro, Taro.request, 'Taro1111');
             const request = Taro.request({
                 method: requestMethod as any,
                 url: requestUrl,
