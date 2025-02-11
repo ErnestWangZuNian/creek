@@ -7,7 +7,6 @@ import { AxiosPluginManager } from './plugins/AxiosPluginManager';
 
 let requestInstance = axios.create();
 
-
 interface RequestFunction {
     <T = any>(url: string, config: AxiosPluginConfigType): Promise<T>;
     instance: AxiosInstance;
@@ -24,10 +23,10 @@ export const request: RequestFunction = (url: string, config: AxiosPluginConfigT
 };
 
 request.instance = requestInstance;
+
 request.pluginManager = new AxiosPluginManager(requestInstance);
 
 request.createInstance = (config?: AxiosRequestConfig) => {
-    console.log(config, 'config');
     requestInstance = axios.create(config);
     request.instance = requestInstance;
     request.pluginManager = new AxiosPluginManager(requestInstance);

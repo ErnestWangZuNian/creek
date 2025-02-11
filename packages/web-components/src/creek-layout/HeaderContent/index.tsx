@@ -1,15 +1,15 @@
-import { Divider, Flex, Space } from "antd";
-import { createStyles } from "antd-style";
+import { Divider, Flex, Space } from 'antd';
+import { createStyles } from 'antd-style';
 
-import { FullScreen } from "./FullScreen";
-import { UserInfo } from "./UserInfo";
+import { FullScreen } from './FullScreen';
+import { UserInfo } from './UserInfo';
 
 const useStyles = createStyles(({}) => ({
   headerContentContainer: {
-    color: "#fff",
+    color: '#fff',
   },
   dividerContainer: {
-    backgroundColor: "#9b9999",
+    backgroundColor: '#9b9999',
   },
 }));
 
@@ -18,9 +18,7 @@ export const HeaderContent = () => {
   return (
     <Flex justify="space-between" className={styles.headerContentContainer}>
       <span />
-      <Space
-        split={<Divider type="vertical" className={styles.dividerContainer} />}
-      >
+      <Space split={<Divider type="vertical" className={styles.dividerContainer} />}>
         <FullScreen />
         <UserInfo />
       </Space>

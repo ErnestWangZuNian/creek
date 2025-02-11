@@ -14,11 +14,11 @@ request
     adapter: taroAdapter
   }).pluginManager.use(new DuplicatePlugin()).use(new LoadingPlugin({
     showLoading() {
-      Toast.loading({message: '正在加载数据，请您耐心等待'})
-     },
+      Toast.loading({ message: '正在加载' })
+    },
     hideLoading() {
       Toast.clear();
-     }
+    }
   }));
 
 

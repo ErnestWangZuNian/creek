@@ -10,18 +10,11 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
   const baseConfig: UserConfigExport<'webpack5'> = {
     projectName: 'mobile',
     date: '2025-2-8',
-    designWidth(input) {
-console.log(input, 'input');
-      // if (input?.file?.replace(/\+/g, '/').indexOf('@antmjs/vantui') > -1) {
-      //   return 750
-      // }
-      return 375
-    },
+    designWidth: 750,
     deviceRatio: {
       640: 2.34 / 2,
       750: 1,
-      375: 2,
-      828: 1.81 / 2
+      828: 1.81 / 2,
     },
     sourceRoot: 'src',
     outputRoot: 'dist',
@@ -37,7 +30,7 @@ console.log(input, 'input');
     framework: 'react',
     compiler: {
 
-      type: 'webpack5', 
+      type: 'webpack5',
       prebundle: {
         enable: false
       }
@@ -46,30 +39,37 @@ console.log(input, 'input');
       enable: false // Webpack 持久化缓存配置，建议开启。默认配置请参考：https://docs.taro.zone/docs/config-detail#cache
     },
     alias: {
-      "@":  path.resolve(__dirname, '..', 'src/components')
+      "@": path.resolve(__dirname, '..', 'src/components')
     },
     mini: {
+      webpackChain(chain) {
+        chain.resolve.plugin('tsconfig-paths').use(TsconfigPathsPlugin)
+      },
       postcss: {
-        pxtransform: {
+        autoprefixer: {
           enable: true,
           config: {
-            selectorBlackList: ['nut-']
-          }
+            // autoprefixer 配置项
+          },
+        },
+        pxtransform: {
+          enable: true,
+          config: {},
         },
         cssModules: {
           enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true
           config: {
             namingPattern: 'module', // 转换模式，取值为 global/module
-            generateScopedName: '[name]__[local]___[hash:base64:5]'
-          }
-        }
+            generateScopedName: '[name]__[local]___[hash:base64:5]',
+          },
+        },
       },
-      webpackChain(chain) {
-        chain.resolve.plugin('tsconfig-paths').use(TsconfigPathsPlugin)
-      }
+      miniCssExtractPluginOption: {
+        ignoreOrder: true,
+      },
     },
     h5: {
-      esnextModules: ['/@antmjs[\/]vantui/'],
+      esnextModules: ['@antmjs/vantui'],
       publicPath: '/',
       staticDirectory: 'static',
       output: {

@@ -16,7 +16,7 @@ function Index() {
       <View>
         <View>232323455</View>
         <Button type="primary" onClick={handleClick}>
-          点我开启taro之旅
+          主要按钮
         </Button>
       </View>
     </ConfigProvider>
