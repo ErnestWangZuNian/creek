@@ -89,7 +89,7 @@ export default (api: IApi) => {
         return zod
           .object({
             title: zod.string(),
-            iconfontCNs: zod.string().array(),
+            iconFontCNs: zod.string().array(),
           })
           .partial();
       }, 
@@ -134,7 +134,7 @@ export default (api: IApi) => {
     const hasInitialStatePlugin = api.config.initialState;
     const iconsInfo = getIconsInfoForRoutes(api);
 
-    console.log(api.userConfig.creekLayout?.iconfontCNs, '11111');
+    const iconFontCNs = Array.isArray(api.userConfig.creekLayout?.iconFontCNs) ? api.userConfig.creekLayout?.iconFontCNs : [];
 
     api.writeTmpFile({
       path: 'Layout.tsx',
@@ -179,7 +179,9 @@ export default (api: IApi) => {
       path: 'runtime.tsx',
       tplPath: join(TEMPLATE_DIR, '/runtime.tpl'),
       context: {
-        iconfontCNs: `${api.userConfig.creekLayout?.iconfontCNs}`,
+        creekWebComponentsPath,
+        hasIconFontCNs: iconFontCNs.length > 0,
+        iconFontCNs: JSON.stringify(iconFontCNs),
       },
     });
   });

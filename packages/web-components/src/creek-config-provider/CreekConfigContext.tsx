@@ -2,7 +2,7 @@ import { createContext } from 'react';
 
 
 export type CreekConfigContextProps = {
-    iconfontCNs?: string[];
+    iconFontCNs?: string[];
 }
 
 export const CreekConfigContext = createContext<CreekConfigContextProps>({});

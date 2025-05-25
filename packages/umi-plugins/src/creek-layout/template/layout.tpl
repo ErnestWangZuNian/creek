@@ -1,8 +1,8 @@
-
 import { useLocation, useAppData, IRoute, matchRoutes, Outlet, useNavigate } from 'umi';
 import { useMemo } from 'react';
 import _ from 'lodash';
-import {CreekLayout, CreekLayoutProps} from '{{{creekWebComponentsPath}}}';
+import { CreekLayout, CreekLayoutProps } from '{{{creekWebComponentsPath}}}';
+
 {{#hasInitialStatePlugin}}
 import { useModel } from '@@/plugin-model';
 {{/hasInitialStatePlugin}}
@@ -16,12 +16,9 @@ import { useAccessMarkedRoutes } from '@@/plugin-access';
 {{^access}}
 const useAccessMarkedRoutes = (r) => r;
 {{/access}}
-       
+
 // 过滤出需要显示的路由, 这里的filterFn 指 不希望显示的层级
-const filterRoutes = (
-  routes: IRoute[],
-  filterFn: (route: IRoute) => boolean
-) => {
+const filterRoutes = (routes: IRoute[], filterFn: (route: IRoute) => boolean) => {
   if (routes.length === 0) {
     return [];
   }
@@ -40,10 +37,10 @@ const filterRoutes = (
       newRoutes.push(newRoute);
     }
   }
-      
+
   return newRoutes;
 };
-      
+
 // 格式化路由 处理因 wrapper 导致的 菜单 path 不一致
 const mapRoutes = (routes: IRoute[]) => {
   if (routes.length === 0) {
@@ -68,9 +65,6 @@ const mapRoutes = (routes: IRoute[]) => {
   });
 };
 
-
-
-      
 const Layout = (props: CreekLayoutProps) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -86,39 +80,44 @@ const Layout = (props: CreekLayoutProps) => {
     key: 'layout',
     type: 'modify',
     initialValue: {
-      ...initialInfo
+      ...initialInfo,
     },
   });
-  
-  // 现在的 layout 及 wrapper 实现是通过父路由的形式实现的, 会导致路由数据多了冗余层级, proLayout 消费时, 无法正确展示菜单, 这里对冗余数据进行过滤操作
+
+  // 现在的 layout 及 wrapper 实现是通过父路由的形式实现的, 会导致路由数据多了冗余层级
   const newRoutes = filterRoutes(
     clientRoutes.filter((route) => route.id === 'ant-design-pro-layout'),
     (route) => {
       return (
-        (!!route.isLayout && route.id !== 'ant-design-pro-layout') ||
-        !!route.isWrapper
+        (!!route.isLayout && route.id !== 'ant-design-pro-layout') || !!route.isWrapper
       );
     }
   );
   const [route] = useAccessMarkedRoutes(mapRoutes(newRoutes));
 
-  const matchedRoute = useMemo(() => matchRoutes(route.children, location.pathname)?.pop?.()?.route, [location.pathname]);
+  const matchedRoute = useMemo(
+    () => matchRoutes(route.children, location.pathname)?.pop?.()?.route,
+    [location.pathname]
+  );
 
-  return <CreekLayout
-    location={location}
-    runtimeConfig={runtimeConfig}
-    matchedRoute={matchedRoute}
-    navigate={navigate}
-    userConfig={userConfig}
-    route={route}
-    initialInfo={initialInfo}
-    children={
-      runtimeConfig.childrenRender
-        ? runtimeConfig.childrenRender(<Outlet />, props)
-        : <Outlet />
-    }
-  />
+  return (
+      <CreekLayout
+        location={location}
+        runtimeConfig={runtimeConfig}
+        matchedRoute={matchedRoute}
+        navigate={navigate}
+        userConfig={userConfig}
+        route={route}
+        initialInfo={initialInfo}
+        children={
+          runtimeConfig.childrenRender ? (
+            runtimeConfig.childrenRender(<Outlet />, props)
+          ) : (
+            <Outlet />
+          )
+        }
+      />
+  );
 };
 
 export default Layout;
-        

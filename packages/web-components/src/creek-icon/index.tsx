@@ -8,24 +8,24 @@ import { CreekConfigProvider, CreekConfigProviderProps } from '../creek-config-p
 type CustomIconComponentProps = GetProps<typeof Icon>;
 
 export type CreekIconProps = CustomIconComponentProps & {
-  iconfontCNs?: CreekConfigProviderProps['iconfontCNs'];
+  iconFontCNs?: CreekConfigProviderProps['iconFontCNs'];
   type?: string;
   component?: CustomIconComponentProps['component'];
 };
 
 export const CreekIcon = (props: CreekIconProps) => {
-  const { iconfontCNs: iconfontCNsContext } = useContext(CreekConfigProvider.CreekConfigContext);
-  const { component, type, iconfontCNs, ...more } = props;
+  const { iconFontCNs: iconFontCNsContext } = useContext(CreekConfigProvider.CreekConfigContext);
+  const { component, type, iconFontCNs, ...more } = props;
 
-  const _iconfontCNs = iconfontCNs || iconfontCNsContext;
+  const _iconFontCNs = iconFontCNs || iconFontCNsContext;
 
   if (component) {
     return <Icon component={component} {...more} />;
   }
 
-  if (type && !isEmpty(_iconfontCNs)) {
+  if (type && !isEmpty(_iconFontCNs)) {
     const IconFont = createFromIconfontCN({
-      scriptUrl: _iconfontCNs,
+      scriptUrl: _iconFontCNs,
     });
     return <IconFont type={type} {...more} />;
   }

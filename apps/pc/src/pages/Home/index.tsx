@@ -1,26 +1,20 @@
 import { Button } from 'antd';
-import { useEffect } from 'react';
 
-import { getStoreIdService, getStoreService } from '@/testService';
+import { getStoreService } from '@/testService';
 
-const HomePage: React.FC = () => {
-  useEffect(() => {
-    getStoreService();
-    getStoreIdService();
-  });
+const HomePage = () => {
+
+  const handleStoreData = async () => {
+    try {
+      await getStoreService();
+    } catch (error) {
+      console.log(error, 'error');
+    }
+  };
 
   return (
     <>
-      <Button
-        type="primary"
-        onClick={async () => {
-          try {
-            await getStoreService();
-          } catch (error) {
-            console.log(error, 'error');
-          }
-        }}
-      >
+      <Button type="primary" onClick={handleStoreData}>
         点我存数据
       </Button>
     </>

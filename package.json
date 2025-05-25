@@ -4,6 +4,7 @@
   "scripts": {
     "build": "turbo build",
     "dev": "concurrently 'turbo dev' 'wait-on http://localhost:8000 && wait-on http://localhost:10086 &&  turbo father:dev'",
+    "dev:pc": "turbo dev --filter=pc-demo",
     "test": "turbo test",
     "lint": "turbo lint",
     "clear": "rimraf apps/*/src/.umi*  && rimraf apps*/*/dist &&  rimraf packages*/*/dist &&  rimraf apps/*/.turbo && rimraf packages/*/node_modules && rimraf apps/*/node_modules && rimraf node_modules",

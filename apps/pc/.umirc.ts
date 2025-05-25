@@ -8,7 +8,7 @@ export default defineConfig({
   model: {},
   creekLayout: {
     title: 'creekjs',
-    iconfontCNs: ['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js']
+    iconFontCNs: ['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js'],
   },
   openApi: {
     schemaPath: 'https://petstore.swagger.io/v2/swagger.json',
@@ -23,14 +23,14 @@ export default defineConfig({
       name: '首页',
       path: '/home',
       component: './Home',
-      icon: 'HomeOutlined'
+      icon: 'HomeOutlined',
     },
     {
       name: '权限演示权限演示权限演示权限演示',
       path: '/access',
       component: './Access',
-      icon: 'icon-auth'
-    }
+      icon: 'icon-auth',
+    },
   ],
   mfsu: false,
   plugins: [require.resolve('@creek/umi-plugins/dist/creek-layout'), require.resolve('@creek/umi-plugins/dist/open-api')],
@@ -41,6 +41,5 @@ export default defineConfig({
       changeOrigin: true,
       secure: false,
     },
-  },
+  }
 });
-

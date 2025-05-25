@@ -16,9 +16,9 @@ export const layout: RunTimeLayoutConfig = (props) => {
     menu: {
       locale: false,
     },
-    iconfontCNs: ['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js'],
+    iconFontCNs: ['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js'],
   };
-};
+}
 
 request
   .createInstance({})
@@ -37,3 +37,5 @@ request
     }),
   )
   .use(new DuplicatePlugin());
+
+  
