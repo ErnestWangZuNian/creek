@@ -1,22 +1,27 @@
+import { CreekIcon, CreekTable } from '@creek/web-components';
 import { Button } from 'antd';
 
-import { getStoreService } from '@/testService';
-
 const HomePage = () => {
-
-  const handleStoreData = async () => {
-    try {
-      await getStoreService();
-    } catch (error) {
-      console.log(error, 'error');
-    }
-  };
-
   return (
     <>
-      <Button type="primary" onClick={handleStoreData}>
-        点我存数据
-      </Button>
+      <CreekIcon />
+      <CreekTable
+        rowKey="name"
+        toolBarRender={() => {
+          return [<Button type="primary">新建</Button>, <Button type="primary">编辑</Button>, <Button type="primary">测试</Button>];
+        }}
+        dataSource={[
+          {
+            name: 'user',
+          },
+        ]}
+        columns={[
+          {
+            dataIndex: 'name',
+            title: '姓名',
+          },
+        ]}
+      />
     </>
   );
 };
