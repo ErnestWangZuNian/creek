@@ -20,6 +20,15 @@ const HomePage = () => {
             dataIndex: 'name',
             title: '姓名',
           },
+           {
+            dataIndex: 'type',
+            title: '类型',
+            valueType: 'select',
+            valueEnum: {
+              'student': '学生',
+              'teacher': '老师'
+            }
+          },
         ]}
       />
     </>
