@@ -49,6 +49,11 @@ const useStyles = createStyles(({ token }) => ({
     justifyContent: 'flex-end',
     gap: token.marginXS,
   },
+  verticalStyle: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+
   // 不同类型的宽度样式
   narrowSelector: {
     width: 200,
@@ -271,10 +276,10 @@ export const CustomSearch = <T extends ParamsType, U extends ParamsType, ValueTy
       const selectValueType = valueType;
       switch (selectValueType) {
         case 'radio':
-          selectorContent = <Radio.Group {...fieldProps} value={tempValue} onChange={(e) => setTempValue(e.target.value)} options={options} />;
+          selectorContent = <Radio.Group className={styles.verticalStyle} {...fieldProps} value={tempValue} onChange={(e) => setTempValue(e.target.value)} options={options} />;
           break;
         case 'checkbox':
-          selectorContent = <Checkbox.Group {...fieldProps} value={tempValue} onChange={(value) => setTempValue(value)} options={options} />;
+          selectorContent = <Checkbox.Group className={styles.verticalStyle} {...fieldProps} value={tempValue} onChange={(value) => setTempValue(value)} options={options} />;
           break;
         case 'select':
           selectorContent = <Select {...fieldProps} placeholder="请选择" value={tempValue} onChange={setTempValue} options={options} showSearch style={{ width: '100%' }} />;
