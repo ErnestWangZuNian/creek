@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "dev": "concurrently 'turbo dev' 'wait-on http://localhost:8000 && wait-on http://localhost:10086 &&  turbo father:dev'",
+    "dev": "concurrently 'turbo dev' 'wait-on http://localhost:8000  &&  turbo father:dev'",
     "dev:pc": "turbo dev --filter=pc-demo",
     "test": "turbo test",
     "lint": "turbo lint",

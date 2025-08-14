@@ -1,18 +1,12 @@
 import { SearchOutlined } from '@ant-design/icons';
-import { ParamsType } from '@ant-design/pro-components';
-import { AutoComplete, Button, DatePicker, Input, InputNumber, Popover, Select, Space, Switch, Tag } from 'antd';
+import { ParamsType, ProFormColumnsType } from '@ant-design/pro-components';
+import { AutoComplete, Button, Checkbox, DatePicker, Input, InputNumber, Popover, Radio, Select, Space, Tag } from 'antd';
 import { createStyles } from 'antd-style';
 import { useRef, useState } from 'react';
+
 import { CreekTableProps } from '../type';
 
 const { RangePicker } = DatePicker;
-
-interface Filter {
-  id: number;
-  key: string;
-  value: string;
-  label: string;
-}
 
 // 样式定义
 const useStyles = createStyles(({ token }) => ({
@@ -76,7 +70,7 @@ export const CustomSearch = <T extends ParamsType, U extends ParamsType, ValueTy
   const { styles } = useStyles();
 
   const [searchValue, setSearchValue] = useState<string>('');
-  const [filters, setFilters] = useState<CustomSearchProps<T, U, ValueType>[]>([]);
+  const [filters = [], setFilters] = useState<CustomSearchProps<T, U, ValueType>['columns']>([]);
   const [showValueSelector, setShowValueSelector] = useState(false);
   const [selectedColumn, setSelectedColumn] = useState<any>(null);
   const [tempValue, setTempValue] = useState<any>(null);
@@ -85,6 +79,53 @@ export const CustomSearch = <T extends ParamsType, U extends ParamsType, ValueTy
 
   // 筛选条件配置
   const filterOptions = columns?.filter((item) => item.search !== false || item.hideInSearch !== false);
+
+  // 获取选项数据 - 兼容 valueEnum 和 fieldProps.options
+  const getColumnOptions = (column: any) => {
+    // 优先使用 valueEnum
+    if (column.valueEnum) {
+      if (typeof column.valueEnum === 'object') {
+        return Object.entries(column.valueEnum).map(([key, value]: [string, any]) => ({
+          label: typeof value === 'object' ? value.text || value.label || key : value,
+          value: key,
+        }));
+      }
+    }
+
+    // 然后检查 fieldProps.options
+    if (column.fieldProps?.options) {
+      return column.fieldProps.options.map((option: any) => ({
+        label: option.label || option.text || option.value,
+        value: option.value,
+      }));
+    }
+
+    return [];
+  };
+
+  // 获取显示文本 - 兼容 valueEnum 和 fieldProps.options
+  const getDisplayText = (column: any, value: any) => {
+    // 先尝试从 valueEnum 获取
+    if (column.valueEnum && column.valueEnum[value]) {
+      const enumItem = column.valueEnum[value];
+      return typeof enumItem === 'object' ? enumItem.text || enumItem.label || value : enumItem;
+    }
+
+    // 再尝试从 fieldProps.options 获取
+    if (column.fieldProps?.options) {
+      const option = column.fieldProps.options.find((opt: any) => opt.value === value);
+      if (option) {
+        return option.label || option.text || option.value;
+      }
+    }
+
+    return value;
+  };
+
+  // 判断是否有选项配置
+  const hasOptions = (column: any) => {
+    return !!(column.valueEnum || column.fieldProps?.options);
+  };
 
   // 处理搜索输入
   const handleSearch = (value: string): void => {
@@ -98,7 +139,7 @@ export const CustomSearch = <T extends ParamsType, U extends ParamsType, ValueTy
       const matchingFilter = filterOptions.find((f) => f.title === filterType || f.key === filterType);
 
       if (matchingFilter && filterValue) {
-        addFilter(matchingFilter.dataIndex as string, filterValue);
+        addFilter(matchingFilter.dataIndex as string);
         setSearchValue('');
         return;
       }
@@ -107,26 +148,50 @@ export const CustomSearch = <T extends ParamsType, U extends ParamsType, ValueTy
   };
 
   // 处理选择列名
-  const handleSelectColumn = (value: string): void => {
-    const selectedOption = filterOptions.find((option) => `${option.title}: ` === value);
+  const handleSelectColumn = (value: string) => {
+    const selectedOption = filterOptions.find((option) => option.dataIndex === value);
+    const needShowValueSelectorArray: (ProFormColumnsType['valueType'] | string)[] = [
+      'select',
+      'date',
+      'dateRange',
+      'timeRange',
+      'dateMonth',
+      'dateTime',
+      'dateWeek',
+      'dateWeekRange',
+      'dateYearRange',
+      'dateYear',
+      'radio',
+      'checkbox',
+      'digit',
+      'radioButton',
+      'switch',
+    ];
+
     if (selectedOption) {
+      const valueType = selectedOption.valueType as ProFormColumnsType['valueType'];
+      const shouldShowSelector = needShowValueSelectorArray.includes(valueType) || hasOptions(selectedOption);
+
       setSelectedColumn(selectedOption);
-      setShowValueSelector(true);
-      setSearchValue('');
+      setShowValueSelector(shouldShowSelector);
+      setSearchValue(`${selectedOption.title}: `);
       setTempValue(null);
     }
   };
 
   // 添加筛选条件
-  const addFilter = (key: string, value: string): void => {
+  const addFilter = (key: string) => {
     const filterConfig = filterOptions.find((f) => f.dataIndex === key);
     if (!filterConfig) return;
 
-    setFilters((prev) => [...prev, filterConfig]);
+    setFilters((prev) => {
+      const _prev = prev || [];
+      return [..._prev, filterConfig];
+    });
   };
 
   // 确认添加筛选条件
-  const confirmAddFilter = (): void => {
+  const confirmAddFilter = () => {
     if (selectedColumn && tempValue !== null && tempValue !== undefined) {
       let displayValue = tempValue;
 
@@ -135,12 +200,12 @@ export const CustomSearch = <T extends ParamsType, U extends ParamsType, ValueTy
         displayValue = `${tempValue[0]?.format('YYYY-MM-DD')} ~ ${tempValue[1]?.format('YYYY-MM-DD')}`;
       } else if (selectedColumn.valueType === 'date') {
         displayValue = tempValue.format('YYYY-MM-DD');
-      } else if (selectedColumn.valueType === 'select' && selectedColumn.valueEnum) {
-        const enumItem = selectedColumn.valueEnum[tempValue];
-        displayValue = enumItem?.text || tempValue;
+      } else if (hasOptions(selectedColumn)) {
+        // 使用统一的获取显示文本方法
+        displayValue = getDisplayText(selectedColumn, tempValue);
       }
 
-      addFilter(selectedColumn.dataIndex as string, displayValue.toString());
+      addFilter(selectedColumn.dataIndex as string);
       setShowValueSelector(false);
       setSelectedColumn(null);
       setTempValue(null);
@@ -148,28 +213,39 @@ export const CustomSearch = <T extends ParamsType, U extends ParamsType, ValueTy
   };
 
   // 取消选择
-  const cancelValueSelector = (): void => {
+  const cancelValueSelector = () => {
     setShowValueSelector(false);
     setSelectedColumn(null);
     setTempValue(null);
   };
 
   // 删除筛选条件
-  const removeFilter = (filterId: number): void => {
-    setFilters((prev) => prev.filter((f) => f.id !== filterId));
+  const removeFilter = (filterId: string) => {
+    setFilters((prev) => prev?.filter((f) => f.dataIndex !== filterId));
   };
 
   // 根据值类型获取宽度样式
-  const getPopoverWidth = (valueType: string): string => {
+  const getPopoverWidth = (valueType: ProFormColumnsType['valueType']) => {
     switch (valueType) {
       case 'select':
+      case 'radio':
+      case 'checkbox':
+      case 'radioButton':
       case 'switch':
         return styles.narrowSelector;
-      case 'date':
+
       case 'digit':
       case 'money':
         return styles.mediumSelector;
       case 'dateRange':
+      case 'date':
+      case 'timeRange':
+      case 'dateMonth':
+      case 'dateTime':
+      case 'dateWeek':
+      case 'dateWeekRange':
+      case 'dateYearRange':
+      case 'dateYear':
       default:
         return styles.wideSelector;
     }
@@ -177,7 +253,7 @@ export const CustomSearch = <T extends ParamsType, U extends ParamsType, ValueTy
 
   // AutoComplete 选项
   const autoCompleteOptions = filterOptions.map((option) => ({
-    value: `${option.title}: `,
+    value: option.dataIndex,
     label: option.title,
   }));
 
@@ -185,53 +261,59 @@ export const CustomSearch = <T extends ParamsType, U extends ParamsType, ValueTy
   const renderValueSelectorContent = () => {
     if (!selectedColumn) return null;
 
-    const { valueType, valueEnum } = selectedColumn;
+    const { valueType } = selectedColumn;
     let selectorContent;
 
-    switch (valueType) {
-      case 'select':
-        const options = valueEnum
-          ? Object.entries(valueEnum).map(([key, value]: [string, any]) => ({
-              label: value.text || key,
-              value: key,
-            }))
-          : [];
-        selectorContent = (
-          <Select
-            placeholder="请选择"
-            value={tempValue}
-            onChange={setTempValue}
-            options={options}
-            showSearch
-            filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
-            style={{ width: '100%' }}
-          />
-        );
-        break;
+    // 如果有选项配置，优先使用 Select
+    if (hasOptions(selectedColumn)) {
+      const options = getColumnOptions(selectedColumn);
+      const fieldProps = selectedColumn.fieldProps || {};
+      const selectValueType = valueType;
+      switch (selectValueType) {
+        case 'radio':
+          selectorContent = <Radio.Group {...fieldProps} value={tempValue} onChange={(e) => setTempValue(e.target.value)} options={options} />;
+          break;
+        case 'checkbox':
+          selectorContent = <Checkbox.Group {...fieldProps} value={tempValue} onChange={(value) => setTempValue(value)} options={options} />;
+          break;
+        case 'select':
+          selectorContent = <Select {...fieldProps} placeholder="请选择" value={tempValue} onChange={setTempValue} options={options} showSearch style={{ width: '100%' }} />;
+          break;
+      }
+    } else {
+      // 根据 valueType 渲染对应的组件
+      switch (valueType) {
+        case 'date':
+          selectorContent = <DatePicker placeholder="请选择日期" value={tempValue} onChange={setTempValue} style={{ width: '100%' }} />;
+          break;
 
-      case 'date':
-        selectorContent = <DatePicker placeholder="请选择日期" value={tempValue} onChange={setTempValue} style={{ width: '100%' }} />;
-        break;
+        case 'dateRange':
+          selectorContent = <RangePicker placeholder={['开始日期', '结束日期']} value={tempValue} onChange={setTempValue} style={{ width: '100%' }} />;
+          break;
 
-      case 'dateRange':
-        selectorContent = <RangePicker placeholder={['开始日期', '结束日期']} value={tempValue} onChange={setTempValue} style={{ width: '100%' }} />;
-        break;
+        case 'digit':
+        case 'money':
+          selectorContent = <InputNumber placeholder="请输入数字" value={tempValue} onChange={setTempValue} style={{ width: '100%' }} />;
+          break;
 
-      case 'digit':
-      case 'money':
-        selectorContent = <InputNumber placeholder="请输入数字" value={tempValue} onChange={setTempValue} style={{ width: '100%' }} />;
-        break;
+        case 'switch':
+          selectorContent = (
+            <Select
+              placeholder="请选择"
+              value={tempValue}
+              onChange={setTempValue}
+              options={[
+                { label: '是', value: true },
+                { label: '否', value: false },
+              ]}
+              style={{ width: '100%' }}
+            />
+          );
+          break;
 
-      case 'switch':
-        selectorContent = (
-          <div style={{ textAlign: 'center' }}>
-            <Switch checked={tempValue} onChange={setTempValue} checkedChildren="是" unCheckedChildren="否" />
-          </div>
-        );
-        break;
-
-      default:
-        selectorContent = <Input placeholder="请输入值" value={tempValue} onChange={(e) => setTempValue(e.target.value)} style={{ width: '100%' }} />;
+        default:
+          selectorContent = <Input placeholder="请输入值" value={tempValue} onChange={(e) => setTempValue(e.target.value)} style={{ width: '100%' }} />;
+      }
     }
 
     return (
@@ -252,11 +334,11 @@ export const CustomSearch = <T extends ParamsType, U extends ParamsType, ValueTy
   };
 
   // 渲染筛选条件标签
-  const renderFilterTags = (filterList: Filter[], color: string = 'blue') => (
+  const renderFilterTags = (filterList: CustomSearchProps<T, U, ValueType>['columns'], color: string = 'blue') => (
     <Space size={4} wrap>
-      {filterList.map((filter) => (
-        <Tag key={filter.id} closable onClose={() => removeFilter(filter.id)} color={color} className={styles.filterTag}>
-          {filter.label}
+      {filterList?.map((filter) => (
+        <Tag key={filter.dataIndex as string} closable onClose={() => removeFilter(filter.dataIndex as string)} color={color} className={styles.filterTag}>
+          {filter.title as string}
         </Tag>
       ))}
     </Space>
@@ -274,8 +356,10 @@ export const CustomSearch = <T extends ParamsType, U extends ParamsType, ValueTy
             cancelValueSelector();
           }
         }}
+        style={{
+          padding: 0,
+        }}
         placement="bottomLeft"
-        overlayStyle={{ padding: 0 }}
       >
         <AutoComplete ref={inputRef} className={styles.autoCompleteContainer} options={autoCompleteOptions} onSearch={setSearchValue} onSelect={handleSelectColumn} value={searchValue} allowClear>
           <Input placeholder="添加筛选条件" prefix={<SearchOutlined />} onPressEnter={(e) => handleSearch((e.target as HTMLInputElement).value)} className={styles.searchInput} />
