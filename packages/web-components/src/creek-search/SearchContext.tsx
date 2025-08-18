@@ -1,4 +1,5 @@
 import { ParamsType, ProFormColumnsType, ProTableProps } from '@ant-design/pro-components';
+import dayjs, { Dayjs } from 'dayjs';
 import _ from 'lodash';
 import React, { createContext, ReactNode, useContext, useRef, useState } from 'react';
 
@@ -45,6 +46,12 @@ export interface SearchContextValue<T extends ParamsType, U extends ParamsType, 
 
 const SearchContext = createContext<SearchContextValue<any, any, any> | null>(null);
 
+const formatValue = (val: any, fmt: string): string => {
+  if (!val) return val;
+  const day = val.format ? (val as Dayjs) : dayjs(val);
+  return day.format(fmt);
+};
+
 export const useSearchContext = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>() => {
   const context = useContext(SearchContext);
   if (!context) {
@@ -61,6 +68,24 @@ interface SearchProviderProps<T extends ParamsType, U extends ParamsType, ValueT
 }
 
 export const SearchProvider = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>({ columns = [], onSubmit, beforeSearchSubmit, children }: SearchProviderProps<T, U, ValueType>) => {
+  const DATE_FORMAT_MAP: Record<string, string> = {
+    date: 'YYYY-MM-DD',
+    dateTime: 'YYYY-MM-DD HH:mm:ss',
+    time: 'HH:mm:ss',
+    dateWeek: 'YYYY-wo',
+    dateMonth: 'YYYY-MM',
+    dateQuarter: 'YYYY-[Q]Q',
+    dateYear: 'YYYY',
+    // 范围类型
+    dateRange: 'YYYY-MM-DD',
+    dateTimeRange: 'YYYY-MM-DD HH:mm:ss',
+    timeRange: 'HH:mm:ss',
+    dateWeekRange: 'YYYY-wo',
+    dateMonthRange: 'YYYY-MM',
+    dateQuarterRange: 'YYYY-[Q]Q',
+    dateYearRange: 'YYYY',
+  };
+
   const [searchValue, setSearchValue] = useState<string>('');
   const [filters, setFilters] = useState<CreekSearchFilter[]>([]);
   const [showValueSelector, setShowValueSelector] = useState(false);
@@ -110,6 +135,8 @@ export const SearchProvider = <T extends ParamsType, U extends ParamsType, Value
         return option.label || option.text || option.value;
       }
     }
+
+    console.log(value, 'value');
 
     return value;
   };
@@ -164,7 +191,7 @@ export const SearchProvider = <T extends ParamsType, U extends ParamsType, Value
   // 处理选择列名
   const handleSelectColumn = (value: string) => {
     const selectedOption = filterOptions.find((option) => option.dataIndex === value);
-    const needShowValueSelectorArray: (ProFormColumnsType['valueType'] | string)[] = [
+    const needShowValueSelectorArray: ProFormColumnsType['valueType'][] = [
       'select',
       'date',
       'dateRange',
@@ -175,6 +202,11 @@ export const SearchProvider = <T extends ParamsType, U extends ParamsType, Value
       'dateWeekRange',
       'dateYearRange',
       'dateYear',
+      'dateTimeRange',
+      'dateMonthRange',
+      'dateQuarter',
+      'dateQuarterRange',
+      'time',
       'radio',
       'checkbox',
       'digit',
@@ -237,28 +269,44 @@ export const SearchProvider = <T extends ParamsType, U extends ParamsType, Value
 
   // 确认添加筛选条件
   const confirmAddFilter = () => {
-    if (selectedColumn && tempValue !== null && tempValue !== undefined) {
-      let displayValue = tempValue;
+    if (!selectedColumn || tempValue == null) return;
 
-      // 处理不同类型的显示值
-      if (selectedColumn.valueType === 'dateRange' && Array.isArray(tempValue)) {
-        displayValue = `${tempValue[0]?.format('YYYY-MM-DD')} ~ ${tempValue[1]?.format('YYYY-MM-DD')}`;
-      } else if (selectedColumn.valueType === 'date') {
-        displayValue = tempValue.format('YYYY-MM-DD');
-      } else if (hasOptions(selectedColumn)) {
-        // 使用统一的获取显示文本方法
-        displayValue = getDisplayText(selectedColumn, tempValue);
+    const { valueType, dataIndex } = selectedColumn;
+    let value: any = tempValue;
+    let displayValue: string = '';
+
+    const format = DATE_FORMAT_MAP[valueType];
+    const isDateType = selectedColumn.valueType?.startsWith('date') || selectedColumn.valueType?.startsWith('time');
+
+    if (isDateType) {
+      const isRange = Array.isArray(tempValue);
+      if (!isRange) {
+        if (hasOptions(selectedColumn)) {
+          value = String(tempValue);
+          displayValue = getDisplayText(selectedColumn, tempValue);
+        } else {
+          value = formatValue(tempValue, format);
+          displayValue = value;
+        }
+      } else {
+        const [start, end] = tempValue as [any, any];
+        const startStr = formatValue(start, format);
+        const endStr = formatValue(end, format);
+        value = [startStr, endStr];
+        displayValue = `${startStr} ~ ${endStr}`;
       }
-
-      addFilter(selectedColumn.dataIndex as string, {
-        value: tempValue,
-        displayText: displayValue,
-      });
-      setSearchValue('');
-      setShowValueSelector(false);
-      setSelectedColumn(null);
-      setTempValue(null);
+    } else if (_.isArray(tempValue)) {
+      displayValue = tempValue.join('|');
     }
+
+    console.log('value2222', value, displayValue);
+    addFilter(dataIndex as string, { value, displayText: displayValue });
+
+    // 收尾
+    setSearchValue('');
+    setShowValueSelector(false);
+    setSelectedColumn(null);
+    setTempValue(null);
   };
 
   // 取消选择

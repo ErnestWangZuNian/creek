@@ -34,6 +34,8 @@ export const FilterDisplay = <T extends ParamsType, U extends ParamsType, ValueT
   const { styles } = useStyles();
   const { filters, removeFilter } = useSearchContext<T, U, ValueType>();
 
+  console.log('当前筛选条件:', filters);
+
   // 渲染筛选条件标签
   const renderFilterTags = (filterList: CreekSearchFilter[]) => (
     <Space size={4} wrap>
