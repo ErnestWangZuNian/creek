@@ -1,7 +1,8 @@
 import { ParamsType, ProFormColumnsType, ProTableProps } from '@ant-design/pro-components';
+import _ from 'lodash';
 import React, { createContext, ReactNode, useContext, useRef, useState } from 'react';
 
-import { CreekSearchFilter } from './type';
+import { CreekSearchAddFilterOption, CreekSearchFilter } from './type';
 
 export interface SearchContextValue<T extends ParamsType, U extends ParamsType, ValueType = 'text'> {
   // 状态
@@ -17,6 +18,8 @@ export interface SearchContextValue<T extends ParamsType, U extends ParamsType, 
   // 配置
   columns: ProTableProps<T, U, ValueType>['columns'];
   filterOptions: ProTableProps<T, U, ValueType>['columns'];
+  onSubmit?: (params: U) => void;
+  beforeSearchSubmit?: (params: Record<string, any>) => Record<string, any>;
 
   // 状态更新方法
   setSearchValue: (value: string) => void;
@@ -28,13 +31,7 @@ export interface SearchContextValue<T extends ParamsType, U extends ParamsType, 
   // 业务方法
   handleSearch: (value: string) => void;
   handleSelectColumn: (value: string) => void;
-  addFilter: (
-    key: string,
-    option: {
-      value: any;
-      displayText?: string;
-    },
-  ) => void;
+  addFilter: (key: string, option: CreekSearchAddFilterOption) => void;
   confirmAddFilter: () => void;
   cancelValueSelector: () => void;
   removeFilter: (filterId: string) => void;
@@ -43,6 +40,7 @@ export interface SearchContextValue<T extends ParamsType, U extends ParamsType, 
   getColumnOptions: (column: any) => Array<{ label: string; value: string }>;
   getDisplayText: (column: any, value: any) => any;
   hasOptions: (column: any) => boolean;
+  filtersToParams: (filters: CreekSearchFilter[]) => ParamsType;
 }
 
 const SearchContext = createContext<SearchContextValue<any, any, any> | null>(null);
@@ -57,10 +55,12 @@ export const useSearchContext = <T extends ParamsType, U extends ParamsType, Val
 
 interface SearchProviderProps<T extends ParamsType, U extends ParamsType, ValueType = 'text'> {
   columns: ProTableProps<T, U, ValueType>['columns'];
+  onSubmit?: (params: U) => void;
+  beforeSearchSubmit?: (params: Record<string, any>) => Record<string, any>;
   children: ReactNode;
 }
 
-export const SearchProvider = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>({ columns = [], children }: SearchProviderProps<T, U, ValueType>) => {
+export const SearchProvider = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>({ columns = [], onSubmit, beforeSearchSubmit, children }: SearchProviderProps<T, U, ValueType>) => {
   const [searchValue, setSearchValue] = useState<string>('');
   const [filters, setFilters] = useState<CreekSearchFilter[]>([]);
   const [showValueSelector, setShowValueSelector] = useState(false);
@@ -117,6 +117,25 @@ export const SearchProvider = <T extends ParamsType, U extends ParamsType, Value
   // 判断是否有选项配置
   const hasOptions = (column: any) => {
     return !!(column.valueEnum || column.fieldProps?.options);
+  };
+
+  // 将 filters 转换成 params 对象
+  const filtersToParams: SearchContextValue<T, U, ValueType>['filtersToParams'] = (filters) => {
+    let params = {} as ParamsType;
+
+    // 将 filters 数组转换为 params 对象
+    filters.forEach((filter) => {
+      if (filter.dataIndex && filter.value !== undefined && filter.value !== null) {
+        params[filter.dataIndex] = filter.value;
+      }
+    });
+
+    // 如果存在 beforeSearchSubmit 钩子，则调用它来修改 params
+    if (beforeSearchSubmit && _.isFunction(beforeSearchSubmit)) {
+      params = beforeSearchSubmit(params);
+    }
+
+    return params;
   };
 
   // 处理搜索输入
@@ -204,7 +223,15 @@ export const SearchProvider = <T extends ParamsType, U extends ParamsType, Value
         });
       }
 
-      return [..._prev];
+      const _filters = [..._prev];
+
+      const params = filtersToParams(_filters);
+
+      if (onSubmit && _.isFunction(onSubmit)) {
+        onSubmit(params as U);
+      }
+
+      return _filters;
     });
   };
 
@@ -243,7 +270,17 @@ export const SearchProvider = <T extends ParamsType, U extends ParamsType, Value
 
   // 删除筛选条件
   const removeFilter = (filterId: string) => {
-    setFilters((prev) => prev?.filter((f) => f.dataIndex !== filterId));
+    setFilters((prev) => {
+      const _prev = prev?.filter((f) => f.dataIndex !== filterId);
+
+      const _filters = [..._prev];
+      const params = filtersToParams(_filters);
+      if (onSubmit && _.isFunction(onSubmit)) {
+        onSubmit(params as U);
+      }
+
+      return _prev || [];
+    });
   };
 
   const contextValue: SearchContextValue<T, U, ValueType> = {
@@ -260,6 +297,8 @@ export const SearchProvider = <T extends ParamsType, U extends ParamsType, Value
     // 配置
     columns,
     filterOptions,
+    onSubmit,
+    beforeSearchSubmit,
 
     // 状态更新方法
     setSearchValue,
@@ -280,6 +319,7 @@ export const SearchProvider = <T extends ParamsType, U extends ParamsType, Value
     getColumnOptions,
     getDisplayText,
     hasOptions,
+    filtersToParams,
   };
 
   return <SearchContext.Provider value={contextValue}>{children}</SearchContext.Provider>;

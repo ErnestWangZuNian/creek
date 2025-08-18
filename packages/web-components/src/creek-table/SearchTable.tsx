@@ -1,5 +1,3 @@
-
-
 import { ParamsType, ProTable } from '@ant-design/pro-components';
 import { useMemo } from 'react';
 
@@ -9,15 +7,10 @@ import { CreekTableProps } from './type';
 // 独立的 ProTable 组件
 export const SearchProTable = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>(props: CreekTableProps<T, U, ValueType>) => {
   const { columns, params, ...restProps } = props;
-  const { filters } = useSearchContext();
+  const { filters, filtersToParams } = useSearchContext();
 
   const finalParams = useMemo(() => {
-    let result = {} as any;
-    if (filters.length > 0) {
-      filters.map((filter) => {
-        result[filter.dataIndex] = filter.value;
-      });
-    }
+    let result = filtersToParams(filters) as U;
     return result;
   }, [filters]);
 

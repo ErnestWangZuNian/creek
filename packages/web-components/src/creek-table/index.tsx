@@ -6,10 +6,10 @@ import { SearchProTable } from './SearchTable';
 import { CreekTableProps } from './type';
 
 export const CreekTable = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>(props: CreekTableProps<T, U, ValueType>) => {
-  const { columns = [], ...restProps } = props;
+  const { columns = [],  onSubmit, ...restProps } = props;
 
   return (
-    <SearchProvider columns={columns}>
+    <SearchProvider columns={columns} onSubmit={onSubmit}>
       <SearchProTable columns={columns} {...restProps} />
     </SearchProvider>
   );
