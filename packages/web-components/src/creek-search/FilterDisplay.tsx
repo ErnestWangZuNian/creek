@@ -2,8 +2,8 @@ import { ParamsType } from '@ant-design/pro-components';
 import { Space, Tag } from 'antd';
 import { createStyles } from 'antd-style';
 
-import { CreekSearchFilter } from '../type';
 import { useSearchContext } from './SearchContext';
+import { CreekSearchFilter } from './type';
 
 // 样式定义
 const useStyles = createStyles(({ token }) => ({

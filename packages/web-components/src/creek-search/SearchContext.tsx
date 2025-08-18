@@ -1,7 +1,7 @@
-import { ParamsType, ProFormColumnsType } from '@ant-design/pro-components';
+import { ParamsType, ProFormColumnsType, ProTableProps } from '@ant-design/pro-components';
 import React, { createContext, ReactNode, useContext, useRef, useState } from 'react';
 
-import { CreekSearchFilter, CreekTableProps } from '../type';
+import { CreekSearchFilter } from './type';
 
 export interface SearchContextValue<T extends ParamsType, U extends ParamsType, ValueType = 'text'> {
   // 状态
@@ -15,8 +15,8 @@ export interface SearchContextValue<T extends ParamsType, U extends ParamsType, 
   inputRef: React.RefObject<any>;
 
   // 配置
-  columns: CreekTableProps<T, U, ValueType>['columns'];
-  filterOptions: CreekTableProps<T, U, ValueType>['columns'];
+  columns: ProTableProps<T, U, ValueType>['columns'];
+  filterOptions: ProTableProps<T, U, ValueType>['columns'];
 
   // 状态更新方法
   setSearchValue: (value: string) => void;
@@ -56,7 +56,7 @@ export const useSearchContext = <T extends ParamsType, U extends ParamsType, Val
 };
 
 interface SearchProviderProps<T extends ParamsType, U extends ParamsType, ValueType = 'text'> {
-  columns: CreekTableProps<T, U, ValueType>['columns'];
+  columns: ProTableProps<T, U, ValueType>['columns'];
   children: ReactNode;
 }
 
