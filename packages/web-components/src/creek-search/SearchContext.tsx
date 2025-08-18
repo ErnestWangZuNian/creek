@@ -227,6 +227,7 @@ export const SearchProvider = <T extends ParamsType, U extends ParamsType, Value
         value: tempValue,
         displayText: displayValue,
       });
+      setSearchValue('');
       setShowValueSelector(false);
       setSelectedColumn(null);
       setTempValue(null);
