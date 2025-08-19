@@ -1,4 +1,4 @@
-import { ParamsType } from '@ant-design/pro-components';
+import { ParamsType, ProColumnType } from '@ant-design/pro-components';
 import { createStyles } from 'antd-style';
 import classnames from 'classnames';
 
@@ -36,7 +36,7 @@ const useStyles = createStyles(
 );
 
 export type CreekSearchProps<T> = {
-  columns: T[];
+  columns: ProColumnType<T>[];
   onSubmit?: (values: Record<string, any>) => void;
   justify?: 'start' | 'end';
 };
