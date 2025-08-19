@@ -15,6 +15,7 @@ const HomePage = () => {
       <CreekIcon />
       <Flex justify="flex-end" flex={1}>
         <CreekSearch
+          justify="end"
           columns={[
             {
               dataIndex: 'name',

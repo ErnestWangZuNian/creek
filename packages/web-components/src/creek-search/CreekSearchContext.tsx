@@ -21,185 +21,184 @@ interface ValueTypeConfig {
   componentType: 'input' | 'select' | 'date' | 'dateRange' | 'time' | 'timeRange' | 'number' | 'switch' | 'radio' | 'checkbox';
 }
 
-
 // ValueType配置映射表
 const VALUE_TYPE_CONFIG_MAP: Record<string, ValueTypeConfig> = {
   // 文本输入类
-  'text': {
+  text: {
     showValueSelector: false,
     displayName: '文本',
-    componentType: 'input'
+    componentType: 'input',
   },
-  'textarea': {
+  textarea: {
     showValueSelector: false,
     displayName: '多行文本',
-    componentType: 'input'
+    componentType: 'input',
   },
-  'password': {
+  password: {
     showValueSelector: false,
     displayName: '密码',
-    componentType: 'input'
+    componentType: 'input',
   },
 
   // 数字类
-  'digit': {
+  digit: {
     showValueSelector: true,
     displayName: '数字',
-    componentType: 'number'
+    componentType: 'number',
   },
-  'money': {
+  money: {
     showValueSelector: true,
     displayName: '金额',
-    componentType: 'number'
+    componentType: 'number',
   },
-  'percent': {
+  percent: {
     showValueSelector: true,
     displayName: '百分比',
-    componentType: 'number'
+    componentType: 'number',
   },
 
   // 选择类
-  'select': {
+  select: {
     showValueSelector: true,
     displayName: '选择器',
-    componentType: 'select'
+    componentType: 'select',
   },
-  'radio': {
+  radio: {
     showValueSelector: true,
     displayName: '单选',
-    componentType: 'radio'
+    componentType: 'radio',
   },
-  'radioButton': {
+  radioButton: {
     showValueSelector: true,
     displayName: '单选按钮',
-    componentType: 'radio'
+    componentType: 'radio',
   },
-  'checkbox': {
+  checkbox: {
     showValueSelector: true,
     displayName: '多选',
-    componentType: 'checkbox'
+    componentType: 'checkbox',
   },
-  'switch': {
+  switch: {
     showValueSelector: true,
     displayName: '开关',
-    componentType: 'radio'
+    componentType: 'radio',
   },
 
   // 日期类 - 单选
-  'date': {
+  date: {
     showValueSelector: true,
     dateFormat: 'YYYY-MM-DD',
     isDateTime: true,
     isRange: false,
     displayName: '日期',
-    componentType: 'date'
+    componentType: 'date',
   },
-  'dateWeek': {
+  dateWeek: {
     showValueSelector: true,
     dateFormat: 'YYYY-wo',
     isDateTime: true,
     isRange: false,
     displayName: '周',
-    componentType: 'date'
+    componentType: 'date',
   },
-  'dateMonth': {
+  dateMonth: {
     showValueSelector: true,
     dateFormat: 'YYYY-MM',
     isDateTime: true,
     isRange: false,
     displayName: '月份',
-    componentType: 'date'
+    componentType: 'date',
   },
-  'dateQuarter': {
+  dateQuarter: {
     showValueSelector: true,
     dateFormat: 'YYYY-[Q]Q',
     isDateTime: true,
     isRange: false,
     displayName: '季度',
-    componentType: 'date'
+    componentType: 'date',
   },
-  'dateYear': {
+  dateYear: {
     showValueSelector: true,
     dateFormat: 'YYYY',
     isDateTime: true,
     isRange: false,
     displayName: '年份',
-    componentType: 'date'
+    componentType: 'date',
   },
-  'dateTime': {
+  dateTime: {
     showValueSelector: true,
     dateFormat: 'YYYY-MM-DD HH:mm:ss',
     isDateTime: true,
     isRange: false,
     displayName: '日期时间',
-    componentType: 'date'
+    componentType: 'date',
   },
-  'time': {
+  time: {
     showValueSelector: true,
     dateFormat: 'HH:mm:ss',
     isDateTime: true,
     isRange: false,
     displayName: '时间',
-    componentType: 'time'
+    componentType: 'time',
   },
 
   // 日期类 - 范围
-  'dateRange': {
+  dateRange: {
     showValueSelector: true,
     dateFormat: 'YYYY-MM-DD',
     isDateTime: true,
     isRange: true,
     displayName: '日期范围',
-    componentType: 'dateRange'
+    componentType: 'dateRange',
   },
-  'dateTimeRange': {
+  dateTimeRange: {
     showValueSelector: true,
     dateFormat: 'YYYY-MM-DD HH:mm:ss',
     isDateTime: true,
     isRange: true,
     displayName: '日期时间范围',
-    componentType: 'dateRange'
+    componentType: 'dateRange',
   },
-  'timeRange': {
+  timeRange: {
     showValueSelector: true,
     dateFormat: 'HH:mm:ss',
     isDateTime: true,
     isRange: true,
     displayName: '时间范围',
-    componentType: 'timeRange'
+    componentType: 'timeRange',
   },
-  'dateWeekRange': {
+  dateWeekRange: {
     showValueSelector: true,
     dateFormat: 'YYYY-wo',
     isDateTime: true,
     isRange: true,
     displayName: '周范围',
-    componentType: 'dateRange'
+    componentType: 'dateRange',
   },
-  'dateMonthRange': {
+  dateMonthRange: {
     showValueSelector: true,
     dateFormat: 'YYYY-MM',
     isDateTime: true,
     isRange: true,
     displayName: '月份范围',
-    componentType: 'dateRange'
+    componentType: 'dateRange',
   },
-  'dateQuarterRange': {
+  dateQuarterRange: {
     showValueSelector: true,
     dateFormat: 'YYYY-[Q]Q',
     isDateTime: true,
     isRange: true,
     displayName: '季度范围',
-    componentType: 'dateRange'
+    componentType: 'dateRange',
   },
-  'dateYearRange': {
+  dateYearRange: {
     showValueSelector: true,
     dateFormat: 'YYYY',
     isDateTime: true,
     isRange: true,
     displayName: '年份范围',
-    componentType: 'dateRange'
-  }
+    componentType: 'dateRange',
+  },
 };
 
 export interface SearchContextValue<T extends ParamsType, U extends ParamsType, ValueType = 'text'> {
@@ -233,13 +232,14 @@ export interface SearchContextValue<T extends ParamsType, U extends ParamsType, 
   confirmAddFilter: () => void;
   cancelValueSelector: () => void;
   removeFilter: (filterId: string) => void;
+  handelRest: () => void;
 
   // 工具方法
   getColumnOptions: (column: any) => Array<{ label: string; value: string }>;
   getDisplayText: (column: any, value: any) => any;
   hasOptions: (column: any) => boolean;
   filtersToParams: (filters: CreekSearchFilter[]) => ParamsType;
-  getValueTypeConfig: (valueType:  string) => ValueTypeConfig;
+  getValueTypeConfig: (valueType: string) => ValueTypeConfig;
   formatDateValue: (value: any, config: ValueTypeConfig) => string | string[];
   shouldShowValueSelector: (column: any) => boolean;
 }
@@ -261,13 +261,12 @@ interface CreekSearchProviderProps<T extends ParamsType, U extends ParamsType, V
   children: ReactNode;
 }
 
-export const CreekSearchProvider = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>({ 
-  columns = [], 
-  onSubmit, 
-  beforeSearchSubmit, 
-  children 
+export const CreekSearchProvider = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>({
+  columns = [],
+  onSubmit,
+  beforeSearchSubmit,
+  children,
 }: CreekSearchProviderProps<T, U, ValueType>) => {
-  
   const [searchValue, setSearchValue] = useState<string>('');
   const [filters, setFilters] = useState<CreekSearchFilter[]>([]);
   const [showValueSelector, setShowValueSelector] = useState(false);
@@ -282,7 +281,7 @@ export const CreekSearchProvider = <T extends ParamsType, U extends ParamsType, 
   // 获取valueType配置
   const getValueTypeConfig = (valueType: string): ValueTypeConfig => {
     // 如果valueType为undefined，使用默认的text类型
-    const validValueType = (valueType || 'text');
+    const validValueType = valueType || 'text';
     return VALUE_TYPE_CONFIG_MAP[validValueType] || VALUE_TYPE_CONFIG_MAP['text'];
   };
 
@@ -295,7 +294,7 @@ export const CreekSearchProvider = <T extends ParamsType, U extends ParamsType, 
   // 格式化日期值
   const formatDateValue = (value: any, config: ValueTypeConfig): string | string[] => {
     if (!value || !config.isDateTime) return value;
-    
+
     const formatValue = (val: any): string => {
       if (!val) return val;
       const day = val.format ? (val as Dayjs) : dayjs(val);
@@ -306,7 +305,7 @@ export const CreekSearchProvider = <T extends ParamsType, U extends ParamsType, 
       const [start, end] = value;
       return [formatValue(start), formatValue(end)];
     }
-    
+
     return formatValue(value);
   };
 
@@ -370,7 +369,7 @@ export const CreekSearchProvider = <T extends ParamsType, U extends ParamsType, 
       }
     }
 
-    if(column.valueType === 'switch' && typeof value === 'boolean') {
+    if (column.valueType === 'switch' && typeof value === 'boolean') {
       return value ? '开启' : '关闭';
     }
 
@@ -430,7 +429,7 @@ export const CreekSearchProvider = <T extends ParamsType, U extends ParamsType, 
 
     if (selectedOption) {
       const shouldShow = shouldShowValueSelector(selectedOption);
-      
+
       setSelectedColumn(selectedOption);
       setShowValueSelector(shouldShow);
       setSearchValue(`${selectedOption.title}: `);
@@ -485,14 +484,14 @@ export const CreekSearchProvider = <T extends ParamsType, U extends ParamsType, 
 
     const { valueType, dataIndex } = selectedColumn;
     const config = getValueTypeConfig(valueType);
-    
+
     let value: any = tempValue;
     let displayValue: string = '';
 
     if (config.isDateTime) {
       const formattedValue = formatDateValue(tempValue, config);
       value = formattedValue;
-      
+
       if (config.isRange && Array.isArray(formattedValue)) {
         displayValue = `${formattedValue[0]} ~ ${formattedValue[1]}`;
       } else {
@@ -524,12 +523,22 @@ export const CreekSearchProvider = <T extends ParamsType, U extends ParamsType, 
       const _prev = prev?.filter((f) => f.dataIndex !== filterId);
       const _filters = [..._prev];
       const params = filtersToParams(_filters);
-      
+
       if (onSubmit && _.isFunction(onSubmit)) {
         onSubmit(params as U);
       }
 
       return _prev || [];
+    });
+  };
+
+  // 重置所有条件
+  const handelRest = () => {
+    setFilters(() => {
+      if (onSubmit && _.isFunction(onSubmit)) {
+        onSubmit({} as U);
+      }
+      return [];
     });
   };
 
@@ -564,6 +573,7 @@ export const CreekSearchProvider = <T extends ParamsType, U extends ParamsType, 
     confirmAddFilter,
     cancelValueSelector,
     removeFilter,
+    handelRest,
 
     // 工具方法
     getColumnOptions,

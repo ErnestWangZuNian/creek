@@ -1,5 +1,6 @@
+import { DeleteOutlined } from '@ant-design/icons';
 import { ParamsType } from '@ant-design/pro-components';
-import { Space, Tag } from 'antd';
+import { Flex, Space, Tag } from 'antd';
 import { createStyles } from 'antd-style';
 import classNames from 'classnames';
 
@@ -29,6 +30,17 @@ const useStyles = createStyles(({ token }) => ({
   filterTagValue: {
     color: '#42464E',
   },
+
+  clearButtonContainer: {
+    marginLeft: token.marginXS,
+    borderLeft: `1px solid #EBEDF1`,
+    paddingLeft: 8,
+  },
+  clearTextContainer: {
+    color: '#1E2128',
+    fontWeight: 500,
+    cursor: 'pointer',
+  },
 }));
 
 export type CreekFilterDisplayProps<T, U, ValueType> = {
@@ -37,7 +49,7 @@ export type CreekFilterDisplayProps<T, U, ValueType> = {
 
 export const CreekFilterDisplay = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>(props: CreekFilterDisplayProps<T, U, ValueType>) => {
   const { styles } = useStyles();
-  const { filters, removeFilter } = useSearchContext<T, U, ValueType>();
+  const { filters, removeFilter, handelRest } = useSearchContext<T, U, ValueType>();
 
   const { className } = props;
 
@@ -58,5 +70,13 @@ export const CreekFilterDisplay = <T extends ParamsType, U extends ParamsType, V
     return null;
   }
 
-  return <div className={classNames(styles.filtersDisplay, className)}>{renderFilterTags(filters)}</div>;
+  return (
+    <Flex className={classNames(styles.filtersDisplay, className)} wrap>
+      <span>{renderFilterTags(filters)}</span>
+      <Space className={styles.clearButtonContainer} align="center" size={4} onClick={handelRest}>
+        <DeleteOutlined />
+        <span className={styles.clearTextContainer}>清空</span>
+      </Space>
+    </Flex>
+  );
 };
