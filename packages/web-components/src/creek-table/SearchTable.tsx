@@ -1,7 +1,7 @@
 import { ParamsType, ProTable } from '@ant-design/pro-components';
 import { useMemo } from 'react';
 
-import { CustomSearchInput, FilterDisplay, useSearchContext } from '../creek-search';
+import { CreekFilterDisplay, CreekSearchInput, useSearchContext } from '../creek-search';
 import { CreekTableProps } from './type';
 
 // 独立的 ProTable 组件
@@ -25,12 +25,12 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
       }}
       search={false}
       // 在 headerTitle 中只放搜索输入框
-      headerTitle={<CustomSearchInput />}
+      headerTitle={<CreekSearchInput />}
       // 在表格内容区上方显示筛选条件
       tableViewRender={(_, dom) => (
         <>
           {/* 筛选条件展示区域 */}
-          <FilterDisplay />
+          <CreekFilterDisplay />
           {/* 表格内容 */}
           {dom}
         </>

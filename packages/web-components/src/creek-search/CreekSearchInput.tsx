@@ -2,7 +2,8 @@ import { SearchOutlined } from '@ant-design/icons';
 import { AutoComplete, Button, Checkbox, DatePicker, Input, InputNumber, Popover, Radio, Select, Space, Switch, TimePicker } from 'antd';
 import { createStyles } from 'antd-style';
 
-import { useSearchContext } from './SearchContext';
+import classNames from 'classnames';
+import { useSearchContext } from './CreekSearchContext';
 
 const { RangePicker } = DatePicker;
 const { RangePicker: TimeRangePicker } = TimePicker;
@@ -325,13 +326,17 @@ const ValueSelector = () => {
   );
 };
 
+export type CreekSearchInputProps = {
+  className?: string;
+};
 // 主搜索输入组件
-export const CustomSearchInput = () => {
+export const CreekSearchInput = (props: CreekSearchInputProps) => {
+  const { className } = props;
   const { styles } = useStyles();
   const { showValueSelector, cancelValueSelector } = useSearchContext();
 
   return (
-    <div className={styles.searchWrapper}>
+    <div className={classNames(styles.searchWrapper, className)}>
       <Popover
         content={<ValueSelector />}
         trigger="click"

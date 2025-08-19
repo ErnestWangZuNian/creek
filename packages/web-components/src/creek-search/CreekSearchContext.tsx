@@ -249,24 +249,24 @@ const SearchContext = createContext<SearchContextValue<any, any, any> | null>(nu
 export const useSearchContext = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>() => {
   const context = useContext(SearchContext);
   if (!context) {
-    throw new Error('useSearchContext must be used within SearchProvider');
+    throw new Error('useSearchContext must be used within CreekSearchProvider');
   }
   return context as SearchContextValue<T, U, ValueType>;
 };
 
-interface SearchProviderProps<T extends ParamsType, U extends ParamsType, ValueType = 'text'> {
+interface CreekSearchProviderProps<T extends ParamsType, U extends ParamsType, ValueType = 'text'> {
   columns: ProTableProps<T, U, ValueType>['columns'];
   onSubmit?: (params: U) => void;
   beforeSearchSubmit?: (params: Record<string, any>) => Record<string, any>;
   children: ReactNode;
 }
 
-export const SearchProvider = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>({ 
+export const CreekSearchProvider = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>({ 
   columns = [], 
   onSubmit, 
   beforeSearchSubmit, 
   children 
-}: SearchProviderProps<T, U, ValueType>) => {
+}: CreekSearchProviderProps<T, U, ValueType>) => {
   
   const [searchValue, setSearchValue] = useState<string>('');
   const [filters, setFilters] = useState<CreekSearchFilter[]>([]);

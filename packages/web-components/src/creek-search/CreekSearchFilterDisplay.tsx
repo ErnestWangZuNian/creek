@@ -1,8 +1,9 @@
 import { ParamsType } from '@ant-design/pro-components';
 import { Space, Tag } from 'antd';
 import { createStyles } from 'antd-style';
+import classNames from 'classnames';
 
-import { useSearchContext } from './SearchContext';
+import { useSearchContext } from './CreekSearchContext';
 import { CreekSearchFilter } from './type';
 
 // 样式定义
@@ -30,9 +31,15 @@ const useStyles = createStyles(({ token }) => ({
   },
 }));
 
-export const FilterDisplay = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>() => {
+export type CreekFilterDisplayProps<T, U, ValueType> = {
+  className?: string;
+};
+
+export const CreekFilterDisplay = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>(props: CreekFilterDisplayProps<T, U, ValueType>) => {
   const { styles } = useStyles();
   const { filters, removeFilter } = useSearchContext<T, U, ValueType>();
+
+  const { className } = props;
 
   // 渲染筛选条件标签
   const renderFilterTags = (filterList: CreekSearchFilter[]) => (
@@ -51,5 +58,5 @@ export const FilterDisplay = <T extends ParamsType, U extends ParamsType, ValueT
     return null;
   }
 
-  return <div className={styles.filtersDisplay}>{renderFilterTags(filters)}</div>;
+  return <div className={classNames(styles.filtersDisplay, className)}>{renderFilterTags(filters)}</div>;
 };
