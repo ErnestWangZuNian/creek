@@ -1,5 +1,6 @@
 // 运行时配置
 import { RunTimeLayoutConfig } from '@umijs/max';
+import { ConfigProvider } from 'antd';
 
 import { DuplicatePlugin, LoadingPlugin, request } from '@creek/request';
 import { Loading } from '@creek/web-components';
@@ -18,6 +19,18 @@ export const layout: RunTimeLayoutConfig = (props) => {
     },
     iconFontCNs: ['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js'],
   };
+}
+
+export const rootContainer = (children: React.ReactNode) => {
+  return (
+    <ConfigProvider theme={{
+      token: {
+        colorPrimary: '#4e43ff',
+      },
+    }}>
+     {children}
+    </ConfigProvider>
+  );
 }
 
 request

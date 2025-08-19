@@ -1,9 +1,206 @@
-import { ParamsType, ProFormColumnsType, ProTableProps } from '@ant-design/pro-components';
+import { ParamsType, ProTableProps } from '@ant-design/pro-components';
 import dayjs, { Dayjs } from 'dayjs';
 import _ from 'lodash';
 import React, { createContext, ReactNode, useContext, useRef, useState } from 'react';
 
 import { CreekSearchAddFilterOption, CreekSearchFilter } from './type';
+
+// ValueType配置接口
+interface ValueTypeConfig {
+  // 是否需要显示值选择器
+  showValueSelector: boolean;
+  // 日期格式化字符串
+  dateFormat?: string;
+  // 是否为范围类型
+  isRange?: boolean;
+  // 是否为日期时间类型
+  isDateTime?: boolean;
+  // 显示名称
+  displayName: string;
+  // 组件类型标识
+  componentType: 'input' | 'select' | 'date' | 'dateRange' | 'time' | 'timeRange' | 'number' | 'switch' | 'radio' | 'checkbox';
+}
+
+
+// ValueType配置映射表
+const VALUE_TYPE_CONFIG_MAP: Record<string, ValueTypeConfig> = {
+  // 文本输入类
+  'text': {
+    showValueSelector: false,
+    displayName: '文本',
+    componentType: 'input'
+  },
+  'textarea': {
+    showValueSelector: false,
+    displayName: '多行文本',
+    componentType: 'input'
+  },
+  'password': {
+    showValueSelector: false,
+    displayName: '密码',
+    componentType: 'input'
+  },
+
+  // 数字类
+  'digit': {
+    showValueSelector: true,
+    displayName: '数字',
+    componentType: 'number'
+  },
+  'money': {
+    showValueSelector: true,
+    displayName: '金额',
+    componentType: 'number'
+  },
+  'percent': {
+    showValueSelector: true,
+    displayName: '百分比',
+    componentType: 'number'
+  },
+
+  // 选择类
+  'select': {
+    showValueSelector: true,
+    displayName: '选择器',
+    componentType: 'select'
+  },
+  'radio': {
+    showValueSelector: true,
+    displayName: '单选',
+    componentType: 'radio'
+  },
+  'radioButton': {
+    showValueSelector: true,
+    displayName: '单选按钮',
+    componentType: 'radio'
+  },
+  'checkbox': {
+    showValueSelector: true,
+    displayName: '多选',
+    componentType: 'checkbox'
+  },
+  'switch': {
+    showValueSelector: true,
+    displayName: '开关',
+    componentType: 'radio'
+  },
+
+  // 日期类 - 单选
+  'date': {
+    showValueSelector: true,
+    dateFormat: 'YYYY-MM-DD',
+    isDateTime: true,
+    isRange: false,
+    displayName: '日期',
+    componentType: 'date'
+  },
+  'dateWeek': {
+    showValueSelector: true,
+    dateFormat: 'YYYY-wo',
+    isDateTime: true,
+    isRange: false,
+    displayName: '周',
+    componentType: 'date'
+  },
+  'dateMonth': {
+    showValueSelector: true,
+    dateFormat: 'YYYY-MM',
+    isDateTime: true,
+    isRange: false,
+    displayName: '月份',
+    componentType: 'date'
+  },
+  'dateQuarter': {
+    showValueSelector: true,
+    dateFormat: 'YYYY-[Q]Q',
+    isDateTime: true,
+    isRange: false,
+    displayName: '季度',
+    componentType: 'date'
+  },
+  'dateYear': {
+    showValueSelector: true,
+    dateFormat: 'YYYY',
+    isDateTime: true,
+    isRange: false,
+    displayName: '年份',
+    componentType: 'date'
+  },
+  'dateTime': {
+    showValueSelector: true,
+    dateFormat: 'YYYY-MM-DD HH:mm:ss',
+    isDateTime: true,
+    isRange: false,
+    displayName: '日期时间',
+    componentType: 'date'
+  },
+  'time': {
+    showValueSelector: true,
+    dateFormat: 'HH:mm:ss',
+    isDateTime: true,
+    isRange: false,
+    displayName: '时间',
+    componentType: 'time'
+  },
+
+  // 日期类 - 范围
+  'dateRange': {
+    showValueSelector: true,
+    dateFormat: 'YYYY-MM-DD',
+    isDateTime: true,
+    isRange: true,
+    displayName: '日期范围',
+    componentType: 'dateRange'
+  },
+  'dateTimeRange': {
+    showValueSelector: true,
+    dateFormat: 'YYYY-MM-DD HH:mm:ss',
+    isDateTime: true,
+    isRange: true,
+    displayName: '日期时间范围',
+    componentType: 'dateRange'
+  },
+  'timeRange': {
+    showValueSelector: true,
+    dateFormat: 'HH:mm:ss',
+    isDateTime: true,
+    isRange: true,
+    displayName: '时间范围',
+    componentType: 'timeRange'
+  },
+  'dateWeekRange': {
+    showValueSelector: true,
+    dateFormat: 'YYYY-wo',
+    isDateTime: true,
+    isRange: true,
+    displayName: '周范围',
+    componentType: 'dateRange'
+  },
+  'dateMonthRange': {
+    showValueSelector: true,
+    dateFormat: 'YYYY-MM',
+    isDateTime: true,
+    isRange: true,
+    displayName: '月份范围',
+    componentType: 'dateRange'
+  },
+  'dateQuarterRange': {
+    showValueSelector: true,
+    dateFormat: 'YYYY-[Q]Q',
+    isDateTime: true,
+    isRange: true,
+    displayName: '季度范围',
+    componentType: 'dateRange'
+  },
+  'dateYearRange': {
+    showValueSelector: true,
+    dateFormat: 'YYYY',
+    isDateTime: true,
+    isRange: true,
+    displayName: '年份范围',
+    componentType: 'dateRange'
+  }
+};
 
 export interface SearchContextValue<T extends ParamsType, U extends ParamsType, ValueType = 'text'> {
   // 状态
@@ -42,15 +239,12 @@ export interface SearchContextValue<T extends ParamsType, U extends ParamsType, 
   getDisplayText: (column: any, value: any) => any;
   hasOptions: (column: any) => boolean;
   filtersToParams: (filters: CreekSearchFilter[]) => ParamsType;
+  getValueTypeConfig: (valueType:  string) => ValueTypeConfig;
+  formatDateValue: (value: any, config: ValueTypeConfig) => string | string[];
+  shouldShowValueSelector: (column: any) => boolean;
 }
 
 const SearchContext = createContext<SearchContextValue<any, any, any> | null>(null);
-
-const formatValue = (val: any, fmt: string): string => {
-  if (!val) return val;
-  const day = val.format ? (val as Dayjs) : dayjs(val);
-  return day.format(fmt);
-};
 
 export const useSearchContext = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>() => {
   const context = useContext(SearchContext);
@@ -67,25 +261,13 @@ interface SearchProviderProps<T extends ParamsType, U extends ParamsType, ValueT
   children: ReactNode;
 }
 
-export const SearchProvider = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>({ columns = [], onSubmit, beforeSearchSubmit, children }: SearchProviderProps<T, U, ValueType>) => {
-  const DATE_FORMAT_MAP: Record<string, string> = {
-    date: 'YYYY-MM-DD',
-    dateTime: 'YYYY-MM-DD HH:mm:ss',
-    time: 'HH:mm:ss',
-    dateWeek: 'YYYY-wo',
-    dateMonth: 'YYYY-MM',
-    dateQuarter: 'YYYY-[Q]Q',
-    dateYear: 'YYYY',
-    // 范围类型
-    dateRange: 'YYYY-MM-DD',
-    dateTimeRange: 'YYYY-MM-DD HH:mm:ss',
-    timeRange: 'HH:mm:ss',
-    dateWeekRange: 'YYYY-wo',
-    dateMonthRange: 'YYYY-MM',
-    dateQuarterRange: 'YYYY-[Q]Q',
-    dateYearRange: 'YYYY',
-  };
-
+export const SearchProvider = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>({ 
+  columns = [], 
+  onSubmit, 
+  beforeSearchSubmit, 
+  children 
+}: SearchProviderProps<T, U, ValueType>) => {
+  
   const [searchValue, setSearchValue] = useState<string>('');
   const [filters, setFilters] = useState<CreekSearchFilter[]>([]);
   const [showValueSelector, setShowValueSelector] = useState(false);
@@ -96,6 +278,37 @@ export const SearchProvider = <T extends ParamsType, U extends ParamsType, Value
 
   // 筛选条件配置
   const filterOptions = columns?.filter((item) => item.search !== false || item.hideInSearch !== false);
+
+  // 获取valueType配置
+  const getValueTypeConfig = (valueType: string): ValueTypeConfig => {
+    // 如果valueType为undefined，使用默认的text类型
+    const validValueType = (valueType || 'text');
+    return VALUE_TYPE_CONFIG_MAP[validValueType] || VALUE_TYPE_CONFIG_MAP['text'];
+  };
+
+  // 判断是否需要显示值选择器
+  const shouldShowValueSelector = (column: any): boolean => {
+    const config = getValueTypeConfig(column.valueType);
+    return config.showValueSelector || hasOptions(column);
+  };
+
+  // 格式化日期值
+  const formatDateValue = (value: any, config: ValueTypeConfig): string | string[] => {
+    if (!value || !config.isDateTime) return value;
+    
+    const formatValue = (val: any): string => {
+      if (!val) return val;
+      const day = val.format ? (val as Dayjs) : dayjs(val);
+      return day.format(config.dateFormat);
+    };
+
+    if (config.isRange && Array.isArray(value)) {
+      const [start, end] = value;
+      return [formatValue(start), formatValue(end)];
+    }
+    
+    return formatValue(value);
+  };
 
   // 获取选项数据 - 兼容 valueEnum 和 fieldProps.options
   const getColumnOptions = (column: any) => {
@@ -122,6 +335,27 @@ export const SearchProvider = <T extends ParamsType, U extends ParamsType, Value
 
   // 获取显示文本 - 兼容 valueEnum 和 fieldProps.options
   const getDisplayText = (column: any, value: any) => {
+    // 处理空值
+    if (value === undefined || value === null || value === '') {
+      return value;
+    }
+
+    const config = getValueTypeConfig(column.valueType);
+
+    // 处理日期时间类型
+    if (config.isDateTime) {
+      const formattedValue = formatDateValue(value, config);
+      if (config.isRange && Array.isArray(formattedValue)) {
+        return `${formattedValue[0]} ~ ${formattedValue[1]}`;
+      }
+      return formattedValue;
+    }
+
+    // 处理数组类型（多选等）
+    if (Array.isArray(value)) {
+      return value.join(' | ');
+    }
+
     // 先尝试从 valueEnum 获取
     if (column.valueEnum && column.valueEnum[value]) {
       const enumItem = column.valueEnum[value];
@@ -136,7 +370,9 @@ export const SearchProvider = <T extends ParamsType, U extends ParamsType, Value
       }
     }
 
-    console.log(value, 'value');
+    if(column.valueType === 'switch' && typeof value === 'boolean') {
+      return value ? '开启' : '关闭';
+    }
 
     return value;
   };
@@ -191,35 +427,12 @@ export const SearchProvider = <T extends ParamsType, U extends ParamsType, Value
   // 处理选择列名
   const handleSelectColumn = (value: string) => {
     const selectedOption = filterOptions.find((option) => option.dataIndex === value);
-    const needShowValueSelectorArray: ProFormColumnsType['valueType'][] = [
-      'select',
-      'date',
-      'dateRange',
-      'timeRange',
-      'dateMonth',
-      'dateTime',
-      'dateWeek',
-      'dateWeekRange',
-      'dateYearRange',
-      'dateYear',
-      'dateTimeRange',
-      'dateMonthRange',
-      'dateQuarter',
-      'dateQuarterRange',
-      'time',
-      'radio',
-      'checkbox',
-      'digit',
-      'radioButton',
-      'switch',
-    ];
 
     if (selectedOption) {
-      const valueType = selectedOption.valueType as ProFormColumnsType['valueType'];
-      const shouldShowSelector = needShowValueSelectorArray.includes(valueType) || hasOptions(selectedOption);
-
+      const shouldShow = shouldShowValueSelector(selectedOption);
+      
       setSelectedColumn(selectedOption);
-      setShowValueSelector(shouldShowSelector);
+      setShowValueSelector(shouldShow);
       setSearchValue(`${selectedOption.title}: `);
       setTempValue(null);
     }
@@ -256,7 +469,6 @@ export const SearchProvider = <T extends ParamsType, U extends ParamsType, Value
       }
 
       const _filters = [..._prev];
-
       const params = filtersToParams(_filters);
 
       if (onSubmit && _.isFunction(onSubmit)) {
@@ -272,34 +484,24 @@ export const SearchProvider = <T extends ParamsType, U extends ParamsType, Value
     if (!selectedColumn || tempValue == null) return;
 
     const { valueType, dataIndex } = selectedColumn;
+    const config = getValueTypeConfig(valueType);
+    
     let value: any = tempValue;
     let displayValue: string = '';
 
-    const format = DATE_FORMAT_MAP[valueType];
-    const isDateType = selectedColumn.valueType?.startsWith('date') || selectedColumn.valueType?.startsWith('time');
-
-    if (isDateType) {
-      const isRange = Array.isArray(tempValue);
-      if (!isRange) {
-        if (hasOptions(selectedColumn)) {
-          value = String(tempValue);
-          displayValue = getDisplayText(selectedColumn, tempValue);
-        } else {
-          value = formatValue(tempValue, format);
-          displayValue = value;
-        }
+    if (config.isDateTime) {
+      const formattedValue = formatDateValue(tempValue, config);
+      value = formattedValue;
+      
+      if (config.isRange && Array.isArray(formattedValue)) {
+        displayValue = `${formattedValue[0]} ~ ${formattedValue[1]}`;
       } else {
-        const [start, end] = tempValue as [any, any];
-        const startStr = formatValue(start, format);
-        const endStr = formatValue(end, format);
-        value = [startStr, endStr];
-        displayValue = `${startStr} ~ ${endStr}`;
+        displayValue = formattedValue as string;
       }
-    } else if (_.isArray(tempValue)) {
-      displayValue = tempValue.join('|');
+    } else {
+      displayValue = getDisplayText(selectedColumn, tempValue);
     }
 
-    console.log('value2222', value, displayValue);
     addFilter(dataIndex as string, { value, displayText: displayValue });
 
     // 收尾
@@ -320,9 +522,9 @@ export const SearchProvider = <T extends ParamsType, U extends ParamsType, Value
   const removeFilter = (filterId: string) => {
     setFilters((prev) => {
       const _prev = prev?.filter((f) => f.dataIndex !== filterId);
-
       const _filters = [..._prev];
       const params = filtersToParams(_filters);
+      
       if (onSubmit && _.isFunction(onSubmit)) {
         onSubmit(params as U);
       }
@@ -368,6 +570,9 @@ export const SearchProvider = <T extends ParamsType, U extends ParamsType, Value
     getDisplayText,
     hasOptions,
     filtersToParams,
+    getValueTypeConfig,
+    formatDateValue,
+    shouldShowValueSelector,
   };
 
   return <SearchContext.Provider value={contextValue}>{children}</SearchContext.Provider>;

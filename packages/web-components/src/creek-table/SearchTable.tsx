@@ -14,6 +14,7 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
     return result;
   }, [filters]);
 
+
   return (
     <ProTable<T, U, ValueType>
       {...restProps}
