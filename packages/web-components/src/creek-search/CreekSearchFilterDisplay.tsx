@@ -35,11 +35,13 @@ const useStyles = createStyles(({ token }) => ({
     marginLeft: token.marginXS,
     borderLeft: `1px solid #EBEDF1`,
     paddingLeft: 8,
+    height: 20,
   },
   clearTextContainer: {
     color: '#1E2128',
     fontWeight: 500,
     cursor: 'pointer',
+  
   },
 }));
 

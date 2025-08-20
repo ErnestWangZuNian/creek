@@ -1,4 +1,9 @@
 import { ParamsType, ProTableProps } from '@ant-design/pro-components';
 
-export type CreekTableProps<T extends ParamsType, U extends ParamsType, ValueType = 'text'> = Omit<ProTableProps<T, U, ValueType>, 'search'>;
-
+export type CreekTableProps<T extends ParamsType, U extends ParamsType, ValueType = 'text'> = Omit<ProTableProps<T, U, ValueType>, 'search'> & {
+  pageFixedBottom?: boolean; // 是否固定分页在底部
+  pageFixedBottomConfig?: {
+    /** 底部保留空间（如固定在底部的元素高度），默认 0 */
+    bottomFix?: number;
+  };
+};
