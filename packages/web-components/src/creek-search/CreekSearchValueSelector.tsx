@@ -3,6 +3,7 @@ import { Button, Checkbox, DatePicker, Input, InputNumber, Radio, Select, Space,
 import { createStyles } from 'antd-style';
 import _ from 'lodash';
 
+import { useEffect, useMemo } from 'react';
 import { useSearchContext } from './CreekSearchContext';
 
 const { RangePicker } = DatePicker;
@@ -44,42 +45,33 @@ const ComponentRenderer = ({ column, value, onChange, className }: ComponentRend
         const allOption = { label: '全部', value: '__ALL__' };
         const checkboxOptions = [allOption, ...options];
 
-        // 处理checkbox值的变化
         const handleCheckboxChange = (checkedValues: any[]) => {
-          const allValues = options.map((opt) => opt.value);
+          const clickedAll = checkedValues.includes('__ALL__');
+         
+          const prevAllSelected = (value || []).length === options.length;
 
-          if (checkedValues.includes('__ALL__')) {
-            // 如果选择了"全部"
-            if (value && value.includes('__ALL__')) {
-              // 如果之前已经选择了"全部"，现在取消选择，则清空所有选项
+          if (clickedAll) {
+            // 用户点击了“全部”
+            if (prevAllSelected) {
+              // 如果之前是全选，则取消全选
               onChange([]);
             } else {
-              // 选择全部选项，但只返回实际的选项值，不包含__ALL__
-              onChange(allValues);
+              // 否则全选
+              onChange(options.map((opt) => opt.value));
             }
           } else {
-            // 没有选择"全部"
-            const filteredValues = checkedValues.filter((val) => val !== '__ALL__');
-
-            // 如果选择了所有其他选项，自动加上"全部"显示状态，但实际值不包含__ALL__
-            if (filteredValues.length === allValues.length && filteredValues.every((val) => allValues.includes(val))) {
-              onChange(filteredValues);
-            } else {
-              onChange(filteredValues);
-            }
+            // 用户点击了具体选项
+            const filtered = checkedValues.filter((v) => v !== '__ALL__');
+            onChange(filtered);
           }
         };
 
-        // 处理显示值：如果选择了所有选项，则在显示时加上__ALL__
         const displayValue = (() => {
           const currentValue = value || [];
           const allValues = options.map((opt) => opt.value);
+          const isAllSelected = allValues.length > 0 && allValues.every((v) => currentValue.includes(v));
 
-          // 如果当前选择的值包含了所有选项，则在显示时加上__ALL__
-          if (currentValue.length === allValues.length && allValues.every((val) => currentValue.includes(val))) {
-            return ['__ALL__', ...currentValue];
-          }
-          return currentValue;
+          return isAllSelected ? ['__ALL__', ...currentValue] : currentValue;
         })();
 
         return <Checkbox.Group {...mergedProps} className={className} value={displayValue} onChange={handleCheckboxChange} options={checkboxOptions} />;
@@ -233,18 +225,58 @@ export type CreekSearchValueSelectorProps<T extends ParamsType, U extends Params
   onConfirm?: () => void;
 };
 
+// 根据不同类型获取初始值
+const getInitialValue = (componentType: string) => {
+  switch (componentType) {
+    case 'checkbox':
+      return [];
+    case 'switch':
+      return false;
+    case 'number':
+      return undefined; // InputNumber 使用 undefined 而不是 null
+    default:
+      return null;
+  }
+};
+
 // 值选择器组件
 export const CreekSearchValueSelector = <T extends ParamsType, U extends ParamsType>(props: CreekSearchValueSelectorProps<T, U>) => {
   const { styles } = useStyles();
   const searchContext = useSearchContext();
 
-  const { selectedColumn, tempValue, setTempValue, confirmAddFilter, getValueTypeConfig } = searchContext;
+  const { selectedColumn, tempValue, setTempValue, confirmAddFilter, getValueTypeConfig, filters } = searchContext;
   const { onConfirm } = props;
 
-  if (!selectedColumn) return null;
+  const config = getValueTypeConfig(selectedColumn?.valueType);
 
-  const config = getValueTypeConfig(selectedColumn.valueType);
-  
+  // 获取当前过滤器的值
+  const currentFilterValue = useMemo(() => {
+    const currentFilter = filters.find((item) => item.dataIndex === selectedColumn?.dataIndex);
+    return currentFilter?.value;
+  }, [filters, selectedColumn]);
+
+  // 计算实际显示的值
+  const actualValue = useMemo(() => {
+    // 如果 tempValue 已设置（不是 null 和 undefined），优先使用 tempValue
+    if (tempValue !== null && tempValue !== undefined) {
+      return tempValue;
+    }
+    // 否则使用当前过滤器的值，如果也没有则使用初始值
+    return currentFilterValue ?? getInitialValue(config.componentType);
+  }, [tempValue, currentFilterValue, selectedColumn?.valueType, config.componentType]);
+
+  // 当选择的列发生变化时，重置 tempValue 为当前过滤器的值
+  useEffect(() => {
+    if (selectedColumn) {
+      const currentFilter = filters.find((item) => item.dataIndex === selectedColumn.dataIndex);
+      if (currentFilter?.value !== undefined) {
+        setTempValue(currentFilter.value);
+      } else {
+        // 如果没有现有的过滤器值，设置为初始值
+        setTempValue(getInitialValue(config.componentType));
+      }
+    }
+  }, [selectedColumn?.dataIndex]); // 只在 selectedColumn.dataIndex 变化时触发
 
   // 根据组件类型获取合适的宽度
   const getPopoverWidth = () => {
@@ -267,24 +299,22 @@ export const CreekSearchValueSelector = <T extends ParamsType, U extends ParamsT
 
   // 重置值的处理
   const handleReset = () => {
-    const config = getValueTypeConfig(selectedColumn.valueType);
-    // 根据不同类型设置合适的初始值
-    switch (config.componentType) {
-      case 'checkbox':
-        setTempValue([]);
-        break;
-      case 'switch':
-        setTempValue(false);
-        break;
-      default:
-        setTempValue(null);
-    }
+    const initialValue = getInitialValue(config.componentType);
+    setTempValue(initialValue);
   };
 
-  return (
+  // 处理值的变化
+  const handleValueChange = (value: any) => {
+    console.log(value, 'handleValueChange');
+    setTempValue(value);
+  };
+
+  console.log('actualValue:', actualValue, 'tempValue:', tempValue, 'currentFilterValue:', currentFilterValue);
+
+  return selectedColumn ? (
     <div className={getPopoverWidth()}>
       <div className={styles.valueSelectorContent}>
-        <ComponentRenderer column={selectedColumn} value={tempValue} onChange={setTempValue} className={['radio', 'checkbox'].includes(config.componentType) ? styles.verticalStyle : ''} />
+        <ComponentRenderer column={selectedColumn} value={actualValue} onChange={handleValueChange} className={['radio', 'checkbox'].includes(config.componentType) ? styles.verticalStyle : ''} />
       </div>
       <div className={styles.valueSelectorActions}>
         <Space size="small">
@@ -306,5 +336,5 @@ export const CreekSearchValueSelector = <T extends ParamsType, U extends ParamsT
         </Space>
       </div>
     </div>
-  );
+  ) : null;
 };
