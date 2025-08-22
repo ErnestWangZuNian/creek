@@ -1,7 +1,5 @@
-import { CreekIcon, CreekSearch, CreekTable } from '@creek/web-components';
-import { Button, Flex } from 'antd';
-
-import { ProTable } from '@ant-design/pro-components';
+import { CreekIcon, CreekTable } from '@creek/web-components';
+import { Button } from 'antd';
 
 enum heightEnum {
   'g' = '1.75米',
@@ -13,7 +11,7 @@ const HomePage = () => {
   return (
     <>
       <CreekIcon />
-      <Flex justify="flex-end" flex={1}>
+      {/* <Flex justify="flex-end" flex={1}>
         <CreekSearch
           justify="end"
           columns={[
@@ -49,7 +47,8 @@ const HomePage = () => {
             {
               dataIndex: 'weight',
               title: '体重',
-              valueType: 'checkbox',
+              onFilter: true,
+              filters: true,
               valueEnum: {
                 '1.75': '1.75米',
                 '1.80': '1.80米',
@@ -58,18 +57,28 @@ const HomePage = () => {
             },
           ]}
         />
-      </Flex>
+      </Flex> */}
 
       <CreekTable
         rowKey="name"
         toolBarRender={() => {
           return [<Button type="primary">新建</Button>, <Button type="primary">编辑</Button>, <Button type="primary">测试</Button>];
         }}
+        onSubmit={(values) => {
+          console.log('提交的值:', values);
+        }}
         dataSource={[
           {
             name: 'user',
             type: 'student',
             isCool: true,
+            weight: 1.75,
+          },
+          {
+            name: 'user1',
+            type: 'student',
+            isCool: true,
+            weight: 1.85,
           },
         ]}
         columns={[
@@ -115,10 +124,7 @@ const HomePage = () => {
         ]}
       />
 
-      <ProTable
-        onSubmit={(values) => {
-          console.log('提交的值:', values);
-        }}
+      {/* <ProTable
         dataSource={[
           {
             name: 'user',
@@ -167,7 +173,7 @@ const HomePage = () => {
             },
           },
         ]}
-      />
+      /> */}
     </>
   );
 };

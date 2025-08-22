@@ -1,4 +1,4 @@
-import { ParamsType, ProTableProps } from '@ant-design/pro-components';
+import { ParamsType, ProColumnType, ProTableProps } from '@ant-design/pro-components';
 import dayjs, { Dayjs } from 'dayjs';
 import _ from 'lodash';
 import React, { createContext, ReactNode, useContext, useRef, useState } from 'react';
@@ -22,7 +22,7 @@ interface ValueTypeConfig {
 }
 
 // ValueType配置映射表
-const VALUE_TYPE_CONFIG_MAP: Record<string, ValueTypeConfig> = {
+const VALUE_TYPE_CONFIG_MAP: Record<ProColumnType<any, any>['valueType'], ValueTypeConfig> = {
   // 文本输入类
   text: {
     showValueSelector: false,
@@ -206,7 +206,7 @@ export interface SearchContextValue<T extends ParamsType, U extends ParamsType, 
   searchValue: string;
   filters: CreekSearchFilter[];
   showValueSelector: boolean;
-  selectedColumn: any;
+  selectedColumn: ProColumnType<T, U>;
   tempValue: any;
 
   // 引用
@@ -239,7 +239,7 @@ export interface SearchContextValue<T extends ParamsType, U extends ParamsType, 
   getDisplayText: (column: any, value: any) => any;
   hasOptions: (column: any) => boolean;
   filtersToParams: (filters: CreekSearchFilter[]) => ParamsType;
-  getValueTypeConfig: (valueType: string) => ValueTypeConfig;
+  getValueTypeConfig: (valueType?: ProColumnType<T, U>['valueType']) => ValueTypeConfig;
   formatDateValue: (value: any, config: ValueTypeConfig) => string | string[];
   shouldShowValueSelector: (column: any) => boolean;
 }
@@ -279,10 +279,10 @@ export const CreekSearchProvider = <T extends ParamsType, U extends ParamsType, 
   const filterOptions = columns?.filter((item) => item.search !== false || item.hideInSearch !== false);
 
   // 获取valueType配置
-  const getValueTypeConfig = (valueType: string): ValueTypeConfig => {
+  const getValueTypeConfig = (valueType?: ProColumnType<T, U>['valueType']) => {
     // 如果valueType为undefined，使用默认的text类型
     const validValueType = valueType || 'text';
-    return VALUE_TYPE_CONFIG_MAP[validValueType] || VALUE_TYPE_CONFIG_MAP['text'];
+    return (VALUE_TYPE_CONFIG_MAP[validValueType] || VALUE_TYPE_CONFIG_MAP['text']) as unknown as ValueTypeConfig;
   };
 
   // 判断是否需要显示值选择器
@@ -480,6 +480,9 @@ export const CreekSearchProvider = <T extends ParamsType, U extends ParamsType, 
 
   // 确认添加筛选条件
   const confirmAddFilter = () => {
+    
+    console.log(selectedColumn, '1111');
+
     if (!selectedColumn || tempValue == null) return;
 
     const { valueType, dataIndex } = selectedColumn;
@@ -501,6 +504,7 @@ export const CreekSearchProvider = <T extends ParamsType, U extends ParamsType, 
       displayValue = getDisplayText(selectedColumn, tempValue);
     }
 
+    console.log(value, 'value');
     addFilter(dataIndex as string, { value, displayText: displayValue });
 
     // 收尾

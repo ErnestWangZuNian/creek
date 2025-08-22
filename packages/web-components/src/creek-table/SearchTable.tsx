@@ -5,6 +5,8 @@ import _ from 'lodash';
 import { useMemo } from 'react';
 
 import { CreekFilterDisplay, CreekSearchInput, useSearchContext } from '../creek-search';
+
+import { useAutoAddFilterToColumns } from './hooks';
 import { TableViewContent } from './TableViewContent';
 import { CreekTableProps } from './type';
 
@@ -24,7 +26,13 @@ const useStyles = createStyles(({ prefixCls }) => {
 export const SearchProTable = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>(props: CreekTableProps<T, U, ValueType>) => {
   const { columns, params, prefixCls = 'ant', className, tableViewRender, pagination, pageFixedBottom = true, pageFixedBottomConfig, ...restProps } = props;
 
-  const { filters, filtersToParams } = useSearchContext();
+  const searchContext = useSearchContext();
+  const { filters, filtersToParams } = searchContext;
+
+  // 使用自定义 hook 处理列的筛选功能（包含状态管理）
+  const { columnsWithFilter } = useAutoAddFilterToColumns({
+    columns,
+  });
 
   const { styles } = useStyles();
 
@@ -38,7 +46,7 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
     <ProTable<T, U, ValueType>
       {...restProps}
       className={classnames(styles['creek-table-container'], className)}
-      columns={columns}
+      columns={columnsWithFilter}
       params={{
         ...params,
         ...finalParams,
