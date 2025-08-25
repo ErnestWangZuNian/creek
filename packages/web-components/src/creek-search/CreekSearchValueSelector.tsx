@@ -292,11 +292,8 @@ export const CreekSearchValueSelector = <T extends ParamsType, U extends ParamsT
 
   // 处理值的变化
   const handleValueChange = (value: any) => {
-    console.log(value, 'handleValueChange');
     setTempValue(value);
   };
-
-  console.log('actualValue:', actualValue, 'tempValue:', tempValue, 'currentFilterValue:', currentFilterValue);
 
   return selectedColumn ? (
     <div className={getPopoverWidth()}>
