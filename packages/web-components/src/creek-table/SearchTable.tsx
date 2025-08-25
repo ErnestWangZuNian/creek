@@ -7,6 +7,7 @@ import { useMemo } from 'react';
 import { CreekFilterDisplay, CreekSearchInput, useSearchContext } from '../creek-search';
 
 import { useAutoAddFilterToColumns } from './hooks';
+import { TableOptionRender } from './TableOptionRender';
 import { TableViewContent } from './TableViewContent';
 import { CreekTableProps } from './type';
 
@@ -24,7 +25,7 @@ const useStyles = createStyles(({ prefixCls }) => {
 
 // 独立的 ProTable 组件
 export const SearchProTable = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>(props: CreekTableProps<T, U, ValueType>) => {
-  const { columns, params, prefixCls = 'ant', className, tableViewRender, pagination, pageFixedBottom = true, pageFixedBottomConfig, ...restProps } = props;
+  const { columns, params, prefixCls = 'ant', className, optionsRender, tableViewRender, pagination, pageFixedBottom = true, pageFixedBottomConfig, ...restProps } = props;
 
   const searchContext = useSearchContext();
   const { filters, filtersToParams } = searchContext;
@@ -56,6 +57,13 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
         showTotal: (total) => <span>共 {total} 条</span>,
         showSizeChanger: true,
         ...pagination,
+      }}
+      optionsRender={(defaultProps, dom) => {
+        return _.isFunction(optionsRender)
+          ? optionsRender(defaultProps, dom)
+          : restProps?.options
+            ? [<TableOptionRender key="option" defaultDom={dom} importConfig={restProps?.options?.importConfig} exportConfig={restProps?.options?.exportConfig} />]
+            : [];
       }}
       // 在 headerTitle 中只放搜索输入框
       headerTitle={<CreekSearchInput />}

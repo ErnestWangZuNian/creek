@@ -67,6 +67,18 @@ const HomePage = () => {
         onSubmit={(values) => {
           console.log('提交的值:', values);
         }}
+        options={{
+          importConfig: {
+            onClick: () => {
+              console.log('点击了导入');
+            },
+          },
+          exportConfig: {
+            onClick: () => {
+              console.log('点击了导出');
+            },
+          },
+        }}
         dataSource={[
           {
             name: 'user',
