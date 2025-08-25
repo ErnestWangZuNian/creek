@@ -16,4 +16,6 @@ export type CreekTableProps<T extends ParamsType, U extends ParamsType, ValueTyp
     importConfig?: OptionRenderCustom;
     exportConfig?: OptionRenderCustom;
   };
+  // 是否自动为列添加筛选功能，默认 true
+  autoAddFilterForColumn?: boolean;
 };

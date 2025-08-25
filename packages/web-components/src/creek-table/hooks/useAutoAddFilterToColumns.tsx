@@ -7,17 +7,19 @@ import { CreekTableProps } from '../type';
 
 interface UseAutoAddFilterToColumnsProps<T extends ParamsType, U extends ParamsType, ValueType = 'text'> {
   columns: CreekTableProps<T, U, ValueType>['columns'];
+  autoAddFilterForColumn?: boolean;
 }
 
 interface UseAutoAddFilterToColumnsReturn<T extends ParamsType, U extends ParamsType, ValueType> {
-  columnsWithFilter:CreekTableProps<T, U, ValueType>['columns'];
+  columnsWithFilter: CreekTableProps<T, U, ValueType>['columns'];
   getColumnKey: (column: ProColumnType<T, U>) => string;
 }
 
 export const useAutoAddFilterToColumns = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>({
   columns,
+  autoAddFilterForColumn,
 }: UseAutoAddFilterToColumnsProps<T, U, ValueType>): UseAutoAddFilterToColumnsReturn<T, U, ValueType> => {
-  const { hasOptions, setSelectedColumn } = useSearchContext();
+  const { hasOptions, setSelectedColumn, filters } = useSearchContext();
 
   // 管理每列的下拉框状态
   const [filterOpenMap, setFilterOpenMap] = useSafeState<Record<string, boolean>>({});
@@ -54,6 +56,7 @@ export const useAutoAddFilterToColumns = <T extends ParamsType, U extends Params
           ...newColumn,
           filters: newColumn?.filters || true,
           onFilter: newColumn?.onFilter || false,
+          filtered: filters.map((item) => item.dataIndex).includes(columnKey),
           filterDropdown: (
             <CreekSearchValueSelector
               onConfirm={() => {
@@ -78,10 +81,7 @@ export const useAutoAddFilterToColumns = <T extends ParamsType, U extends Params
     });
   });
 
-  const columnsWithFilter = useMemo(
-    () => autoAddFilterToColumns(columns), 
-    [columns, autoAddFilterToColumns, filterOpenMap]
-  );
+  const columnsWithFilter = useMemo(() => (autoAddFilterForColumn ? autoAddFilterToColumns(columns) : columns), [columns, filters, autoAddFilterToColumns, filterOpenMap]);
 
   return {
     columnsWithFilter,

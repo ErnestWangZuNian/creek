@@ -25,7 +25,19 @@ const useStyles = createStyles(({ prefixCls }) => {
 
 // 独立的 ProTable 组件
 export const SearchProTable = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>(props: CreekTableProps<T, U, ValueType>) => {
-  const { columns, params, prefixCls = 'ant', className, optionsRender, tableViewRender, pagination, pageFixedBottom = true, pageFixedBottomConfig, ...restProps } = props;
+  const {
+    columns,
+    params,
+    prefixCls = 'ant',
+    autoAddFilterForColumn = true,
+    className,
+    optionsRender,
+    tableViewRender,
+    pagination,
+    pageFixedBottom = true,
+    pageFixedBottomConfig,
+    ...restProps
+  } = props;
 
   const searchContext = useSearchContext();
   const { filters, filtersToParams } = searchContext;
@@ -33,6 +45,7 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
   // 使用自定义 hook 处理列的筛选功能（包含状态管理）
   const { columnsWithFilter } = useAutoAddFilterToColumns({
     columns,
+    autoAddFilterForColumn,
   });
 
   const { styles } = useStyles();
