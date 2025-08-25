@@ -2,8 +2,8 @@ import { ParamsType } from '@ant-design/pro-components';
 import { Button, Checkbox, DatePicker, Input, InputNumber, Radio, Select, Space, Switch, TimePicker } from 'antd';
 import { createStyles } from 'antd-style';
 import _ from 'lodash';
-
 import { useEffect, useMemo } from 'react';
+
 import { useSearchContext } from './CreekSearchContext';
 
 const { RangePicker } = DatePicker;
@@ -33,7 +33,6 @@ const ComponentRenderer = ({ column, value, onChange, className }: ComponentRend
 
     switch (config.componentType) {
       case 'radio':
-        // 如果valueType是switch，使用RadioButton样式
         const radioOptions = options.map((option) => ({
           ...option,
         }));
@@ -41,40 +40,27 @@ const ComponentRenderer = ({ column, value, onChange, className }: ComponentRend
         return <Radio.Group {...mergedProps} className={className} value={value} onChange={(e) => onChange(e.target.value)} options={radioOptions} />;
 
       case 'checkbox':
-        // 为checkbox添加"全部"选项
-        const allOption = { label: '全部', value: '__ALL__' };
-        const checkboxOptions = [allOption, ...options];
+        const currentValue = value || [];
+        const allValues = options.map((opt) => opt.value);
+        const checkAll = allValues.length === currentValue.length && allValues.length > 0;
+        const indeterminate = currentValue.length > 0 && currentValue.length < allValues.length;
 
         const handleCheckboxChange = (checkedValues: any[]) => {
-          const clickedAll = checkedValues.includes('__ALL__');
-         
-          const prevAllSelected = (value || []).length === options.length;
-
-          if (clickedAll) {
-            // 用户点击了“全部”
-            if (prevAllSelected) {
-              // 如果之前是全选，则取消全选
-              onChange([]);
-            } else {
-              // 否则全选
-              onChange(options.map((opt) => opt.value));
-            }
-          } else {
-            // 用户点击了具体选项
-            const filtered = checkedValues.filter((v) => v !== '__ALL__');
-            onChange(filtered);
-          }
+          onChange(checkedValues);
         };
 
-        const displayValue = (() => {
-          const currentValue = value || [];
-          const allValues = options.map((opt) => opt.value);
-          const isAllSelected = allValues.length > 0 && allValues.every((v) => currentValue.includes(v));
+        const onCheckAllChange = (e: any) => {
+          onChange(e.target.checked ? allValues : []);
+        };
 
-          return isAllSelected ? ['__ALL__', ...currentValue] : currentValue;
-        })();
-
-        return <Checkbox.Group {...mergedProps} className={className} value={displayValue} onChange={handleCheckboxChange} options={checkboxOptions} />;
+        return (
+          <div className={className}>
+            <Checkbox indeterminate={indeterminate} onChange={onCheckAllChange} checked={checkAll} style={{ marginBottom: 4 }}>
+              全部
+            </Checkbox>
+            <Checkbox.Group {...mergedProps} value={currentValue} onChange={handleCheckboxChange} options={options} />
+          </div>
+        );
 
       case 'select':
       default:
@@ -181,6 +167,7 @@ const useStyles = createStyles(({ token, prefixCls }) => {
 
   // 公共选项样式
   const optionBase = {
+    width: '100%',
     padding: 8,
     borderRadius: 2,
     marginBottom: 4,
