@@ -23,7 +23,7 @@ interface UseViewportHeightOptions {
 }
 
 export const useViewportHeight = (options: UseViewportHeightOptions = {}) => {
-  const { bottomOffset = 0, topOffset, margin = 0, minHeight = 0, maxHeight, debug = false, debounceDelay = 16, deps = [], isObserverParent } = options;
+  const { bottomOffset = 0, topOffset, margin = 0, minHeight = 0, maxHeight, debug = false, debounceDelay = 200, deps = [], isObserverParent } = options;
 
   const [viewPortHeight, setHeight] = useState<number | undefined>(undefined);
   let containerRef = useRef<HTMLDivElement| null>(null);
@@ -140,6 +140,8 @@ export const useViewportHeight = (options: UseViewportHeightOptions = {}) => {
       setupObservers();
     }
   }, [containerRef.current])
+
+  console.log(viewPortHeight, 'viewPortHeight');
 
   return {
     /** 容器引用，需要绑定到目标元素的容器 */

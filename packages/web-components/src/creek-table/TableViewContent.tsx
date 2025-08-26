@@ -22,10 +22,12 @@ export const TableViewContent = <T extends ParamsType, U extends ParamsType, Val
     const antdPaginationElement = containerRef.current?.querySelector(`.${prefixCls}-pagination`);
     if (antdTableContentElement) {
       const paginationHeight = antdPaginationElement?.clientHeight || 0;
-      const bottomFix = pageFixedBottomConfig?.bottomFix || 8;
-      const tableContentHeight = mainHeight - paginationHeight - 16 - bottomFix;
+      const bottomFix = pageFixedBottomConfig?.bottomFix || 20;
+      const tableContentHeight = mainHeight - paginationHeight - 32 - bottomFix;
       antdTableContentElement.setAttribute('style', `height: ${tableContentHeight}px`);
     }
+  }, {
+    wait: 16
   });
 
   useDeepCompareEffect(() => {

@@ -121,12 +121,14 @@ const HomePage = () => {
             dataIndex: 'height',
             title: '身高',
             valueType: 'radio',
+            search: false,
             valueEnum: heightEnum,
           },
           {
             dataIndex: 'weight',
             title: '体重',
             valueType: 'checkbox',
+            search: false,
             valueEnum: {
               '1.75': '1.75米',
               '1.80': '1.80米',

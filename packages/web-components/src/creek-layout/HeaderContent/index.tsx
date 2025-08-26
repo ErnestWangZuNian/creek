@@ -5,9 +5,6 @@ import { FullScreen } from './FullScreen';
 import { UserInfo } from './UserInfo';
 
 const useStyles = createStyles(({}) => ({
-  headerContentContainer: {
-    color: '#fff',
-  },
   dividerContainer: {
     backgroundColor: '#9b9999',
   },
@@ -16,7 +13,7 @@ const useStyles = createStyles(({}) => ({
 export const HeaderContent = () => {
   const { styles } = useStyles();
   return (
-    <Flex justify="space-between" className={styles.headerContentContainer}>
+    <Flex justify="space-between">
       <span />
       <Space split={<Divider type="vertical" className={styles.dividerContainer} />}>
         <FullScreen />

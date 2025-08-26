@@ -19,7 +19,7 @@ export const useAutoAddFilterToColumns = <T extends ParamsType, U extends Params
   columns,
   autoAddFilterForColumn,
 }: UseAutoAddFilterToColumnsProps<T, U, ValueType>): UseAutoAddFilterToColumnsReturn<T, U, ValueType> => {
-  const { hasOptions, setSelectedColumn, filters } = useSearchContext();
+  const { hasOptions, setSelectedColumn, filters, filterOptions } = useSearchContext();
 
   // 管理每列的下拉框状态
   const [filterOpenMap, setFilterOpenMap] = useSafeState<Record<string, boolean>>({});
@@ -48,7 +48,7 @@ export const useAutoAddFilterToColumns = <T extends ParamsType, U extends Params
   // 自动为列添加筛选功能
   const autoAddFilterToColumns = useMemoizedFn((columns: CreekTableProps<T, U, ValueType>['columns'] = []) => {
     return columns.map((column) => {
-      if (hasOptions(column)) {
+      if (hasOptions(column) && filterOptions?.map(item => item.dataIndex).includes(column.dataIndex as string)) {
         const newColumn = { ...column };
         const columnKey = getColumnKey(newColumn as ProColumnType<T, U>);
 

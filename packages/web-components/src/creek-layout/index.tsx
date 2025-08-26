@@ -64,13 +64,13 @@ export const CreekLayout = (props: LayoutProps) => {
       }}
       token={{
         header: {
-          colorBgHeader: "#2c2c2c",
-          colorHeaderTitle: "#fff",
-          colorTextMenuSelected: "#fff",
+          colorBgHeader: "#fff",
+          colorHeaderTitle: "rgba(0, 0, 0, 0.80);",
+          colorTextMenuSelected: token.colorPrimary,
           heightLayoutHeader: 48,
         },
         sider: {
-          colorMenuBackground: "#fff",
+          colorMenuBackground: "#f7f8fa",
           colorBgMenuItemSelected: "transparent",
           colorTextMenuActive: token.colorPrimary,
           colorTextMenuSelected: token.colorPrimary,
@@ -78,8 +78,9 @@ export const CreekLayout = (props: LayoutProps) => {
           colorTextMenu: "#333",
         },
         pageContainer: {
-          paddingBlockPageContainerContent: 0,
-          paddingInlinePageContainerContent: 0,
+          paddingBlockPageContainerContent: 20,
+          paddingInlinePageContainerContent: 20,
+          colorBgPageContainer: 'linear-gradient(180deg, #F7F9FF 0%, #FFF 45.59%);'
         },
       }}
       fixSiderbar
