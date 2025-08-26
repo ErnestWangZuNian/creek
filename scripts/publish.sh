@@ -111,6 +111,25 @@ increment_version() {
 # 检查包是否有变更
 has_package_changed() {
     local package_path=$1
+    local package_name=$(basename "$package_path")
+    
+    # 检查是否有未提交的变更
+    local unstaged_changes=$(git diff --name-only -- "$package_path/")
+    local staged_changes=$(git diff --cached --name-only -- "$package_path/")
+    
+    if [ -n "$unstaged_changes" ] || [ -n "$staged_changes" ]; then
+        log_info "检测到 $package_name 包有未提交的变更"
+        return 0
+    fi
+    
+    # 检查最近的提交
+    local recent_changes=$(git log --oneline -10 --name-only -- "$package_path/" | head -20)
+    if [ -n "$recent_changes" ]; then
+        log_info "检测到 $package_name 包最近有提交变更"
+        return 0
+    fi
+    
+    # 原来的标签检测逻辑
     local last_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
     
     if [ -z "$last_tag" ]; then
@@ -118,7 +137,6 @@ has_package_changed() {
         return 0
     fi
     
-    # 检查自上次标签以来是否有文件变更
     local changed_files=$(git diff --name-only "$last_tag" HEAD -- "$package_path/")
     
     if [ -n "$changed_files" ]; then
