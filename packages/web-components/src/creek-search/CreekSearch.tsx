@@ -48,6 +48,7 @@ export const CreekSearch = <T extends ParamsType>(props: CreekSearchProps<T>) =>
     justify,
   });
 
+  
   return (
     <CreekSearchProvider columns={columns} onSubmit={onSubmit}>
       <div className={classnames(styles.creekSearchContainer, justify === 'end' && styles.creekSearchContainerEnd)}>
