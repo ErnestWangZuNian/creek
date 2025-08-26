@@ -51,11 +51,12 @@ check_dependencies() {
 # 获取包的当前版本
 get_package_version() {
     local package_path=$1
+    local abs_path=$(cd "$package_path" && pwd)
     if [ -f "$package_path/package.json" ]; then
         if command -v jq &> /dev/null; then
             jq -r '.version' "$package_path/package.json"
         else
-            node -p "require('$package_path/package.json').version"
+            node -p "require('$abs_path/package.json').version"
         fi
     else
         echo "0.0.0"
@@ -65,11 +66,12 @@ get_package_version() {
 # 获取包名
 get_package_name() {
     local package_path=$1
+    local abs_path=$(cd "$package_path" && pwd)
     if [ -f "$package_path/package.json" ]; then
         if command -v jq &> /dev/null; then
             jq -r '.name' "$package_path/package.json"
         else
-            node -p "require('$package_path/package.json').name"
+            node -p "require('$abs_path/package.json').name"
         fi
     fi
 }
@@ -132,6 +134,7 @@ has_package_changed() {
 update_package_version() {
     local package_path=$1
     local new_version=$2
+    local abs_path=$(cd "$package_path" && pwd)
     
     if command -v jq &> /dev/null; then
         jq ".version = \"$new_version\"" "$package_path/package.json" > "$package_path/package.json.tmp"
@@ -139,9 +142,9 @@ update_package_version() {
     else
         node -e "
             const fs = require('fs');
-            const pkg = require('$package_path/package.json');
+            const pkg = require('$abs_path/package.json');
             pkg.version = '$new_version';
-            fs.writeFileSync('$package_path/package.json', JSON.stringify(pkg, null, 2) + '\\n');
+            fs.writeFileSync('$abs_path/package.json', JSON.stringify(pkg, null, 2) + '\\n');
         "
     fi
 }
