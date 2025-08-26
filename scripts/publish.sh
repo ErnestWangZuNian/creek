@@ -200,12 +200,6 @@ publish_package() {
     log_info "当前版本: $current_version"
     log_info "NPM 版本: $npm_version"
     
-    # 检查是否有变更
-    if ! has_package_changed "$package_path"; then
-        log_warning "包 $package_name 没有变更，跳过发布"
-        return 0
-    fi
-    
     # 确定新版本
     local new_version
     if [ "$current_version" = "$npm_version" ]; then
