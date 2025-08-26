@@ -287,14 +287,31 @@ main() {
             exit 1
         fi
     else
-        # 发布所有包
+        # 只发布有变更的包
+        log_info "检查哪些包有变更..."
+        local changed_packages=()
+        
         for package_path in "$packages_dir"/*; do
             if [ -d "$package_path" ] && [ -f "$package_path/package.json" ]; then
-                if publish_package "$package_path" "$increment_type"; then
-                    ((published_count++))
-                else
-                    ((failed_count++))
+                if has_package_changed "$package_path"; then
+                    changed_packages+=("$package_path")
+                    log_info "检测到变更: $(basename "$package_path")"
                 fi
+            fi
+        done
+        
+        if [ ${#changed_packages[@]} -eq 0 ]; then
+            log_info "没有检测到任何包的变更，跳过发布"
+            exit 0
+        fi
+        
+        log_info "将发布 ${#changed_packages[@]} 个有变更的包"
+        
+        for package_path in "${changed_packages[@]}"; do
+            if publish_package "$package_path" "$increment_type"; then
+                ((published_count++))
+            else
+                ((failed_count++))
             fi
         done
     fi
