@@ -188,6 +188,8 @@ build_package() {
     cd - > /dev/null
 }
 
+# 同时简化 `publish_package` 函数，移除重复的变更检测：
+```bash
 # 发布单个包
 publish_package() {
     local package_path=$1
@@ -242,6 +244,7 @@ publish_package() {
         return 1
     fi
 }
+```
 
 # 主函数
 main() {
