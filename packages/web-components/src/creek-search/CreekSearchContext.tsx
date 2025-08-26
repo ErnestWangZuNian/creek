@@ -276,7 +276,7 @@ export const CreekSearchProvider = <T extends ParamsType, U extends ParamsType, 
   const inputRef = useRef<any>(null);
 
   // 筛选条件配置
-  const filterOptions = columns?.filter((item) => item.search !== false || item.hideInSearch !== false);
+  const filterOptions = columns?.filter((item) => item.search !== false || item.hideInSearch !== true);
 
   // 获取valueType配置
   const getValueTypeConfig = (valueType?: ProColumnType<T, U>['valueType']) => {

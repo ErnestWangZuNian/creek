@@ -8,7 +8,12 @@
     "test": "turbo test",
     "lint": "turbo lint",
     "clear": "rimraf apps/*/src/.umi*  && rimraf apps*/*/dist &&  rimraf packages*/*/dist &&  rimraf apps/*/.turbo && rimraf packages/*/node_modules && rimraf apps/*/node_modules && rimraf node_modules",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "publish:patch": "chmod +x ./scripts/publish.sh &&  ./scripts/publish.sh patch",
+    "publish:minor": "chmod +x ./scripts/publish.sh &&  ./scripts/publish.sh  minor", 
+    "publish:major": "chmod +x ./scripts/publish.sh &&  ./scripts/publish.sh major",
+    "publish:check": "node scripts/check-changes.js",
+    "publish:dry-run": "node scripts/check-changes.js --json"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.20",
