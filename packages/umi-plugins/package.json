@@ -1,5 +1,5 @@
 {
-  "name": "@creek/umi-plugins",
+  "name": "@creekjs/umi-plugins",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",

@@ -1,6 +1,6 @@
 import { IApi } from "@umijs/max";
 
-const openApi = require('@creek/openapi');
+const openApi = require('@creekjs/openapi');
 
 export default (api: IApi) => {
     api.describe({

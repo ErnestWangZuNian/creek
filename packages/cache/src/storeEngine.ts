@@ -9,7 +9,7 @@ function generateKeyByNamespace(key: string, namespace?: string) {
         if (legalNamespaces.test(namespace)) {
             namespacePrefix = `${CREEK_STORE}_${namespace}`;
         } else {
-            throw new Error('@creek/store namespaces can only have alphanumerics + underscores and dashes');
+            throw new Error('@creekjs/store namespaces can only have alphanumerics + underscores and dashes');
         }
     }
     const _namespacePrefix = toUpperCase(namespacePrefix);

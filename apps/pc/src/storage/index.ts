@@ -1,5 +1,5 @@
 
-import { createStore } from '@creek/cache';
+import { createStore } from '@creekjs/cache';
 
 export const userStore = createStore<string>("sessionStorage", {
     namespace: 'user',

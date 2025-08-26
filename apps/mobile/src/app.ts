@@ -2,8 +2,8 @@ import { Toast } from '@antmjs/vantui';
 import { useDidHide, useDidShow } from '@tarojs/taro';
 import { useEffect } from 'react';
 
-import { DuplicatePlugin, LoadingPlugin, request } from '@creek/request';
-import { taroAdapter } from "@creek/taro-adapter";
+import { DuplicatePlugin, LoadingPlugin, request } from '@creekjs/request';
+import { taroAdapter } from "@creekjs/taro-adapter";
 
 // 全局样式
 import './app.less';

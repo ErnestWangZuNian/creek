@@ -79,7 +79,7 @@ const getIconsInfoForRoutes = (api: IApi) => {
 export default (api: IApi) => {
   const TEMPLATE_DIR = join(__dirname, 'template');
 
-  const creekWebComponentsPath = winPath(getPkgPath(api, '@creek/web-components'));
+  const creekWebComponentsPath = winPath(getPkgPath(api, '@creekjs/web-components'));
   const creekIconPath = require.resolve(`${creekWebComponentsPath}/dist/creek-icon`);
 
   api.describe({

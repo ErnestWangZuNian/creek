@@ -1,5 +1,5 @@
 {
-  "extends": "@creek/lint/dist/tsconfig.base.json",
+  "extends": "@creekjs/lint/dist/tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",

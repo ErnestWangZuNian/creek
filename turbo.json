@@ -11,13 +11,13 @@
     "base:build": {
       "cache": false,
       "dependsOn": [
-        "@creek/lint#father:build",
-        "@creek/cache#father:build",
-        "@creek/taro-adapter#father:build",
-        "@creek/openapi#father:build",
-        "@creek/request#father:build",
-        "@creek/web-components#father:build",
-        "@creek/umi-plugins#father:build"
+        "@creekjs/lint#father:build",
+        "@creekjs/cache#father:build",
+        "@creekjs/taro-adapter#father:build",
+        "@creekjs/openapi#father:build",
+        "@creekjs/request#father:build",
+        "@creekjs/web-components#father:build",
+        "@creekjs/umi-plugins#father:build"
       ]
     },
     "father:dev": {
@@ -31,6 +31,11 @@
       "cache": false,
       "persistent": true,
       "dependsOn": [
+        "base:build"
+      ]
+    },
+    "build": {
+       "dependsOn": [
         "base:build"
       ]
     }

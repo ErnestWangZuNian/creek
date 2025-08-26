@@ -12,7 +12,7 @@ export default defineConfig({
   },
   openApi: {
     schemaPath: 'https://petstore.swagger.io/v2/swagger.json',
-    requestLibPath: "import { request } from '@creek/request';",
+    requestLibPath: "import { request } from '@creekjs/request';",
   },
   routes: [
     {
@@ -33,7 +33,7 @@ export default defineConfig({
     },
   ],
   mfsu: false,
-  plugins: [require.resolve('@creek/umi-plugins/dist/creek-layout'), require.resolve('@creek/umi-plugins/dist/open-api')],
+  plugins: [require.resolve('@creekjs/umi-plugins/dist/creek-layout'), require.resolve('@creekjs/umi-plugins/dist/open-api')],
   npmClient: 'pnpm',
   proxy: {
     '/v2/': {

@@ -1,3 +1,3 @@
 module.exports = {
-  extends: require.resolve('@creek/lint/dist/stylelint'),
+  extends: require.resolve('@creekjs/lint/dist/stylelint'),
 };

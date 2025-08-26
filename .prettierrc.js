@@ -1,4 +1,4 @@
-const creekPrettierConfig = require('@creek/lint/dist/prettier');
+const creekPrettierConfig = require('@creekjs/lint/dist/prettier');
 
 module.exports = {
   ...creekPrettierConfig

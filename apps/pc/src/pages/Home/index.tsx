@@ -1,4 +1,4 @@
-import { CreekIcon, CreekTable } from '@creek/web-components';
+import { CreekIcon, CreekTable } from '@creekjs/web-components';
 import { Button } from 'antd';
 
 enum heightEnum {

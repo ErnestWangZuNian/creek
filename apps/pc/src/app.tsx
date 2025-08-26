@@ -2,8 +2,8 @@
 import { RunTimeLayoutConfig } from '@umijs/max';
 import { ConfigProvider } from 'antd';
 
-import { DuplicatePlugin, LoadingPlugin, request } from '@creek/request';
-import { Loading } from '@creek/web-components';
+import { DuplicatePlugin, LoadingPlugin, request } from '@creekjs/request';
+import { Loading } from '@creekjs/web-components';
 
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
 // 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate

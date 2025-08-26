@@ -1,4 +1,4 @@
-import { request } from '@creek/request';
+import { request } from '@creekjs/request';
 
 
 export const getStoreService = () => {

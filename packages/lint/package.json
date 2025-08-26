@@ -1,7 +1,7 @@
 {
-  "name": "@creek/lint",
+  "name": "@creekjs/lint",
   "version": "0.0.1",
-  "description": "@creek/lint",
+  "description": "@creekjs/lint",
   "files": [
     "eslint",
     "stylint",
