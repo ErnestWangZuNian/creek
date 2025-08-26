@@ -122,12 +122,12 @@ has_package_changed() {
         return 0
     fi
     
-    # 检查最近的提交
-    local recent_changes=$(git log --oneline -10 --name-only -- "$package_path/" | head -20)
-    if [ -n "$recent_changes" ]; then
-        log_info "检测到 $package_name 包最近有提交变更"
-        return 0
-    fi
+    # 注释掉最近提交检测
+    # local recent_changes=$(git log --oneline -10 --name-only -- "$package_path/" | head -20)
+    # if [ -n "$recent_changes" ]; then
+    #     log_info "检测到 $package_name 包最近有提交变更"
+    #     return 0
+    # fi
     
     # 原来的标签检测逻辑
     local last_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
