@@ -3,7 +3,6 @@ import { ParamsType } from '@ant-design/pro-components';
 import { useDebounceFn, useDeepCompareEffect } from 'ahooks';
 
 import { useViewportHeight } from '../creek-hooks';
-import { CreekFilterDisplay } from '../creek-search';
 import { CreekTableProps } from './type';
 
 export type CreekTableViewRender<T extends ParamsType, U extends ParamsType, ValueType = 'text'> = CreekTableProps<T, U, ValueType>['tableViewRender'];
@@ -39,7 +38,6 @@ export const TableViewContent = <T extends ParamsType, U extends ParamsType, Val
   // 默认渲染逻辑
   return (
     <>
-      <CreekFilterDisplay />
       <div ref={containerRef}>{children}</div>
     </>
   );

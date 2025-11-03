@@ -2,11 +2,9 @@ import { ParamsType, ProTable } from '@ant-design/pro-components';
 import { createStyles } from 'antd-style';
 import classnames from 'classnames';
 import _ from 'lodash';
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 
-import { CreekFilterDisplay, CreekSearchInput, useSearchContext } from '../creek-search';
-
-import { useAdaptiveToolBar, useAutoAddFilterToColumns } from './hooks';
+import { useAdaptiveToolBar } from './hooks';
 import { TableOptionRender } from './TableOptionRender';
 import { TableViewContent } from './TableViewContent';
 import { toolBarRender } from './toolBarRender';
@@ -40,16 +38,7 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
     ...restProps
   } = props;
 
-  const searchContext = useSearchContext();
-  const { filters, filtersToParams } = searchContext;
-
   const proTableRef = useRef(null);
-
-  // 使用自定义 hook 处理列的筛选功能（包含状态管理）
-  const { columnsWithFilter } = useAutoAddFilterToColumns({
-    columns,
-    autoAddFilterForColumn,
-  });
 
   // 使用自定义 hook 处理工具栏的自适应功能
   const { shouldCollapse } = useAdaptiveToolBar({
@@ -59,24 +48,14 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
 
   const { styles } = useStyles();
 
-  // 获取搜素的参数
-  const finalParams = useMemo(() => {
-    let result = filtersToParams(filters) as U;
-    return result;
-  }, [filters]);
-
   return (
     <div ref={proTableRef}>
       <ProTable<T, U, ValueType>
         {...restProps}
         className={classnames(styles['creek-table-container'], className)}
-        columns={columnsWithFilter}
+        columns={columns}
         toolbar={{
           ...restProps.toolbar,
-        }}
-        params={{
-          ...params,
-          ...finalParams,
         }}
         search={false}
         pagination={{
@@ -92,17 +71,12 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
               : [];
         }}
         toolBarRender={() => {
-          return toolBarRender({ shouldCollapse, restProps  });
+          return toolBarRender({ shouldCollapse, restProps });
         }}
-        // 在 headerTitle 中只放搜索输入框
-        headerTitle={<CreekSearchInput />}
         // 在表格内容区上方显示筛选条件
         tableViewRender={(defaultProps, defaultDom) => {
           return _.isFunction(tableViewRender) ? (
-            <>
-              <CreekFilterDisplay />
-              {tableViewRender(defaultProps, defaultDom)}
-            </>
+            <>{tableViewRender(defaultProps, defaultDom)}</>
           ) : (
             <TableViewContent<T, U, ValueType> pageFixedBottom={pageFixedBottom} pageFixedBottomConfig={pageFixedBottomConfig} prefixCls={prefixCls}>
               {defaultDom}
