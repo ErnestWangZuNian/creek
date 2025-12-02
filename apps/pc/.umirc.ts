@@ -6,6 +6,7 @@ export default defineConfig({
   initialState: {},
   request: {},
   model: {},
+  mako: {},
   creekLayout: {
     title: 'creekjs',
     iconFontCNs: ['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js'],

@@ -2,7 +2,7 @@
 import { RunTimeLayoutConfig } from '@umijs/max';
 import { ConfigProvider } from 'antd';
 
-import { DuplicatePlugin, LoadingPlugin, request } from '@creekjs/request';
+import { DuplicatePlugin, LoadingPlugin, request as creekRequest } from '@creekjs/request';
 import { Loading } from '@creekjs/web-components';
 
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
@@ -25,7 +25,7 @@ export const rootContainer = (children: React.ReactNode) => {
   return (
     <ConfigProvider theme={{
       token: {
-        colorPrimary: '#4e43ff',
+        colorPrimary: 'green',
       },
     }}>
      {children}
@@ -33,9 +33,10 @@ export const rootContainer = (children: React.ReactNode) => {
   );
 }
 
-request
-  .createInstance({})
-  .pluginManager.use(
+creekRequest.createInstance({});
+
+creekRequest.pluginManager
+  .use(
     new LoadingPlugin({
       showLoading(config) {
         if (config.openLoading) {
@@ -51,4 +52,4 @@ request
   )
   .use(new DuplicatePlugin());
 
-  
+
