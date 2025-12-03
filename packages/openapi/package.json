@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "father:build": "father build",
-    "father:dev": "father dev"
+    "father:dev": "father dev --no-clean"
   },
   "keywords": [],
   "author": "",

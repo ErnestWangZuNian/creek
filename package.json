@@ -3,8 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "dev": "turbo base:build && concurrently \"turbo dev\" \"turbo father:dev\"",
-    "dev:pc": "turbo dev --filter=pc-demo",
+     "dev": "turbo base:build && concurrently \"turbo dev\" \"turbo father:dev\"",
     "test": "turbo test",
     "lint": "turbo lint",
     "clear": "rimraf apps/*/src/.umi*  && rimraf apps*/*/dist &&  rimraf packages*/*/dist &&  rimraf apps/*/.turbo && rimraf packages/*/node_modules && rimraf apps/*/node_modules && rimraf node_modules",
@@ -21,7 +20,7 @@
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
     "concurrently": "^9.2.0",
-    "father": "^4.6.8",
+    "father": "^4.6.2",
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
     "turbo": "^2.5.6",

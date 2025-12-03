@@ -3,13 +3,14 @@
   "ui": "tui",
   "tasks": {
     "father:build": {
+       "cache": true,
       "outputs": ["dist/**"],
       "inputs": ["src/**", "package.json", "tsconfig.json"],
-      "dependsOn": [
-        "^father:build"
-      ]
+      "dependsOn": ["^father:build"]
     },
+
     "base:build": {
+       "cache": true,
       "dependsOn": [
         "@creekjs/lint#father:build",
         "@creekjs/cache#father:build",
@@ -21,21 +22,17 @@
       ]
     },
     "father:dev": {
-      "cache": true,
+      "cache": false,
       "persistent": true
     },
     "dev": {
-      "cache": true,
+      "cache": false,
       "persistent": true,
-      "dependsOn": [
-        "base:build"
-      ]
+      "dependsOn": ["base:build"]
     },
     "build": {
-       "outputs": ["dist/**"],
-       "dependsOn": [
-        "base:build"
-      ]
+      "outputs": ["dist/**"],
+      "dependsOn": ["base:build"]
     }
   }
 }

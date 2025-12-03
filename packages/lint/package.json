@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "father:build": "father build",
-    "father:dev": "father dev"
+    "father:dev": "father dev --no-clean"
   },
   "repository": {
     "type": "git",
