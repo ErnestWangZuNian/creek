@@ -1,9 +1,10 @@
 // 运行时配置
 import { RunTimeLayoutConfig } from '@umijs/max';
-import { ConfigProvider } from 'antd';
+import { App, ConfigProvider } from 'antd';
+import zhCN from 'antd/locale/zh_CN';
 
 import { DuplicatePlugin, LoadingPlugin, request as creekRequest } from '@creekjs/request';
-import { Loading } from '@creekjs/web-components';
+import { AppProvider, Loading } from '@creekjs/web-components';
 
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
 // 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate
@@ -11,7 +12,7 @@ export async function getInitialState(): Promise<{ name: string }> {
   return { name: '@umijs/max' };
 }
 
-export const layout: RunTimeLayoutConfig = (props) => {
+export const layout: RunTimeLayoutConfig = () => {
   return {
     logo: 'https://img.alicdn.com/tfs/TB1YHEpwUT1gK0jSZFhXXaAtVXa-28-27.svg',
     menu: {
@@ -19,19 +20,24 @@ export const layout: RunTimeLayoutConfig = (props) => {
     },
     iconFontCNs: ['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js'],
   };
-}
+};
 
 export const rootContainer = (children: React.ReactNode) => {
   return (
-    <ConfigProvider theme={{
-      token: {
-        colorPrimary: 'green',
-      },
-    }}>
-     {children}
+    <ConfigProvider
+      locale={zhCN}
+      theme={{
+        token: {
+          colorPrimary: '#00c07f',
+        },
+      }}
+    >
+      <App>
+        <AppProvider>{children}</AppProvider>
+      </App>
     </ConfigProvider>
   );
-}
+};
 
 creekRequest.createInstance({});
 
@@ -51,5 +57,3 @@ creekRequest.pluginManager
     }),
   )
   .use(new DuplicatePlugin());
-
-
