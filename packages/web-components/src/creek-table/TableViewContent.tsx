@@ -11,6 +11,7 @@ export type CreekTableViewRender<T extends ParamsType, U extends ParamsType, Val
 export const TableViewContent = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>(props: CreekTableProps<T, U, ValueType>) => {
   const { prefixCls, pageFixedBottomConfig, pageFixedBottom, children } = props;
 
+
   const { containerRef, viewPortHeight } = useViewportHeight({
     isObserverParent: true,
   });

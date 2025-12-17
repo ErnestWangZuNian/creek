@@ -1,6 +1,6 @@
 import { ProFormText } from '@ant-design/pro-components';
 import { CreekIcon, CreekTable, useApp } from '@creekjs/web-components';
-import { Button, Form } from 'antd';
+import { Button, Form, Typography } from 'antd';
 import { useCallback } from 'react';
 
 enum heightEnum {
@@ -54,11 +54,7 @@ const HomePage = () => {
             <Button type="primary" key="new" onClick={() => openModal()}>
               新建
             </Button>,
-            <Button
-              key="drawer"
-            >
-              打开抽屉
-            </Button>,
+            <Button key="drawer">打开抽屉</Button>,
             <Button type="primary" key="test">
               测试
             </Button>,
@@ -134,6 +130,18 @@ const HomePage = () => {
               '1.80': '1.80米',
               '1.85': '1.85米',
             },
+          },
+          {
+            dataIndex: 'option',
+            title: '操作',
+            valueType: 'option',
+            search: false,
+            render: (_, row) => (
+              <>
+                {row.name === 'user' ? <Typography.Link>编辑</Typography.Link> : null}
+                <Typography.Link>查看详情</Typography.Link>
+              </>
+            ),
           },
         ]}
       />

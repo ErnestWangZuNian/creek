@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import _ from 'lodash';
 import { useRef } from 'react';
 
-import { useAdaptiveToolBar } from './hooks';
+import { useAutoWidthColumns } from './hooks';
 import { TableOptionRender } from './TableOptionRender';
 import { TableViewContent } from './TableViewContent';
 import { toolBarRender } from './toolBarRender';
@@ -38,13 +38,15 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
     ...restProps
   } = props;
 
-  const proTableRef = useRef(null);
+  const proTableRef = useRef<HTMLDivElement>(null);
 
-  // 使用自定义 hook 处理工具栏的自适应功能
-  const { shouldCollapse } = useAdaptiveToolBar({
-    containerRef: proTableRef,
-    prefixCls,
-  });
+  // // 使用自定义 hook 处理工具栏的自适应功能
+  // const { shouldCollapse } = useAdaptiveToolBar({
+  //   containerRef: proTableRef,
+  //   prefixCls,
+  // });
+
+  const { columns: adaptiveColumns, totalWidth } = useAutoWidthColumns(columns, proTableRef);
 
   const { styles } = useStyles();
 
@@ -53,11 +55,14 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
       <ProTable<T, U, ValueType>
         {...restProps}
         className={classnames(styles['creek-table-container'], className)}
-        columns={columns}
+        columns={adaptiveColumns}
+        scroll={{
+          x: totalWidth,
+          ...restProps.scroll,
+        }}
         toolbar={{
           ...restProps.toolbar,
         }}
-        search={false}
         pagination={{
           showTotal: (total) => <span>共 {total} 条</span>,
           showSizeChanger: true,
@@ -71,7 +76,7 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
               : [];
         }}
         toolBarRender={() => {
-          return toolBarRender({ shouldCollapse, restProps });
+          return toolBarRender({  　shouldCollapse: false, restProps });
         }}
         // 在表格内容区上方显示筛选条件
         tableViewRender={(defaultProps, defaultDom) => {

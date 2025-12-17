@@ -1,4 +1,4 @@
-import { useDebounceEffect, useDeepCompareEffect, useEventListener, useMemoizedFn, useMount, useUnmount } from 'ahooks';
+import { useDebounceEffect, useDebounceFn, useDeepCompareEffect, useEventListener, useMemoizedFn, useMount, useUnmount } from 'ahooks';
 import { useRef, useState } from 'react';
 
 interface UseViewportHeightOptions {
@@ -23,12 +23,13 @@ interface UseViewportHeightOptions {
 }
 
 export const useViewportHeight = (options: UseViewportHeightOptions = {}) => {
-  const { bottomOffset = 0, topOffset, margin = 0, minHeight = 0, maxHeight, debug = false, debounceDelay = 200, deps = [], isObserverParent } = options;
+  const { bottomOffset = 0, topOffset, margin = 0, minHeight = 0, maxHeight, debug = false, debounceDelay = 500, deps = [], isObserverParent } = options;
 
   const [viewPortHeight, setHeight] = useState<number | undefined>(undefined);
   let containerRef = useRef<HTMLDivElement| null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const mutationObserverRef = useRef<MutationObserver | null>(null);
+  const lastHeightRef = useRef<number>(window.innerHeight);
 
   // 使用 useMemoizedFn 缓存计算函数，避免不必要的重新创建
   const calculateHeight = useMemoizedFn(() => {
@@ -69,8 +70,38 @@ export const useViewportHeight = (options: UseViewportHeightOptions = {}) => {
     setHeight(availableHeight);
   });
 
+  const { run: debouncedCalculateHeight } = useDebounceFn(
+    () => {
+      calculateHeight();
+    },
+    { wait: debounceDelay },
+  );
+
   // 使用 ahooks 的 useEventListener 监听窗口 resize 事件
-  useEventListener('resize', calculateHeight, { target: () => window });
+  useEventListener(
+    'resize',
+    () => {
+      const currentHeight = window.innerHeight;
+      // 只有高度发生变化时才重新计算
+      if (Math.abs(currentHeight - lastHeightRef.current) > 1) {
+        lastHeightRef.current = currentHeight;
+        // 防抖调用 calculateHeight
+        if (debounceDelay > 0) {
+          // 清除之前的定时器（如果有）
+          // 注意：这里需要一个 ref 来存储 timer，但为了简化，我们依赖 useDebounceEffect 的重新触发
+          // 或者更直接地，我们可以在这里直接调用 debouncedCalculateHeight
+          // 但由于 calculateHeight 本身是同步的，我们可以利用 ahooks 的 run 方法如果它是 useDebounceFn 返回的
+          
+          // 简单起见，我们在这里直接触发一个状态更新或者调用防抖函数
+          // 由于 calculateHeight 被用在多个地方，我们给它包一层 debounce
+          debouncedCalculateHeight();
+        } else {
+          calculateHeight();
+        }
+      }
+    },
+    { target: () => window },
+  );
 
   // 使用 useDebounceEffect 处理依赖项变化时的防抖计算
   useDebounceEffect(
@@ -140,8 +171,6 @@ export const useViewportHeight = (options: UseViewportHeightOptions = {}) => {
       setupObservers();
     }
   }, [containerRef.current])
-
-  console.log(viewPortHeight, 'viewPortHeight');
 
   return {
     /** 容器引用，需要绑定到目标元素的容器 */
