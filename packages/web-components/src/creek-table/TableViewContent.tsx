@@ -11,24 +11,32 @@ export type CreekTableViewRender<T extends ParamsType, U extends ParamsType, Val
 export const TableViewContent = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>(props: CreekTableProps<T, U, ValueType>) => {
   const { prefixCls, pageFixedBottomConfig, pageFixedBottom, children } = props;
 
-
   const { containerRef, viewPortHeight } = useViewportHeight({
     isObserverParent: true,
   });
 
   // 设置antd内容区的高度，使得分页永远在底部
-  const { run: setAntdTableContentHeight } = useDebounceFn((mainHeight: number) => {
-    const antdTableContentElement = containerRef.current?.querySelector(`.${prefixCls}-table`);
-    const antdPaginationElement = containerRef.current?.querySelector(`.${prefixCls}-pagination`);
-    if (antdTableContentElement) {
-      const paginationHeight = antdPaginationElement?.clientHeight || 0;
-      const bottomFix = pageFixedBottomConfig?.bottomFix || 20;
-      const tableContentHeight = mainHeight - paginationHeight - 32 - bottomFix;
-      antdTableContentElement.setAttribute('style', `height: ${tableContentHeight}px`);
-    }
-  }, {
-    wait: 16
-  });
+  const { run: setAntdTableContentHeight } = useDebounceFn(
+    (mainHeight: number) => {
+      const antdTableContentElement = containerRef.current?.querySelector(`.${prefixCls}-table`);
+      const antdPaginationElement = containerRef.current?.querySelector(`.${prefixCls}-pagination`);
+      if (antdTableContentElement) {
+        const paginationHeight = antdPaginationElement?.clientHeight || 0;
+        const bottomFix = pageFixedBottomConfig?.bottomFix || 20;
+        const parentElement = containerRef.current?.parentElement;
+        let parentPaddingBottom = 0;
+        if (parentElement) {
+          const style = window.getComputedStyle(parentElement);
+          parentPaddingBottom = parseFloat(style.paddingBottom) || 0;
+        }
+        const tableContentHeight = mainHeight - paginationHeight - parentPaddingBottom - bottomFix - parentPaddingBottom;
+        antdTableContentElement.setAttribute('style', `height: ${tableContentHeight}px`);
+      }
+    },
+    {
+      wait: 16,
+    },
+  );
 
   useDeepCompareEffect(() => {
     if (pageFixedBottom) {
