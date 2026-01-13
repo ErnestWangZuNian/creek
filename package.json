@@ -3,33 +3,16 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-     "dev": "turbo base:build && concurrently \"turbo dev\" \"turbo father:dev\"",
-    "test": "turbo test",
-    "lint": "turbo lint",
     "clear": "rimraf apps/*/src/.umi*  && rimraf apps*/*/dist &&  rimraf packages*/*/dist &&  rimraf apps/*/.turbo && rimraf packages/*/node_modules && rimraf apps/*/node_modules && rimraf node_modules",
+    "dev": "turbo base:build && concurrently \"turbo dev\" \"turbo father:dev\"",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "publish:patch": "chmod +x ./scripts/publish.sh &&  ./scripts/publish.sh patch",
-    "publish:minor": "chmod +x ./scripts/publish.sh &&  ./scripts/publish.sh  minor", 
-    "publish:major": "chmod +x ./scripts/publish.sh &&  ./scripts/publish.sh major",
+    "lint": "turbo lint",
     "publish:check": "node scripts/check-changes.js",
-    "publish:dry-run": "node scripts/check-changes.js --json"
-  },
-  "devDependencies": {
-    "@types/lodash": "^4.17.20",
-    "@types/node": "^22.17.2",
-    "@types/react": "^18.3.23",
-    "@types/react-dom": "^18.3.7",
-    "concurrently": "^9.2.0",
-    "father": "^4.6.2",
-    "prettier": "^3.6.2",
-    "rimraf": "^6.0.1",
-    "turbo": "^2.5.6",
-    "typescript": "^5.9.2",
-    "wait-on": "^8.0.4"
-  },
-  "packageManager": "pnpm@8.15.6",
-  "engines": {
-    "node": ">=18"
+    "publish:dry-run": "node scripts/check-changes.js --json",
+    "publish:major": "chmod +x ./scripts/publish.sh &&  ./scripts/publish.sh major",
+    "publish:minor": "chmod +x ./scripts/publish.sh &&  ./scripts/publish.sh  minor",
+    "publish:patch": "chmod +x ./scripts/publish.sh &&  ./scripts/publish.sh patch",
+    "test": "turbo test"
   },
   "dependencies": {
     "@ant-design/pro-components": "^2.8.10",
@@ -47,5 +30,22 @@
     "dayjs": "^1.11.13",
     "lodash": "^4.17.21",
     "lru-cache": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.20",
+    "@types/node": "^22.17.2",
+    "@types/react": "^18.3.23",
+    "@types/react-dom": "^18.3.7",
+    "concurrently": "^9.2.0",
+    "father": "^4.6.2",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
+    "turbo": "^2.5.6",
+    "typescript": "^5.9.2",
+    "wait-on": "^8.0.4"
+  },
+  "packageManager": "pnpm@8.15.6",
+  "engines": {
+    "node": ">=18"
   }
 }

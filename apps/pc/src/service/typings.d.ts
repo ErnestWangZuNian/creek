@@ -1,111 +1,122 @@
 declare namespace API {
-  type ApiResponse = {
-    code?: number;
-    type?: string;
-    message?: string;
+  type deletePurchaseItemParams = {
+    itemId: number;
   };
 
-  type Category = {
+  type getAllPurchasesWithItemsParams = {
+    storeId: number;
+  };
+
+  type getByStoreParams = {
+    storeId: number;
+  };
+
+  type getPurchaseItemsParams = {
+    purchaseId: number;
+  };
+
+  type getPurchaseParams = {
+    purchaseId: number;
+  };
+
+  type importIngredientsExcelParams = {
+    storeId: number;
+  };
+
+  type importIngredientsTxtParams = {
+    storeId: number;
+  };
+
+  type Ingredients = {
     id?: number;
     name?: string;
+    categoryId?: number;
+    storeId?: number;
+    unit?: string;
+    createdAt?: string;
+    updatedAt?: string;
   };
 
-  type deleteOrderParams = {
-    /** ID of the order that needs to be deleted */
-    orderId: number;
-  };
-
-  type deletePetParams = {
-    /** Pet id to delete */
-    petId: number;
-  };
-
-  type deleteUserParams = {
-    /** The name that needs to be deleted */
-    username: string;
-  };
-
-  type findPetsByStatusParams = {
-    /** Status values that need to be considered for filter */
-    status: ('available' | 'pending' | 'sold')[];
-  };
-
-  type findPetsByTagsParams = {
-    /** Tags to filter by */
-    tags: string[];
-  };
-
-  type getOrderByIdParams = {
-    /** ID of pet that needs to be fetched */
-    orderId: number;
-  };
-
-  type getPetByIdParams = {
-    /** ID of pet to return */
-    petId: number;
-  };
-
-  type getUserByNameParams = {
-    /** The name that needs to be fetched. Use user1 for testing.  */
-    username: string;
-  };
-
-  type loginUserParams = {
-    /** The user name for login */
-    username: string;
-    /** The password for login in clear text */
-    password: string;
-  };
-
-  type Order = {
-    id?: number;
-    petId?: number;
+  type PurchaseItemDTO = {
+    ingredientName?: string;
     quantity?: number;
-    shipDate?: string;
-    /** Order Status */
-    status?: 'placed' | 'approved' | 'delivered';
-    complete?: boolean;
+    unit?: string;
+    urgent?: boolean;
   };
 
-  type Pet = {
+  type PurchaseItems = {
     id?: number;
-    category?: Category;
-    name: string;
-    photoUrls: string[];
-    tags?: Tag[];
-    /** pet status in the store */
-    status?: 'available' | 'pending' | 'sold';
+    purchasedId?: number;
+    ingredientId?: number;
+    ingredientName?: string;
+    quantity?: number;
+    unit?: string;
+    urgent?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
   };
 
-  type Tag = {
+  type Purchases = {
     id?: number;
+    storeId?: number;
+    createdAt?: string;
+    expiredAt?: string;
+    status?: string;
+  };
+
+  type ResultListIngredients = {
+    code?: number;
+    message?: string;
+    data?: Ingredients[];
+  };
+
+  type ResultListPurchaseItems = {
+    code?: number;
+    message?: string;
+    data?: PurchaseItems[];
+  };
+
+  type ResultListStore = {
+    code?: number;
+    message?: string;
+    data?: Store[];
+  };
+
+  type ResultMapStringObject = {
+    code?: number;
+    message?: string;
+    data?: Record;
+  };
+
+  type ResultPurchases = {
+    code?: number;
+    message?: string;
+    data?: Purchases;
+  };
+
+  type ResultVoid = {
+    code?: number;
+    message?: string;
+    data?: Record;
+  };
+
+  type searchIngredientsParams = {
+    storeId: number;
     name?: string;
   };
 
-  type updatePetWithFormParams = {
-    /** ID of pet that needs to be updated */
-    petId: number;
-  };
-
-  type updateUserParams = {
-    /** name that need to be updated */
-    username: string;
-  };
-
-  type uploadFileParams = {
-    /** ID of pet to update */
-    petId: number;
-  };
-
-  type User = {
+  type Store = {
     id?: number;
-    username?: string;
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    password?: string;
-    phone?: string;
-    /** User Status */
-    userStatus?: number;
+    storeName?: string;
+    createTime?: string;
+    updateTime?: string;
+  };
+
+  type submitParams = {
+    storeId: number;
+  };
+
+  type updatePurchaseItemParams = {
+    purchaseId: number;
   };
 }
