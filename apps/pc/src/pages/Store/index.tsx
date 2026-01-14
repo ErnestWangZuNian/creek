@@ -5,20 +5,21 @@ import { useCallback } from 'react';
 
 import service from '@/service';
 
-
 const HomePage = () => {
   const [form] = Form.useForm();
 
-  const { drawer } = useApp();
+  const { modal } = useApp();
 
   const openModal = useCallback(() => {
-    drawer.openForm({
+    modal.openForm({
       form,
-      drawerProps: {
-        title: '新建用户',
+      modalProps: {
+        width: 400,
+        title: '新增店铺',
       },
       onFinish: async (values) => {
         console.log('提交的值:', values);
+        await service.storeController.createStore(values);
         return true;
       },
       content: (
@@ -31,15 +32,15 @@ const HomePage = () => {
             ]}
             required
             width="md"
-            name="name"
-            label="签约客户名称"
+            name="storeName"
+            label="店铺名称"
             tooltip="最长为 24 位"
-            placeholder="请输入名称"
+            placeholder="请输入店铺名称"
           />
         </>
       ),
     });
-  }, [form, drawer]);
+  }, [form, modal]);
 
   return (
     <>
@@ -52,33 +53,24 @@ const HomePage = () => {
         toolBarRender={() => {
           return [
             <Button type="primary" key="new" onClick={() => openModal()}>
-              新建
-            </Button>,
-            <Button key="drawer">打开抽屉</Button>,
-            <Button type="primary" key="test">
-              测试
+              新增店铺
             </Button>,
           ];
         }}
-        onSubmit={(values) => {
-          console.log('提交的值:', values);
-        }}
-        options={{
-          importConfig: {
-            onClick: () => {
-              console.log('点击了导入');
-            },
-          },
-          exportConfig: {
-            onClick: () => {
-              console.log('点击了导出');
-            },
-          },
-        }}
         columns={[
           {
-            dataIndex: 'name',
-            title: '姓名',
+            dataIndex: 'storeName',
+            title: '店铺名称',
+          },
+          {
+            dataIndex: 'createTime',
+            title: '创建时间',  
+            search: false,
+          },
+          {
+            dataIndex: 'createTime',
+            title: '更新时间',
+            search: false,
           },
         ]}
       />

@@ -3,8 +3,8 @@ import { RunTimeLayoutConfig } from '@umijs/max';
 import { App, ConfigProvider } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 
-import { DuplicatePlugin, LoadingPlugin, request as creekRequest } from '@creekjs/request';
-import { AppProvider, Loading } from '@creekjs/web-components';
+import { AppProvider } from '@creekjs/web-components';
+import { initRequest } from './request';
 
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
 // 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate
@@ -39,21 +39,5 @@ export const rootContainer = (children: React.ReactNode) => {
   );
 };
 
-creekRequest.createInstance({});
 
-creekRequest.pluginManager
-  .use(
-    new LoadingPlugin({
-      showLoading(config) {
-        if (config.openLoading) {
-          Loading.open();
-        }
-      },
-      hideLoading(config) {
-        if (config.openLoading) {
-          Loading.close();
-        }
-      },
-    }),
-  )
-  .use(new DuplicatePlugin());
+initRequest();

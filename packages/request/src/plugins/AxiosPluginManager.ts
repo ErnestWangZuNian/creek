@@ -41,6 +41,7 @@ export class AxiosPluginManager {
                 return response;
             },
             async (error) => {
+                console.log(error, 'error111');
                 for (const plugin of this.plugins) {
                     await plugin.onError(error);
                 }

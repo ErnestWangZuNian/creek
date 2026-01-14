@@ -32,7 +32,7 @@ export default defineConfig({
   npmClient: 'pnpm',
   proxy: {
     '/stores': {
-      target: 'http://14.103.138.148:8080/',
+      target: 'http://10.162.26.212:8080/',
       changeOrigin: true,
       secure: false,
     },
