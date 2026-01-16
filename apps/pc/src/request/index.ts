@@ -3,7 +3,9 @@ import { Loading } from '@creekjs/web-components';
 import { BusinessResponsePlugin } from './BusinessResponsePlugin';
 
 export const initRequest = () => {
-  creekRequest.createInstance({});
+  creekRequest.createInstance({
+    openLoading: true,
+  });
 
   creekRequest.pluginManager
     .use(
@@ -20,6 +22,6 @@ export const initRequest = () => {
         },
       }),
     )
-    .use(new DuplicatePlugin())
+    .use(new DuplicatePlugin({}))
     .use(new BusinessResponsePlugin());
 };

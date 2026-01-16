@@ -55,6 +55,17 @@ const HomePage = () => {
             <Button type="primary" key="new" onClick={() => openModal()}>
               新增店铺
             </Button>,
+            <Button
+              key="delete"
+              type="primary"
+              onClick={() => {
+                service.storeController.createStore({
+                  storeName: 'ccc',
+                });
+              }}
+            >
+              测试重复链接
+            </Button>,
           ];
         }}
         columns={[
@@ -64,7 +75,7 @@ const HomePage = () => {
           },
           {
             dataIndex: 'createTime',
-            title: '创建时间',  
+            title: '创建时间',
             search: false,
           },
           {
