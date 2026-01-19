@@ -1,14 +1,17 @@
-import { ProFormText } from '@ant-design/pro-components';
+import { ActionType, ProFormText } from '@ant-design/pro-components';
 import { CreekTable, useApp } from '@creekjs/web-components';
+import { useMemoizedFn } from 'ahooks';
 import { Button, Form, Typography } from 'antd';
+import { useRef } from 'react';
 
 import service from '@/service';
-import { useMemoizedFn } from 'ahooks';
 
 const HomePage = () => {
   const [form] = Form.useForm();
 
   const { modal } = useApp();
+
+  const tableActionRef = useRef<ActionType>();
 
   const openModal = useMemoizedFn(() => {
     modal.openForm({
@@ -18,8 +21,8 @@ const HomePage = () => {
         title: '新增店铺',
       },
       onFinish: async (values) => {
-        console.log('提交的值:', values);
         await service.dianpuguanli.createStore(values);
+        tableActionRef.current?.reload();
         return true;
       },
       content: (
@@ -42,13 +45,16 @@ const HomePage = () => {
     });
   });
 
-  const deleteStore = useMemoizedFn(async (storeName?: string) => {
+  const deleteStore = useMemoizedFn(async (storeId?: number) => {
     modal.confirm({
       title: '确认删除店铺吗？',
       okText: '确认',
       okType: 'danger',
       onOk: async () => {
-        console.log(storeName);
+        if (storeId) {
+          await service.dianpuguanli.deleteStore({ id: storeId });
+          tableActionRef.current?.reload();
+        }
       },
     });
   });
@@ -56,6 +62,7 @@ const HomePage = () => {
   return (
     <>
       <CreekTable<API.Store, API.getStoresPageParams>
+        actionRef={tableActionRef}
         rowKey="storeName"
         request={(params) => {
           return service.dianpuguanli.getStoresPage(params);
@@ -89,7 +96,7 @@ const HomePage = () => {
             render: (_, record) => {
               return (
                 <>
-                  <Typography.Link onClick={() => deleteStore(record.storeName)}>删除</Typography.Link>
+                  <Typography.Link onClick={() => deleteStore(record.id)}>删除</Typography.Link>
                 </>
               );
             },
