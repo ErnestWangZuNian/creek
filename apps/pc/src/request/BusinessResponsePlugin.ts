@@ -38,10 +38,7 @@ export class BusinessResponsePlugin extends AxiosPlugin {
     if (config.params) {
       const { current, pageSize, ...rest } = config.params;
       // 如果存在 current/pageSize 且不存在 page/size，则进行映射
-      if ((current !== undefined || pageSize !== undefined) && 
-          config.params.page === undefined && 
-          config.params.size === undefined) {
-        
+      if ((current !== undefined || pageSize !== undefined)) {
         config.params = {
           ...rest,
           page: current,

@@ -13,12 +13,12 @@ const HomePage = () => {
 
   const tableActionRef = useRef<ActionType>();
 
-  const openModal = useMemoizedFn(() => {
+  const openModal = useMemoizedFn((data?: API.Store) => {
     modal.openForm({
       form,
       modalProps: {
         width: 400,
-        title: '新增店铺',
+        title: data?.id ? '编辑店铺': '新增店铺',
       },
       onFinish: async (values) => {
         await service.dianpuguanli.createStore(values);
@@ -33,6 +33,7 @@ const HomePage = () => {
                 required: true,
               },
             ]}
+            initialValue={data?.storeName}
             required
             width="md"
             name="storeName"
@@ -58,6 +59,7 @@ const HomePage = () => {
       },
     });
   });
+
 
   return (
     <>
@@ -96,6 +98,7 @@ const HomePage = () => {
             render: (_, record) => {
               return (
                 <>
+                  <Typography.Link onClick={() => openModal(record)}>编辑</Typography.Link>
                   <Typography.Link onClick={() => deleteStore(record.id)}>删除</Typography.Link>
                 </>
               );

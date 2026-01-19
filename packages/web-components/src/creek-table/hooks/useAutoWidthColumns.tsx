@@ -149,7 +149,6 @@ export const useAutoWidthColumns = <T, ValueType>(
       const colKey = (col.dataIndex as string) || (col.key as string) || `col-${index}`;
       const measuredWidth = columnWidths[colKey];
       let width: number;
-
       if (col.width) {
         width = typeof col.width === 'number' ? col.width : 100; // 暂时给个默认值如果手动设了 string width
       } else if (col.valueType === 'option' && measuredWidth) {
@@ -199,6 +198,8 @@ export const useAutoWidthColumns = <T, ValueType>(
         width: isOverflow || col.width ? _calculatedWidth : undefined,
       };
     });
+
+    console.log(processedColumns, 'processedColumns');
 
     return {
       columns: processedColumns,
