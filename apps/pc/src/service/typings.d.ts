@@ -3,6 +3,10 @@ declare namespace API {
     itemId: number;
   };
 
+  type deleteStoreParams = {
+    id: number;
+  };
+
   type getAllPurchasesWithItemsParams = {
     storeId: number;
   };
@@ -17,6 +21,11 @@ declare namespace API {
 
   type getPurchaseParams = {
     purchaseId: number;
+  };
+
+  type getStoresPageParams = {
+    page?: number;
+    size?: number;
   };
 
   type importIngredientsExcelParams = {
@@ -35,6 +44,14 @@ declare namespace API {
     unit?: string;
     createdAt?: string;
     updatedAt?: string;
+  };
+
+  type IPageStore = {
+    records?: Store[];
+    current?: number;
+    total?: number;
+    pages?: number;
+    size?: number;
   };
 
   type PurchaseItemDTO = {
@@ -64,38 +81,44 @@ declare namespace API {
     status?: string;
   };
 
+  type ResultIPageStore = {
+    code?: string;
+    message?: string;
+    data?: IPageStore;
+  };
+
   type ResultListIngredients = {
-    code?: number;
+    code?: string;
     message?: string;
     data?: Ingredients[];
   };
 
   type ResultListPurchaseItems = {
-    code?: number;
+    code?: string;
     message?: string;
     data?: PurchaseItems[];
   };
 
   type ResultListStore = {
-    code?: number;
+    code?: string;
     message?: string;
     data?: Store[];
   };
 
   type ResultMapStringObject = {
-    code?: number;
+    code?: string;
     message?: string;
     data?: Record;
   };
 
   type ResultPurchases = {
-    code?: number;
+    code?: string;
     message?: string;
     data?: Purchases;
   };
 
   type ResultVoid = {
-    code?: number;
+    code?: string;
     message?: string;
     data?: Record;
   };

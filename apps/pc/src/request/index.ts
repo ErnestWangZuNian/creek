@@ -4,7 +4,7 @@ import { BusinessResponsePlugin } from './BusinessResponsePlugin';
 
 export const initRequest = () => {
   creekRequest.createInstance({
-    openLoading: true,
+    openLoading: false,
   });
 
   creekRequest.pluginManager
@@ -22,6 +22,6 @@ export const initRequest = () => {
         },
       }),
     )
-    .use(new DuplicatePlugin({}))
+    .use(new DuplicatePlugin())
     .use(new BusinessResponsePlugin());
 };

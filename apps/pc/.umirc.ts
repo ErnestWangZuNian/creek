@@ -12,7 +12,7 @@ export default defineConfig({
     iconFontCNs: ['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js'],
   },
   openApi: {
-    schemaPath: 'http://14.103.138.148:8080/v3/api-docs',
+    schemaPath: 'http://localhost:8080/catering/v3/api-docs',
     requestLibPath: "import { request } from '@creekjs/request';",
   },
   routes: [
@@ -31,7 +31,7 @@ export default defineConfig({
   plugins: [require.resolve('@creekjs/umi-plugins/dist/creek-layout'), require.resolve('@creekjs/umi-plugins/dist/open-api')],
   npmClient: 'pnpm',
   proxy: {
-    '/stores': {
+    '/catering': {
       target: 'http://10.162.26.212:8080/',
       changeOrigin: true,
       secure: false,

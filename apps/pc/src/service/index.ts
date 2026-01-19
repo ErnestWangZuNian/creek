@@ -2,11 +2,11 @@
 /* eslint-disable */
 // API 更新时间：
 // API 唯一标识：
+import * as dianpuguanli from './dianpuguanli';
 import * as ingredientsController from './ingredientsController';
 import * as purchaseItemsController from './purchaseItemsController';
-import * as storeController from './storeController';
 export default {
+  dianpuguanli,
   purchaseItemsController,
-  storeController,
   ingredientsController,
 };

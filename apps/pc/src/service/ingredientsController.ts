@@ -2,7 +2,7 @@
 /* eslint-disable */
 import { request } from '@creekjs/request';
 
-/** 此处后端没有提供注释 POST /ingredients/import/excel/${param0} */
+/** 此处后端没有提供注释 POST /catering/ingredients/import/excel/${param0} */
 export async function importIngredientsExcel(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.importIngredientsExcelParams,
@@ -10,7 +10,7 @@ export async function importIngredientsExcel(
   options?: { [key: string]: any },
 ) {
   const { storeId: param0, ...queryParams } = params;
-  return request<API.ResultVoid>(`/ingredients/import/excel/${param0}`, {
+  return request<API.ResultVoid>(`/catering/ingredients/import/excel/${param0}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -21,7 +21,7 @@ export async function importIngredientsExcel(
   });
 }
 
-/** 此处后端没有提供注释 POST /ingredients/import/txt/${param0} */
+/** 此处后端没有提供注释 POST /catering/ingredients/import/txt/${param0} */
 export async function importIngredientsTxt(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.importIngredientsTxtParams,
@@ -29,7 +29,7 @@ export async function importIngredientsTxt(
   options?: { [key: string]: any },
 ) {
   const { storeId: param0, ...queryParams } = params;
-  return request<API.ResultVoid>(`/ingredients/import/txt/${param0}`, {
+  return request<API.ResultVoid>(`/catering/ingredients/import/txt/${param0}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -40,28 +40,28 @@ export async function importIngredientsTxt(
   });
 }
 
-/** 此处后端没有提供注释 GET /ingredients/query/${param0} */
+/** 此处后端没有提供注释 GET /catering/ingredients/query/${param0} */
 export async function getByStore(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.getByStoreParams,
   options?: { [key: string]: any },
 ) {
   const { storeId: param0, ...queryParams } = params;
-  return request<API.ResultListIngredients>(`/ingredients/query/${param0}`, {
+  return request<API.ResultListIngredients>(`/catering/ingredients/query/${param0}`, {
     method: 'GET',
     params: { ...queryParams },
     ...(options || {}),
   });
 }
 
-/** 此处后端没有提供注释 GET /ingredients/query/${param0}/byName */
+/** 此处后端没有提供注释 GET /catering/ingredients/query/${param0}/byName */
 export async function searchIngredients(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.searchIngredientsParams,
   options?: { [key: string]: any },
 ) {
   const { storeId: param0, ...queryParams } = params;
-  return request<API.ResultListIngredients>(`/ingredients/query/${param0}/byName`, {
+  return request<API.ResultListIngredients>(`/catering/ingredients/query/${param0}/byName`, {
     method: 'GET',
     params: {
       ...queryParams,

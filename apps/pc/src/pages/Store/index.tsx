@@ -1,16 +1,16 @@
 import { ProFormText } from '@ant-design/pro-components';
-import { CreekIcon, CreekTable, useApp } from '@creekjs/web-components';
-import { Button, Form } from 'antd';
-import { useCallback } from 'react';
+import { CreekTable, useApp } from '@creekjs/web-components';
+import { Button, Form, Typography } from 'antd';
 
 import service from '@/service';
+import { useMemoizedFn } from 'ahooks';
 
 const HomePage = () => {
   const [form] = Form.useForm();
 
   const { modal } = useApp();
 
-  const openModal = useCallback(() => {
+  const openModal = useMemoizedFn(() => {
     modal.openForm({
       form,
       modalProps: {
@@ -19,7 +19,7 @@ const HomePage = () => {
       },
       onFinish: async (values) => {
         console.log('提交的值:', values);
-        await service.storeController.createStore(values);
+        await service.dianpuguanli.createStore(values);
         return true;
       },
       content: (
@@ -40,31 +40,30 @@ const HomePage = () => {
         </>
       ),
     });
-  }, [form, modal]);
+  });
+
+  const deleteStore = useMemoizedFn(async (storeName?: string) => {
+    modal.confirm({
+      title: '确认删除店铺吗？',
+      okText: '确认',
+      okType: 'danger',
+      onOk: async () => {
+        console.log(storeName);
+      },
+    });
+  });
 
   return (
     <>
-      <CreekIcon />
-      <CreekTable
-        rowKey="name"
-        request={() => {
-          return service.storeController.getAllStores();
+      <CreekTable<API.Store, API.getStoresPageParams>
+        rowKey="storeName"
+        request={(params) => {
+          return service.dianpuguanli.getStoresPage(params);
         }}
         toolBarRender={() => {
           return [
             <Button type="primary" key="new" onClick={() => openModal()}>
               新增店铺
-            </Button>,
-            <Button
-              key="delete"
-              type="primary"
-              onClick={() => {
-                service.storeController.createStore({
-                  storeName: 'ccc',
-                });
-              }}
-            >
-              测试重复链接
             </Button>,
           ];
         }}
@@ -81,6 +80,19 @@ const HomePage = () => {
           {
             dataIndex: 'createTime',
             title: '更新时间',
+            search: false,
+          },
+          {
+            dataIndex: 'operation',
+            title: '操作',
+            valueType: 'option',
+            render: (_, record) => {
+              return (
+                <>
+                  <Typography.Link onClick={() => deleteStore(record.storeName)}>删除</Typography.Link>
+                </>
+              );
+            },
             search: false,
           },
         ]}
