@@ -1,9 +1,4 @@
-import {
-  AxiosPlugin,
-  AxiosPluginConfigType,
-  AxiosPluginErrorType,
-  AxiosPluginResponseType,
-} from '@creekjs/request';
+import { AxiosPlugin, AxiosPluginConfigType, AxiosPluginErrorType, AxiosPluginResponseType } from '@creekjs/request';
 import { message } from 'antd';
 
 export interface BackendResult<T = any> {
@@ -21,7 +16,6 @@ export interface BusinessResponsePluginOptions {
 }
 
 export class BusinessResponsePlugin extends AxiosPlugin {
-  
   private options: BusinessResponsePluginOptions;
 
   constructor(options: BusinessResponsePluginOptions = {}) {
@@ -38,7 +32,7 @@ export class BusinessResponsePlugin extends AxiosPlugin {
     if (config.params) {
       const { current, pageSize, ...rest } = config.params;
       // 如果存在 current/pageSize 且不存在 page/size，则进行映射
-      if ((current !== undefined || pageSize !== undefined)) {
+      if (current !== undefined || pageSize !== undefined) {
         config.params = {
           ...rest,
           page: current,
@@ -52,14 +46,14 @@ export class BusinessResponsePlugin extends AxiosPlugin {
   // 处理请求成功后的响应
   afterRequest<T>(response: AxiosPluginResponseType<BackendResult<T>>) {
     const { data: resData } = response;
-    
+
     // 检查是否为后端返回的标准结构
     if (resData && typeof resData === 'object' && 'code' in resData) {
       const { code, msg, message: msgAlt } = resData;
-      
+
       // 兼容 code 为 number 或 string 的情况，以及 000000/0000 成功码
       const successCodes = [200, '200', '0000', '000000'];
-      
+
       if (!successCodes.includes(code)) {
         const errorMsg = msg || msgAlt || '请求失败';
         message.error(errorMsg);
@@ -77,15 +71,18 @@ export class BusinessResponsePlugin extends AxiosPlugin {
         return {
           ...finalData,
           data: finalData[listField], // ProTable 需要 data 为数组
-          success: true,              // ProTable 需要 success 为 true
+          success: true, // ProTable 需要 success 为 true
           total: finalData[totalField] || 0,
         };
       }
 
       // 解包，只返回 data 字段
-      return finalData;
+      return {
+        ...resData,
+        success: true,
+      };
     }
-    
+
     // 如果不是标准结构，直接返回原始数据
     return resData;
   }

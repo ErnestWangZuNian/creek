@@ -1,4 +1,8 @@
 declare namespace API {
+  type deleteCategoryParams = {
+    id: number;
+  };
+
   type deletePurchaseItemParams = {
     itemId: number;
   };
@@ -15,6 +19,10 @@ declare namespace API {
     storeId: number;
   };
 
+  type getCategoryTreeParams = {
+    storeId: number;
+  };
+
   type getPurchaseItemsParams = {
     purchaseId: number;
   };
@@ -26,6 +34,7 @@ declare namespace API {
   type getStoresPageParams = {
     page?: number;
     size?: number;
+    storeName?: string;
   };
 
   type importIngredientsExcelParams = {
@@ -34,6 +43,17 @@ declare namespace API {
 
   type importIngredientsTxtParams = {
     storeId: number;
+  };
+
+  type IngredientCategory = {
+    id?: number;
+    storeId?: number;
+    parentId?: number;
+    categoryName?: string;
+    sortOrder?: number;
+    createdAt?: string;
+    updatedAt?: string;
+    children?: IngredientCategory[];
   };
 
   type Ingredients = {
@@ -85,6 +105,12 @@ declare namespace API {
     code?: string;
     message?: string;
     data?: IPageStore;
+  };
+
+  type ResultListIngredientCategory = {
+    code?: string;
+    message?: string;
+    data?: IngredientCategory[];
   };
 
   type ResultListIngredients = {

@@ -26,6 +26,12 @@ export default defineConfig({
       component: './Store',
       icon: 'HomeOutlined',
     },
+    {
+      name: '分类管理',
+      path: '/category',
+      component: './Category',
+      icon: 'AppstoreOutlined',
+    },
   ],
   mfsu: false,
   plugins: [require.resolve('@creekjs/umi-plugins/dist/creek-layout'), require.resolve('@creekjs/umi-plugins/dist/open-api')],
