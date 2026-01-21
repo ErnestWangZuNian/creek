@@ -199,8 +199,6 @@ export const useAutoWidthColumns = <T, ValueType>(
       };
     });
 
-    console.log(processedColumns, 'processedColumns');
-
     return {
       columns: processedColumns,
       totalWidth: isOverflow ? totalCalculatedWidth : undefined,

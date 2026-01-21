@@ -9,6 +9,6 @@ import * as purchaseItemsController from './purchaseItemsController';
 export default {
   dianpuguanli,
   purchaseItemsController,
-  caigoufenleiguanli,
   ingredientsController,
+  caigoufenleiguanli,
 };

@@ -1,14 +1,21 @@
-import service from '@/service';
+
 import { ActionType, ProCard, ProFormDigit, ProFormText, ProFormTreeSelect, ProList } from '@ant-design/pro-components';
 import { CreekTable, useApp } from '@creekjs/web-components';
 import { useMemoizedFn } from 'ahooks';
-import { Button, Empty, Form, Typography, message } from 'antd';
+import { Button, Empty, Form, Typography, message, theme } from 'antd';
+import _ from 'lodash';
 import { useRef, useState } from 'react';
+
+import service from '@/service';
 
 const CategoryPage = () => {
   const [form] = Form.useForm();
   const { modal } = useApp();
   const actionRef = useRef<ActionType>();
+
+
+  const {token} =  theme.useToken();
+  
 
   // 当前选中的店铺ID
   const [currentStoreId, setCurrentStoreId] = useState<number>();
@@ -56,9 +63,9 @@ const CategoryPage = () => {
               const storeId = record?.storeId || currentStoreId;
               if (!storeId) return [];
 
-              const res = (await service.caigoufenleiguanli.getCategoryTree({
+              const res = await service.caigoufenleiguanli.getCategoryTree({
                 storeId,
-              })) as unknown as API.IngredientCategory[];
+              });
 
               // 过滤掉当前正在编辑的节点（防止自己选自己为父节点）
               const filterSelf = (nodes: API.IngredientCategory[]): any[] => {
@@ -71,6 +78,7 @@ const CategoryPage = () => {
                     disabled: n.id === record?.id,
                   }));
               };
+              
               return filterSelf(res || []);
             }}
             fieldProps={{
@@ -108,6 +116,12 @@ const CategoryPage = () => {
           request={async () => {
             return service.dianpuguanli.getAllStores();
           }}
+          onDataSourceChange={(data) => {
+           if(_.isArray(data) && data.length > 0) {
+            setCurrentStoreId(data[0].id);
+            setCurrentStoreName(data[0].storeName);
+           }
+          }}
           metas={{
             title: {
               dataIndex: 'storeName',
@@ -118,14 +132,12 @@ const CategoryPage = () => {
               onClick: () => {
                 setCurrentStoreId(record.id);
                 setCurrentStoreName(record.storeName);
-                // 切换店铺后，刷新右侧表格
-                // 由于 currentStoreId 变化会触发组件重渲染，
-                // 但 ProTable 的 request 是闭包，可能需要手动 reload
-                // 这里利用 key 属性强制重置右侧组件是最简单的
+                actionRef.current?.reload();
               },
               style: {
                 cursor: 'pointer',
-                backgroundColor: currentStoreId === record.id ? '#e6f7ff' : 'transparent',
+                padding: `${token.paddingXS}px ${token.padding}px`,
+                backgroundColor: currentStoreId === record.id ? token.colorPrimaryBg : 'transparent',
               },
             };
           }}
@@ -138,6 +150,8 @@ const CategoryPage = () => {
             actionRef={actionRef}
             rowKey="id"
             pagination={false}
+            ghost
+            search={false}
             request={() => {
               return service.caigoufenleiguanli.getCategoryTree({
                 storeId: currentStoreId,
@@ -154,25 +168,18 @@ const CategoryPage = () => {
                 dataIndex: 'categoryName',
               },
               {
-                title: '排序',
-                dataIndex: 'sortOrder',
-                width: 100,
-              },
-              {
                 title: '创建时间',
                 dataIndex: 'createdAt',
                 valueType: 'dateTime',
-                width: 180,
               },
               {
                 title: '操作',
                 valueType: 'option',
-                width: 150,
                 render: (_, record) => [
                   <Typography.Link key="edit" onClick={() => openModal(record)}>
                     编辑
                   </Typography.Link>,
-                  <Typography.Link key="delete" type="danger" onClick={() => handleDelete(record)}>
+                  <Typography.Link key="delete" onClick={() => handleDelete(record)}>
                     删除
                   </Typography.Link>,
                 ],

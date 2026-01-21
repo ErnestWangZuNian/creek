@@ -3,6 +3,10 @@ declare namespace API {
     id: number;
   };
 
+  type deleteIngredientParams = {
+    id: number;
+  };
+
   type deletePurchaseItemParams = {
     itemId: number;
   };
