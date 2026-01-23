@@ -1,13 +1,12 @@
-
 import StoreList from '@/components/StoreList';
 import service from '@/service';
-import { ActionType, ProCard, ProFormDigit, ProFormText, ProFormTreeSelect } from '@ant-design/pro-components';
+import { ActionType, ProCard, ProFormText, ProFormTreeSelect } from '@ant-design/pro-components';
 import { CreekTable, useApp } from '@creekjs/web-components';
 import { useMemoizedFn } from 'ahooks';
 import { Button, Empty, Form, Typography, message } from 'antd';
 import { useRef, useState } from 'react';
 
-const CategoryPage = () => {
+const IngredientsPage = () => {
   const [form] = Form.useForm();
   const { modal } = useApp();
   const actionRef = useRef<ActionType>();
@@ -17,7 +16,7 @@ const CategoryPage = () => {
   // 当前选中的店铺名称
   const [currentStoreName, setCurrentStoreName] = useState<string>();
 
-  const openModal = useMemoizedFn((record?: API.IngredientCategory) => {
+  const openModal = useMemoizedFn((record?: API.Ingredients) => {
     // 必须先选择店铺才能新增
     if (!record && !currentStoreId) {
       message.warning('请先选择左侧店铺');
@@ -26,7 +25,7 @@ const CategoryPage = () => {
 
     modal.openForm({
       form,
-      title: record ? '编辑分类' : '新增分类',
+      title: record ? '编辑物品' : '新增物品',
       initialValues: {
         ...record,
         storeId: record?.storeId || currentStoreId, // 默认带入当前店铺ID
@@ -34,9 +33,9 @@ const CategoryPage = () => {
       width: 500,
       onFinish: async (values) => {
         if (record?.id) {
-          await service.caigoufenleiguanli.updateCategory({ ...values, id: record.id });
+          await service.ingredientsController.updateIngredient({ ...values, id: record.id });
         } else {
-          await service.caigoufenleiguanli.createCategory(values);
+          await service.ingredientsController.addIngredient(values);
         }
         message.success('操作成功');
         actionRef.current?.reload();
@@ -47,55 +46,50 @@ const CategoryPage = () => {
           {/* 隐藏字段，提交时需要 */}
           <ProFormText name="storeId" hidden />
 
-          <ProFormText name="categoryName" label="分类名称" rules={[{ required: true, message: '请输入分类名称' }]} />
+          <ProFormText name="name" label="物品名称" rules={[{ required: true, message: '请输入物品名称' }]} />
 
           <ProFormTreeSelect
-            name="parentId"
-            label="上级分类"
-            placeholder="留空则为一级分类"
+            name="categoryId"
+            label="所属分类"
+            placeholder="请选择分类"
+            rules={[{ required: true, message: '请选择分类' }]}
             request={async () => {
-              // 这里的 currentStoreId 一定存在，因为新增前校验了，编辑时从 record 获取或 fallback
               const storeId = record?.storeId || currentStoreId;
               if (!storeId) return [];
 
-              const res = await service.caigoufenleiguanli.getCategoryTree({
+              const res = (await service.caigoufenleiguanli.getCategoryTree({
                 storeId,
-              });
+              })) as unknown as API.IngredientCategory[];
 
-              // 过滤掉当前正在编辑的节点（防止自己选自己为父节点）
-              const filterSelf = (nodes: API.IngredientCategory[]): any[] => {
-                return nodes
-                  .filter((n) => n.id !== record?.id)
-                  .map((n) => ({
-                    title: n.categoryName,
-                    value: n.id,
-                    children: n.children ? filterSelf(n.children) : undefined,
-                    disabled: n.id === record?.id,
-                  }));
+              const mapTree = (nodes: API.IngredientCategory[]): any[] => {
+                return nodes.map((n) => ({
+                  title: n.categoryName,
+                  value: n.id,
+                  children: n.children ? mapTree(n.children) : undefined,
+                }));
               };
-              
-              return filterSelf(res || []);
+              return mapTree(res || []);
             }}
             fieldProps={{
               fieldNames: { label: 'title', value: 'value', children: 'children' },
               allowClear: true,
+              treeDefaultExpandAll: true,
             }}
           />
 
-          <ProFormDigit name="sortOrder" label="排序" min={0} fieldProps={{ precision: 0 }} />
+          <ProFormText name="unit" label="单位" placeholder="请输入单位（如：kg, 斤, 个）" rules={[{ required: true, message: '请输入单位' }]} />
         </>
       ),
     });
   });
 
-  const handleDelete = useMemoizedFn((record: API.IngredientCategory) => {
+  const handleDelete = useMemoizedFn((record: API.Ingredients) => {
     modal.confirm({
-      title: '确认删除该分类吗？',
-      content: '删除后如有子分类可能也会受到影响。',
+      title: '确认删除该物品吗？',
       okType: 'danger',
       onOk: async () => {
         if (record.id) {
-          await service.caigoufenleiguanli.deleteCategory({ id: record.id });
+          await service.ingredientsController.deleteIngredient({ id: record.id });
           message.success('删除成功');
           actionRef.current?.reload();
         }
@@ -114,43 +108,72 @@ const CategoryPage = () => {
           }}
         />
       </ProCard>
-      <ProCard title={currentStoreName ? `[${currentStoreName}] 的分类管理` : '分类管理'}>
+      <ProCard title={currentStoreName ? `[${currentStoreName}] 的采购物品管理` : '采购物品管理'}>
         {currentStoreId ? (
-          <CreekTable<API.IngredientCategory, API.getCategoryTreeParams>
-            key={currentStoreId} // 关键：storeId 变化时完全重置表格
+          <CreekTable
+            key={currentStoreId}
             actionRef={actionRef}
             rowKey="id"
-            pagination={false}
-            ghost
-            search={false}
             request={() => {
-              return service.caigoufenleiguanli.getCategoryTree({
+              return service.ingredientsController.getByStore({
                 storeId: currentStoreId,
               });
             }}
             toolBarRender={() => [
               <Button key="add" type="primary" onClick={() => openModal()}>
-                新增分类
+                新增物品
               </Button>,
             ]}
             columns={[
               {
-                title: '分类名称',
-                dataIndex: 'categoryName',
+                title: '物品名称',
+                dataIndex: 'name',
+              },
+              {
+                title: '所属分类',
+                dataIndex: 'categoryId',
+                valueType: 'select',
+                request: async () => {
+                  if (!currentStoreId) return [];
+                  const res = (await service.caigoufenleiguanli.getCategoryTree({
+                    storeId: currentStoreId,
+                  })) as unknown as API.IngredientCategory[];
+
+                  // Flatten tree to get valueEnum
+                  const options: { label: string; value: number }[] = [];
+                  const traverse = (nodes: API.IngredientCategory[]) => {
+                    nodes.forEach((node) => {
+                      if (node.id && node.categoryName) {
+                        options.push({ label: node.categoryName, value: node.id });
+                      }
+                      if (node.children) {
+                        traverse(node.children);
+                      }
+                    });
+                  };
+                  traverse(res || []);
+                  return options;
+                },
+              },
+              {
+                title: '单位',
+                dataIndex: 'unit',
               },
               {
                 title: '创建时间',
                 dataIndex: 'createdAt',
                 valueType: 'dateTime',
+                width: 180,
               },
               {
                 title: '操作',
                 valueType: 'option',
+                width: 150,
                 render: (_, record) => [
                   <Typography.Link key="edit" onClick={() => openModal(record)}>
                     编辑
                   </Typography.Link>,
-                  <Typography.Link key="delete" onClick={() => handleDelete(record)}>
+                  <Typography.Link key="delete" type="danger" onClick={() => handleDelete(record)}>
                     删除
                   </Typography.Link>,
                 ],
@@ -165,4 +188,4 @@ const CategoryPage = () => {
   );
 };
 
-export default CategoryPage;
+export default IngredientsPage;
