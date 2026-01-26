@@ -1,0 +1,26 @@
+{
+  "name": "create-creek",
+  "version": "1.0.0",
+  "description": "Scaffold a new creek project",
+  "bin": {
+    "create-creek": "./bin/index.js"
+  },
+  "scripts": {
+    "build": "node scripts/sync.js && father build",
+    "dev": "father dev",
+    "sync": "node scripts/sync.js"
+  },
+  "dependencies": {
+    "fs-extra": "^11.2.0",
+    "prompts": "^2.4.2",
+    "kolorist": "^1.8.0",
+    "minimist": "^1.2.8"
+  },
+  "devDependencies": {
+    "father": "^4.0.0",
+    "glob": "^10.3.10"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

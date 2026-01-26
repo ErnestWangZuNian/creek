@@ -1,0 +1,52 @@
+import { defineConfig } from '@umijs/max';
+
+export default defineConfig({
+  antd: {},
+  access: {},
+  initialState: {},
+  request: {},
+  model: {},
+  mako: {},
+  creekLayout: {
+    title: 'creekjs',
+    iconFontCNs: ['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js'],
+  },
+  openApi: {
+    schemaPath: 'http://localhost:8080/catering/v3/api-docs',
+    requestLibPath: "import { request } from '@creekjs/request';",
+  },
+  routes: [
+    {
+      path: '/',
+      redirect: '/store',
+    },
+    {
+      name: '店铺管理',
+      path: '/store',
+      component: './Store',
+      icon: 'HomeOutlined',
+    },
+    {
+      name: '分类管理',
+      path: '/category',
+      component: './Category',
+      icon: 'AppstoreOutlined',
+    },
+    {
+      name: '采购物品管理',
+      path: '/ingredients',
+      component: './Ingredients',
+      icon: 'ShoppingOutlined',
+    },
+  ],
+  mfsu: false,
+  plugins: [require.resolve('@creekjs/umi-plugins/dist/creek-layout'), require.resolve('@creekjs/umi-plugins/dist/open-api')],
+  npmClient: 'pnpm',
+  proxy: {
+    '/catering': {
+      target: 'http://10.162.26.212:8080/',
+      changeOrigin: true,
+      secure: false,
+    },
+  }
+});
