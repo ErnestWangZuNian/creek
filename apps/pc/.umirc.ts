@@ -32,12 +32,6 @@ export default defineConfig({
       component: './Category',
       icon: 'AppstoreOutlined',
     },
-    {
-      name: '采购物品管理',
-      path: '/ingredients',
-      component: './Ingredients',
-      icon: 'ShoppingOutlined',
-    },
   ],
   mfsu: false,
   plugins: [require.resolve('@creekjs/umi-plugins/dist/creek-layout'), require.resolve('@creekjs/umi-plugins/dist/open-api')],

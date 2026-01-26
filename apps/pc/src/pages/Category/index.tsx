@@ -1,16 +1,21 @@
 
-import StoreList from '@/components/StoreList';
-import service from '@/service';
-import { ActionType, ProCard, ProFormDigit, ProFormText, ProFormTreeSelect } from '@ant-design/pro-components';
+import { ActionType, ProCard, ProFormDigit, ProFormText, ProFormTreeSelect, ProList } from '@ant-design/pro-components';
 import { CreekTable, useApp } from '@creekjs/web-components';
 import { useMemoizedFn } from 'ahooks';
-import { Button, Empty, Form, Typography, message } from 'antd';
+import { Button, Empty, Form, Typography, message, theme } from 'antd';
+import _ from 'lodash';
 import { useRef, useState } from 'react';
+
+import service from '@/service';
 
 const CategoryPage = () => {
   const [form] = Form.useForm();
   const { modal } = useApp();
   const actionRef = useRef<ActionType>();
+
+
+  const {token} =  theme.useToken();
+  
 
   // 当前选中的店铺ID
   const [currentStoreId, setCurrentStoreId] = useState<number>();
@@ -106,11 +111,35 @@ const CategoryPage = () => {
   return (
     <ProCard split="vertical">
       <ProCard colSpan="300px" title="店铺列表">
-        <StoreList
-          value={currentStoreId}
-          onChange={(storeId, store) => {
-            setCurrentStoreId(storeId);
-            setCurrentStoreName(store.storeName);
+        <ProList<API.Store>
+          rowKey="id"
+          request={async () => {
+            return service.dianpuguanli.getAllStores();
+          }}
+          onDataSourceChange={(data) => {
+           if(_.isArray(data) && data.length > 0) {
+            setCurrentStoreId(data[0].id);
+            setCurrentStoreName(data[0].storeName);
+           }
+          }}
+          metas={{
+            title: {
+              dataIndex: 'storeName',
+            },
+          }}
+          onRow={(record) => {
+            return {
+              onClick: () => {
+                setCurrentStoreId(record.id);
+                setCurrentStoreName(record.storeName);
+                actionRef.current?.reload();
+              },
+              style: {
+                cursor: 'pointer',
+                padding: `${token.paddingXS}px ${token.padding}px`,
+                backgroundColor: currentStoreId === record.id ? token.colorPrimaryBg : 'transparent',
+              },
+            };
           }}
         />
       </ProCard>
