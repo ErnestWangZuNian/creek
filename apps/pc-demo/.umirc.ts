@@ -19,6 +19,19 @@ export default defineConfig({
     },
   ],
   mfsu: false,
-  plugins: [require.resolve('@creekjs/umi-plugins/dist/creek-layout'), require.resolve('@creekjs/umi-plugins/dist/open-api')],
+  presets: [require.resolve('@creekjs/umi-plugins')],
+  openApi: {
+    schemaPath: 'https://petstore.swagger.io/v2/swagger.json',
+    requestLibPath: "import { request } from '@creekjs/request';",
+    mock: false,
+  },
+  proxy: {
+    '/pet': {
+      target: 'https://petstore.swagger.io/v2',
+      changeOrigin: true,
+      secure: false,
+      pathRewrite: { '^/api': '' },
+    },
+  },
   npmClient: 'pnpm',
 });

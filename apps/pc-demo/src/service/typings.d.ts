@@ -1,175 +1,111 @@
 declare namespace API {
-  type deleteCategoryParams = {
-    id: number;
+  type ApiResponse = {
+    code?: number;
+    type?: string;
+    message?: string;
   };
 
-  type deleteIngredientParams = {
-    id: number;
-  };
-
-  type deletePurchaseItemParams = {
-    itemId: number;
-  };
-
-  type deleteStoreParams = {
-    id: number;
-  };
-
-  type getAllPurchasesWithItemsParams = {
-    storeId: number;
-  };
-
-  type getByStoreParams = {
-    storeId: number;
-  };
-
-  type getCategoryTreeParams = {
-    storeId: number;
-  };
-
-  type getPurchaseItemsParams = {
-    purchaseId: number;
-  };
-
-  type getPurchaseParams = {
-    purchaseId: number;
-  };
-
-  type getStoresPageParams = {
-    page?: number;
-    size?: number;
-    storeName?: string;
-  };
-
-  type importIngredientsExcelParams = {
-    storeId: number;
-  };
-
-  type importIngredientsTxtParams = {
-    storeId: number;
-  };
-
-  type IngredientCategory = {
-    id?: number;
-    storeId?: number;
-    parentId?: number;
-    categoryName?: string;
-    sortOrder?: number;
-    createdAt?: string;
-    updatedAt?: string;
-    children?: IngredientCategory[];
-  };
-
-  type Ingredients = {
+  type Category = {
     id?: number;
     name?: string;
-    categoryId?: number;
-    storeId?: number;
-    unit?: string;
-    createdAt?: string;
-    updatedAt?: string;
   };
 
-  type IPageStore = {
-    records?: Store[];
-    current?: number;
-    total?: number;
-    pages?: number;
-    size?: number;
+  type deleteOrderParams = {
+    /** ID of the order that needs to be deleted */
+    orderId: number;
   };
 
-  type PurchaseItemDTO = {
-    ingredientName?: string;
-    quantity?: number;
-    unit?: string;
-    urgent?: boolean;
+  type deletePetParams = {
+    /** Pet id to delete */
+    petId: number;
   };
 
-  type PurchaseItems = {
+  type deleteUserParams = {
+    /** The name that needs to be deleted */
+    username: string;
+  };
+
+  type findPetsByStatusParams = {
+    /** Status values that need to be considered for filter */
+    status: ('available' | 'pending' | 'sold')[];
+  };
+
+  type findPetsByTagsParams = {
+    /** Tags to filter by */
+    tags: string[];
+  };
+
+  type getOrderByIdParams = {
+    /** ID of pet that needs to be fetched */
+    orderId: number;
+  };
+
+  type getPetByIdParams = {
+    /** ID of pet to return */
+    petId: number;
+  };
+
+  type getUserByNameParams = {
+    /** The name that needs to be fetched. Use user1 for testing.  */
+    username: string;
+  };
+
+  type loginUserParams = {
+    /** The user name for login */
+    username: string;
+    /** The password for login in clear text */
+    password: string;
+  };
+
+  type Order = {
     id?: number;
-    purchasedId?: number;
-    ingredientId?: number;
-    ingredientName?: string;
+    petId?: number;
     quantity?: number;
-    unit?: string;
-    urgent?: boolean;
-    createdAt?: string;
-    updatedAt?: string;
+    shipDate?: string;
+    /** Order Status */
+    status?: 'placed' | 'approved' | 'delivered';
+    complete?: boolean;
   };
 
-  type Purchases = {
+  type Pet = {
     id?: number;
-    storeId?: number;
-    createdAt?: string;
-    expiredAt?: string;
-    status?: string;
+    category?: Category;
+    name: string;
+    photoUrls: string[];
+    tags?: Tag[];
+    /** pet status in the store */
+    status?: 'available' | 'pending' | 'sold';
   };
 
-  type ResultIPageStore = {
-    code?: string;
-    message?: string;
-    data?: IPageStore;
-  };
-
-  type ResultListIngredientCategory = {
-    code?: string;
-    message?: string;
-    data?: IngredientCategory[];
-  };
-
-  type ResultListIngredients = {
-    code?: string;
-    message?: string;
-    data?: Ingredients[];
-  };
-
-  type ResultListPurchaseItems = {
-    code?: string;
-    message?: string;
-    data?: PurchaseItems[];
-  };
-
-  type ResultListStore = {
-    code?: string;
-    message?: string;
-    data?: Store[];
-  };
-
-  type ResultMapStringObject = {
-    code?: string;
-    message?: string;
-    data?: Record;
-  };
-
-  type ResultPurchases = {
-    code?: string;
-    message?: string;
-    data?: Purchases;
-  };
-
-  type ResultVoid = {
-    code?: string;
-    message?: string;
-    data?: Record;
-  };
-
-  type searchIngredientsParams = {
-    storeId: number;
+  type Tag = {
+    id?: number;
     name?: string;
   };
 
-  type Store = {
+  type updatePetWithFormParams = {
+    /** ID of pet that needs to be updated */
+    petId: number;
+  };
+
+  type updateUserParams = {
+    /** name that need to be updated */
+    username: string;
+  };
+
+  type uploadFileParams = {
+    /** ID of pet to update */
+    petId: number;
+  };
+
+  type User = {
     id?: number;
-    storeName?: string;
-    createTime?: string;
-    updateTime?: string;
-  };
-
-  type submitParams = {
-    storeId: number;
-  };
-
-  type updatePurchaseItemParams = {
-    purchaseId: number;
+    username?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    password?: string;
+    phone?: string;
+    /** User Status */
+    userStatus?: number;
   };
 }

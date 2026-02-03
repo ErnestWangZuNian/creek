@@ -12,6 +12,7 @@ export async function getInitialState(): Promise<{ name: string }> {
   return { name: '@umijs/max' };
 }
 
+//  布局
 export const layout: RunTimeLayoutConfig = () => {
   return {
     logo: 'https://img.alicdn.com/tfs/TB1YHEpwUT1gK0jSZFhXXaAtVXa-28-27.svg',
@@ -22,10 +23,12 @@ export const layout: RunTimeLayoutConfig = () => {
   };
 };
 
+// 全局配置
 export const rootContainer = (children: React.ReactNode) => {
   return (
     <ConfigProvider
       locale={zhCN}
+      componentSize="small"
       theme={{
         token: {
           colorPrimary: '#00c07f',
@@ -39,5 +42,5 @@ export const rootContainer = (children: React.ReactNode) => {
   );
 };
 
-
+// 请求配置
 initRequest();

@@ -17,6 +17,7 @@
   "devDependencies": {
     "@creekjs/openapi": "workspace:^",
     "@creekjs/request": "workspace:^",
-    "@creekjs/web-components": "workspace:^"
+    "@creekjs/web-components": "workspace:^",
+    "umi": "^4.6.25"
   }
 }
