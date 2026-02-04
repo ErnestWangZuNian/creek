@@ -98,7 +98,7 @@ const PetList = () => {
           // 如果用户没有选择状态，则默认查询所有状态
           const status = params.status ? [params.status] : ['available', 'pending', 'sold'];
           const statusParam = (status as string[]).join(',');
-          return  findPetsByStatus({ status: statusParam as any });
+          return findPetsByStatus({ status: statusParam as any, ...params });
         }}
         columns={columns}
       />

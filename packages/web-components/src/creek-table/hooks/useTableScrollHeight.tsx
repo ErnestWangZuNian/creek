@@ -1,7 +1,7 @@
 import { useDebounceFn, useEventListener } from 'ahooks';
 import { useEffect, useState } from 'react';
 
-export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObject<HTMLDivElement>, pageFixedBottom: boolean = true, offsetBottom: number = 20) => {
+export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObject<HTMLDivElement>, pageFixedBottom: boolean = true, contentPadding: number = 16, offsetBottom: number = 16) => {
   const [scrollY, setScrollY] = useState<number | undefined>(undefined);
 
   const { run: calcHeight } = useDebounceFn(
@@ -21,15 +21,8 @@ export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObjec
       }
 
       const windowHeight = window.innerHeight;
-
-      const parentElement = tableRef.current?.parentElement;
-      let parentPaddingBottom = 0;
-
-      if (parentElement) {
-        const style = window.getComputedStyle(parentElement);
-        parentPaddingBottom = parseFloat(style.paddingBottom) || 0;
-      }
-      let height = windowHeight - top - 16 - offsetBottom;
+  
+      let height = windowHeight - top -  contentPadding - offsetBottom;
 
       const pagination = tableEl.querySelector(`.${prefixCls}-pagination`);
 
@@ -37,10 +30,8 @@ export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObjec
         const paginationHeight = pagination.clientHeight;
 
         const styles = window.getComputedStyle(pagination);
-        // 总的垂直 margin
         const totalPaginationMargin = parseFloat(styles.marginTop) + parseFloat(styles.marginBottom);
 
-        console.log(paginationHeight, totalPaginationMargin, height, parentPaddingBottom, 'paginationHeight');
         height = height - paginationHeight - totalPaginationMargin;
       }
 

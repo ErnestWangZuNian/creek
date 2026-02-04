@@ -78,8 +78,8 @@ export const CreekLayout = (props: LayoutProps) => {
           colorTextMenu: "#333",
         },
         pageContainer: {
-          paddingBlockPageContainerContent: 20,
-          paddingInlinePageContainerContent: 20,
+          paddingBlockPageContainerContent: token.padding,
+          paddingInlinePageContainerContent: token.padding,
           colorBgPageContainer: 'linear-gradient(180deg, #F7F9FF 0%, #FFF 45.59%);'
         },
       }}

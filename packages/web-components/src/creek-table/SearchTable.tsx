@@ -1,4 +1,5 @@
 import { ParamsType, ProTable } from '@ant-design/pro-components';
+import { theme } from 'antd';
 import { createStyles } from 'antd-style';
 import classnames from 'classnames';
 import _ from 'lodash';
@@ -9,18 +10,19 @@ import { TableOptionRender } from './TableOptionRender';
 import { toolBarRender } from './toolBarRender';
 import { CreekTableProps } from './type';
 
-const useStyles = createStyles(({ prefixCls }) => {
+const useStyles = createStyles(({ prefixCls, css }, { scrollY }: { scrollY?: number }) => {
   return {
-    'creek-table-container': {
-      [`.${prefixCls}-table-body`]: {
-        minHeight: 'var(--table-scroll-y)',
-      },
-      [`.${prefixCls}-pagination`]: {
-        [`.${prefixCls}-pagination-total-text`]: {
-          flex: `1`,
-        },
-      },
-    },
+    'creek-table-container': css`
+      .${prefixCls}-table-body {
+        overflow-y: auto !important;
+        min-height: ${`${scrollY}px`};
+      }
+      .${prefixCls}-pagination {
+        .${prefixCls}-pagination-total-text {
+          flex: 1;
+        }
+      }
+    `,
   };
 });
 
@@ -30,19 +32,19 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
 
   const proTableRef = useRef<HTMLDivElement>(null);
 
+  const { token } = theme.useToken();
+
   // // 使用自定义 hook 处理工具栏的自适应功能
   // const { shouldCollapse } = useAdaptiveToolBar({
   //   containerRef: proTableRef,
   //   prefixCls,
-  // });
+  // });ƒ
 
   const { columns: adaptiveColumns, totalWidth } = useAutoWidthColumns(columns, proTableRef);
 
-  const scrollY = useTableScrollHeight(prefixCls, proTableRef, pageFixedBottom);
+  const scrollY = useTableScrollHeight(prefixCls, proTableRef, pageFixedBottom, token.paddingContentVerticalLG, pageFixedBottomConfig?.bottomFix || token.padding);
 
-  console.log('scrollY', scrollY);
-
-  const { styles } = useStyles();
+  const { styles } = useStyles({ scrollY });
 
   return (
     <div ref={proTableRef}>
@@ -52,7 +54,6 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
         columns={adaptiveColumns}
         scroll={{
           x: totalWidth,
-          ...restProps.scroll,
           y: scrollY ?? restProps.scroll?.y,
         }}
         toolbar={{
