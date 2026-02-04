@@ -29,8 +29,6 @@ export default defineConfig({
     '/pet': {
       target: 'https://petstore.swagger.io/v2',
       changeOrigin: true,
-      secure: false,
-      pathRewrite: { '^/api': '' },
     },
   },
   npmClient: 'pnpm',

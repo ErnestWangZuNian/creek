@@ -4,7 +4,7 @@
   "author": "wzn <13368343973@163.com>",
   "scripts": {
     "build": "max build",
-    "dev": "max openApi & max dev",
+    "dev": "max dev",
     "format": "prettier --cache --write .",
     "openApi": "max openApi",
     "setup": "max setup",

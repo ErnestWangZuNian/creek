@@ -30,7 +30,7 @@ export const TableViewContent = <T extends ParamsType, U extends ParamsType, Val
           parentPaddingBottom = parseFloat(style.paddingBottom) || 0;
         }
         const tableContentHeight = mainHeight - paginationHeight - parentPaddingBottom - bottomFix - parentPaddingBottom;
-        antdTableContentElement.setAttribute('style', `height: ${tableContentHeight}px`);
+        antdTableContentElement.setAttribute('style', `height: ${tableContentHeight}px;overflow: hidden`);
       }
     },
     {
@@ -40,9 +40,11 @@ export const TableViewContent = <T extends ParamsType, U extends ParamsType, Val
 
   useDeepCompareEffect(() => {
     if (pageFixedBottom) {
+      console.log('viewPortHeight', viewPortHeight);
       setAntdTableContentHeight(viewPortHeight ?? 0);
     }
   }, [viewPortHeight, pageFixedBottom, setAntdTableContentHeight]);
+
 
   // 默认渲染逻辑
   return (

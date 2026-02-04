@@ -1,10 +1,10 @@
 import { DownOutlined } from '@ant-design/icons';
 import { Button, Dropdown } from 'antd';
 
-export const toolBarRender = (options: { shouldCollapse: boolean; restProps: any }) => {
-  const { shouldCollapse, restProps } = options;
+export const toolBarRender = (options: { shouldCollapse: boolean; restProps: any; args?: any[] }) => {
+  const { shouldCollapse, restProps, args = [] } = options;
 
-  const baseActions = restProps.toolBarRender?.() || [];
+  const baseActions = restProps.toolBarRender?.(...args) || [];
   if (!shouldCollapse || baseActions.length <= 1) {
     return baseActions;
   }

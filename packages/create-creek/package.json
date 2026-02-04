@@ -7,7 +7,6 @@
   },
   "scripts": {
     "build": "node scripts/sync.js && father build",
-    "dev": "father dev",
     "sync": "node scripts/sync.js"
   },
   "dependencies": {

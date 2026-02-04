@@ -1,5 +1,6 @@
 import { AxiosPlugin, AxiosPluginConfigType, AxiosPluginErrorType, AxiosPluginResponseType } from '@creekjs/request';
 import { message } from 'antd';
+import _ from 'lodash';
 
 export interface BackendResult<T = any> {
   code: string | number;
@@ -84,7 +85,11 @@ export class BusinessResponsePlugin extends AxiosPlugin {
     }
 
     // 如果不是标准结构，直接返回原始数据
-    return resData;
+    return {
+      data: resData,
+      success: response.status === 200,
+      total: _.isArray(resData) ? resData.length : 0,
+    };
   }
 
   // 处理 HTTP 错误（如 404, 500 等）
