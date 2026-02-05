@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
+import { green, red } from 'kolorist';
 import path from 'path';
 import prompts from 'prompts';
-import { red, green, bold } from 'kolorist';
 
 async function init() {
   const cwd = process.cwd();
@@ -9,7 +9,7 @@ async function init() {
   let targetDir = process.argv[2];
   const defaultTargetDir = 'creek-project';
 
-  let result: prompts.Answers<'projectName'>;
+  let result: any;
 
   try {
     result = await prompts(
@@ -19,23 +19,33 @@ async function init() {
           name: 'projectName',
           message: 'Project name:',
           initial: defaultTargetDir,
-          onState: (state) => {
+          onState: (state: any) => {
             targetDir = state.value.trim() || defaultTargetDir;
           },
+        },
+        {
+          type: 'select',
+          name: 'platform',
+          message: 'Select platform:',
+          choices: [
+            { title: 'PC (Admin/Web)', value: 'pc' },
+            { title: 'Mobile (Taro)', value: 'mobile' },
+          ],
+          initial: 0,
         },
       ],
       {
         onCancel: () => {
           throw new Error(red('✖') + ' Operation cancelled');
         },
-      }
+      } as any
     );
   } catch (cancelled: any) {
     console.log(cancelled.message);
     return;
   }
 
-  const { projectName } = result;
+  const { projectName, platform } = result;
   const root = path.join(cwd, targetDir || projectName);
 
   if (fs.existsSync(root)) {
@@ -45,7 +55,12 @@ async function init() {
 
   console.log(`\nScaffolding project in ${root}...`);
 
-  const templateDir = path.resolve(__dirname, '../templates/default');
+  const templateDir = path.resolve(__dirname, `../templates/${platform}`);
+  
+  if (!fs.existsSync(templateDir)) {
+    console.log(red(`Template for ${platform} not found at ${templateDir}`));
+    return;
+  }
 
   await fs.copy(templateDir, root);
 
@@ -65,7 +80,13 @@ async function init() {
   console.log(`\n${green('Done. Now run:')}\n`);
   console.log(`  cd ${path.relative(cwd, root)}`);
   console.log(`  pnpm install`);
-  console.log(`  pnpm dev`);
+
+  if (platform === 'mobile') {
+    console.log(`  pnpm dev:h5    (for H5)`);
+    console.log(`  pnpm dev:weapp (for WeChat Mini Program)`);
+  } else {
+    console.log(`  pnpm dev`);
+  }
 }
 
 init().catch((e) => {
