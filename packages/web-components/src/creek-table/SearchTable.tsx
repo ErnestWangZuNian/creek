@@ -10,13 +10,39 @@ import { TableOptionRender } from './TableOptionRender';
 import { toolBarRender } from './toolBarRender';
 import { CreekTableProps } from './type';
 
-const useStyles = createStyles(({ prefixCls, css }, { scrollY }: { scrollY?: number }) => {
+const useStyles = createStyles(({ css, token }, { scrollY, prefixCls }: { scrollY?: number | string; prefixCls: string }) => {
   return {
     'creek-table-container': css`
       .${prefixCls}-table-body {
         overflow-y: auto !important;
-        min-height: ${`${scrollY}px`};
+        min-height: ${typeof scrollY === 'number' ? `${scrollY}px` : (scrollY ?? 'auto')};
+
+        /* Firefox 滚动条样式 */
+        scrollbar-width: thin;
+        scrollbar-color: ${token.colorFillSecondary} transparent;
       }
+
+      /* Webkit (Chrome, Safari, Edge) 滚动条样式 */
+      & *::-webkit-scrollbar {
+        width: 6px !important;
+        height: 6px !important;
+        background-color: transparent !important;
+      }
+
+      & *::-webkit-scrollbar-thumb {
+        background-color: ${token.colorFillSecondary} !important;
+        border-radius: 3px !important;
+        transition: all 0.3s;
+      }
+
+      & *::-webkit-scrollbar-thumb:hover {
+        background-color: ${token.colorFill} !important;
+      }
+
+      & *::-webkit-scrollbar-track {
+        background-color: transparent !important;
+      }
+
       .${prefixCls}-pagination {
         .${prefixCls}-pagination-total-text {
           flex: 1;
@@ -44,7 +70,9 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
 
   const scrollY = useTableScrollHeight(prefixCls, proTableRef, pageFixedBottom, token.paddingContentVerticalLG, pageFixedBottomConfig?.bottomFix || token.padding);
 
-  const { styles } = useStyles({ scrollY });
+  const { styles } = useStyles({ scrollY, prefixCls });
+
+  console.log('scrollY', scrollY);
 
   return (
     <div ref={proTableRef}>

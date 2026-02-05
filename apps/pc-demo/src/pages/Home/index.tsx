@@ -1,6 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Button, message, Popconfirm, Space } from 'antd';
+import { Button, message, Space } from 'antd';
 import { useRef } from 'react';
 
 import { CreekTable, useApp } from '@creekjs/web-components';
@@ -25,11 +25,16 @@ const PetList = () => {
   };
 
   const handleRemove = async (selectedRow: API.Pet) => {
-    if (!selectedRow) return true;
-    await deletePet({ petId: selectedRow.id! });
-    message.success('删除成功，即将刷新');
-    actionRef.current?.reload();
-    return true;
+    modal.confirm({
+      title: '确认删除吗？',
+      okText: '确认',
+      okType: 'danger',
+      onOk: async () => {
+        await deletePet({ petId: selectedRow.id! });
+        message.success('删除成功，即将刷新');
+        actionRef.current?.reload();
+      },
+    });
   };
 
   const openEditModal = (record?: API.Pet) => {
@@ -70,9 +75,14 @@ const PetList = () => {
         <a key="config" onClick={() => openEditModal(record)}>
           编辑
         </a>,
-        <Popconfirm key="delete" title="确定删除吗?" onConfirm={() => handleRemove(record)}>
-          <a>删除</a>
-        </Popconfirm>,
+        <a
+          key="delete"
+          onClick={() => {
+            handleRemove(record);
+          }}
+        >
+          删除
+        </a>,
       ],
     },
   ];
@@ -82,7 +92,7 @@ const PetList = () => {
       <CreekTable
         headerTitle="宠物列表"
         actionRef={actionRef}
-        rowKey="id"
+        rowKey={(row) => `${row.id}-${row.status}-${row.name}`}
         search={{
           labelWidth: 120,
         }}

@@ -19,7 +19,7 @@ export const ModalHelper: React.FC<ModalHelperProps> = ({ open, config, onClose 
         open={open}
         onOpenChange={(visible) => !visible && onClose()}
         modalProps={{
-          destroyOnClose: true,
+          destroyOnHidden: true,
           onCancel: onClose,
           ...((config as FormModalConfig).modalProps || {}),
         }}
@@ -34,7 +34,7 @@ export const ModalHelper: React.FC<ModalHelperProps> = ({ open, config, onClose 
     <Modal
       open={open}
       onCancel={onClose}
-      destroyOnClose
+      destroyOnHidden
       {...(restConfig as NormalModalConfig)}
     >
       {content}

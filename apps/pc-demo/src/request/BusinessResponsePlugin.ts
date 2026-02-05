@@ -85,10 +85,11 @@ export class BusinessResponsePlugin extends AxiosPlugin {
     }
 
     // 如果不是标准结构，直接返回原始数据
+    const _resData = _.isArray(resData) ? _.uniqBy(resData, 'id') : resData;
     return {
-      data: resData,
+      data: _resData,
       success: response.status === 200,
-      total: _.isArray(resData) ? resData.length : 0,
+      total: _.isArray(_resData) ? _resData.length : 0,
     };
   }
 

@@ -19,7 +19,7 @@ export const DrawerHelper: React.FC<DrawerHelperProps> = ({ open, config, onClos
         open={open}
         onOpenChange={(visible) => !visible && onClose()}
         drawerProps={{
-          destroyOnClose: true,
+          destroyOnHidden: true,
           onClose,
           ...((config as FormDrawerConfig).drawerProps || {}),
         }}
@@ -34,7 +34,7 @@ export const DrawerHelper: React.FC<DrawerHelperProps> = ({ open, config, onClos
     <Drawer
       open={open}
       onClose={onClose}
-      destroyOnClose
+      destroyOnHidden
       {...(restConfig as NormalDrawerConfig)}
     >
       {content}

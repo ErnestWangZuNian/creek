@@ -33,10 +33,14 @@ export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObjec
         const totalPaginationMargin = parseFloat(styles.marginTop) + parseFloat(styles.marginBottom);
 
         height = height - paginationHeight - totalPaginationMargin;
+      } else {
+        // 如果没有找到分页，预留一个高度（假设分页高度为 24px + margin 16px = 40px）
+        // 这样可以避免初始加载时高度过大，导致出现滚动条，然后分页出现后高度又变小
+        height = height - 40;
       }
 
       // Minimum height to avoid crashes or ugly rendering
-      setScrollY(Math.max(height, 200));
+      setScrollY(height);
     },
     { wait: 100 },
   );

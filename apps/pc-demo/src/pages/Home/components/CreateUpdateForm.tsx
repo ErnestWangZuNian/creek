@@ -4,7 +4,17 @@ import React from 'react';
 const CreateUpdateForm: React.FC = () => {
   return (
     <>
-  
+      <ProFormText
+        name="id"
+        label="宠物ID"
+        placeholder="请输入宠物ID"
+        rules={[
+          {
+            required: true,
+            message: '请输入宠物ID！',
+          },
+        ]}
+      />
       <ProFormText
         name="name"
         label="宠物名称"
