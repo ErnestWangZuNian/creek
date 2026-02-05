@@ -12,7 +12,8 @@ const templates = [
       '@creekjs/web-components': 'latest'
     },
     devDependenciesToInject: {
-      '@creekjs/lint': 'latest'
+      '@creekjs/lint': 'latest',
+      '@creekjs/umi-plugins': 'latest'
     }
   },
   {

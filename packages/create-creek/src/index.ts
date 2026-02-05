@@ -1,12 +1,15 @@
 import fs from 'fs-extra';
 import { green, red } from 'kolorist';
+import minimist from 'minimist';
 import path from 'path';
 import prompts from 'prompts';
 
 async function init() {
   const cwd = process.cwd();
 
-  let targetDir = process.argv[2];
+  const argv = minimist(process.argv.slice(2));
+  let targetDir = argv._[0];
+  let platform = argv.platform || argv.p;
   const defaultTargetDir = 'creek-project';
 
   let result: any;
@@ -24,7 +27,7 @@ async function init() {
           },
         },
         {
-          type: 'select',
+          type: platform ? null : 'select',
           name: 'platform',
           message: 'Select platform:',
           choices: [
@@ -45,7 +48,10 @@ async function init() {
     return;
   }
 
-  const { projectName, platform } = result;
+  const { projectName } = result;
+  // If platform is provided via args, use it, otherwise use prompt result
+  platform = platform || result.platform;
+  
   const root = path.join(cwd, targetDir || projectName);
 
   if (fs.existsSync(root)) {
