@@ -1,11 +1,11 @@
-import { ProLayout, ProLayoutProps } from "@ant-design/pro-components";
-import { useMemoizedFn } from "ahooks";
-import { theme } from "antd";
-import classnames from "classnames";
+import { ProLayout, ProLayoutProps } from '@ant-design/pro-components';
+import { useMemoizedFn } from 'ahooks';
+import { theme } from 'antd';
+import classnames from 'classnames';
 
-import { CollapsedButton, useCollapsedStore } from "./CollapseButton";
-import { Exception } from "./Exception";
-import { HeaderContent } from "./HeaderContent";
+import { FullScreen, UserInfo } from './ActionRender';
+import { CollapsedButton, useCollapsedStore } from './CollapseButton';
+import { Exception } from './Exception';
 
 export type LayoutProps = ProLayoutProps & {
   runtimeConfig: ProLayoutProps;
@@ -19,68 +19,55 @@ export type LayoutProps = ProLayoutProps & {
 };
 
 export const CreekLayout = (props: LayoutProps) => {
-  const {
-    route,
-    userConfig,
-    runtimeConfig,
-    children,
-    location,
-    navigate,
-    ...more
-  } = props;
+  const { route, userConfig, runtimeConfig, children, location, navigate, ...more } = props;
 
   const { useToken } = theme;
   const { token } = useToken();
 
   const { collapsed } = useCollapsedStore();
 
-  const menuItemRender: ProLayoutProps["menuItemRender"] = useMemoizedFn(
-    (itemProps, defaultDom) => {
-      return (
-        <span
-          onClick={() => {
-            if (navigate) {
-              navigate(itemProps.path);
-            }
-          }}
-        >
-          {defaultDom}
-        </span>
-      );
-    }
-  );
+  const menuItemRender: ProLayoutProps['menuItemRender'] = useMemoizedFn((itemProps, defaultDom) => {
+    return (
+      <span
+        onClick={() => {
+          if (navigate) {
+            navigate(itemProps.path);
+          }
+        }}
+      >
+        {defaultDom}
+      </span>
+    );
+  });
 
   return (
     <ProLayout
-      className={classnames("creek-layout-container", userConfig?.className)}
-      layout="mix"
+      className={classnames('creek-layout-container', userConfig?.className)}
       route={route}
       title={userConfig?.title}
       siderWidth={212}
       location={location}
       menuItemRender={menuItemRender}
-      headerContentRender={() => {
-        return <HeaderContent />;
-      }}
+      actionsRender={() => [<FullScreen key="full-screen" />, <UserInfo key="user-info" />]}
       token={{
         header: {
-          colorBgHeader: "#fff",
-          colorHeaderTitle: "rgba(0, 0, 0, 0.80);",
+          colorBgHeader: '#fff',
+          colorHeaderTitle: 'rgba(0, 0, 0, 0.80);',
           colorTextMenuSelected: token.colorPrimary,
           heightLayoutHeader: 48,
         },
         sider: {
-          colorMenuBackground: "#f7f8fa",
-          colorBgMenuItemSelected: "transparent",
+          colorMenuBackground: '#f7f8fa',
+          colorBgMenuItemSelected: 'transparent',
           colorTextMenuActive: token.colorPrimary,
           colorTextMenuSelected: token.colorPrimary,
           colorTextMenuItemHover: token.colorPrimary,
-          colorTextMenu: "#333",
+          colorTextMenu: '#333',
         },
         pageContainer: {
           paddingBlockPageContainerContent: token.padding,
           paddingInlinePageContainerContent: token.padding,
-          colorBgPageContainer: 'linear-gradient(180deg, #F7F9FF 0%, #FFF 45.59%);'
+          colorBgPageContainer: 'linear-gradient(180deg, #F7F9FF 0%, #FFF 45.59%);',
         },
       }}
       fixSiderbar
@@ -96,4 +83,4 @@ export const CreekLayout = (props: LayoutProps) => {
   );
 };
 
-export * from "./Exception";
+export * from './Exception';

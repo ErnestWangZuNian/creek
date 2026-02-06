@@ -84,16 +84,22 @@ const Layout = (props: CreekLayoutProps) => {
     },
   });
 
+  const layoutRestProps = {
+    ...runtimeConfig,
+    ...userConfig,
+  };
+
   // 现在的 layout 及 wrapper 实现是通过父路由的形式实现的, 会导致路由数据多了冗余层级
   const newRoutes = filterRoutes(
-    clientRoutes.filter((route) => route.id === 'ant-design-pro-layout'),
+    clientRoutes,
     (route) => {
       return (
         (!!route.isLayout && route.id !== 'ant-design-pro-layout') || !!route.isWrapper
       );
     }
   );
-  const [route] = useAccessMarkedRoutes(mapRoutes(newRoutes));
+  const layoutRoute = newRoutes.find((item) => item.id === 'ant-design-pro-layout');
+  const [route] = useAccessMarkedRoutes(mapRoutes(layoutRoute ? [layoutRoute] : []));
 
   const matchedRoute = useMemo(
     () => matchRoutes(route.children, location.pathname)?.pop?.()?.route,
@@ -109,6 +115,7 @@ const Layout = (props: CreekLayoutProps) => {
         userConfig={userConfig}
         route={route}
         initialInfo={initialInfo}
+        {...layoutRestProps}
         children={
           runtimeConfig.childrenRender ? (
             runtimeConfig.childrenRender(<Outlet />, props)
