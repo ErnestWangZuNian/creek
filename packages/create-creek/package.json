@@ -1,6 +1,6 @@
 {
   "name": "create-creek",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Scaffold a new creek project",
   "bin": {
     "create-creek": "./bin/index.js"
