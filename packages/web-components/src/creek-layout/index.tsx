@@ -11,6 +11,12 @@ export type LayoutProps = ProLayoutProps & {
   runtimeConfig: ProLayoutProps;
   userConfig?: ProLayoutProps;
   navigate?: (path?: string | number) => void;
+  showFullScreen?: boolean;
+  userInfo?: {
+    name?: React.ReactNode;
+    avatar?: string;
+    menu?: any;
+  };
   initialInfo?: {
     initialState: any;
     loading: boolean;
@@ -19,7 +25,7 @@ export type LayoutProps = ProLayoutProps & {
 };
 
 export const CreekLayout = (props: LayoutProps) => {
-  const { route, userConfig, runtimeConfig, children, location, navigate, ...more } = props;
+  const { route, userConfig, runtimeConfig, children, location, navigate, showFullScreen, userInfo, ...more } = props;
 
   const { useToken } = theme;
   const { token } = useToken();
@@ -40,6 +46,14 @@ export const CreekLayout = (props: LayoutProps) => {
     );
   });
 
+  const actions: React.ReactNode[] = [];
+  if (showFullScreen) {
+    actions.push(<FullScreen key="full-screen" />);
+  }
+  if (userInfo) {
+    actions.push(<UserInfo key="user-info" {...userInfo} />);
+  }
+
   return (
     <ProLayout
       className={classnames('creek-layout-container', userConfig?.className)}
@@ -48,7 +62,7 @@ export const CreekLayout = (props: LayoutProps) => {
       siderWidth={212}
       location={location}
       menuItemRender={menuItemRender}
-      actionsRender={() => [<FullScreen key="full-screen" />, <UserInfo key="user-info" />]}
+      actionsRender={() => actions}
       token={{
         header: {
           colorBgHeader: '#fff',
