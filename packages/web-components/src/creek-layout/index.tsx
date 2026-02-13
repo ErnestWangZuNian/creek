@@ -3,6 +3,7 @@ import { useMemoizedFn } from 'ahooks';
 import { theme } from 'antd';
 import classnames from 'classnames';
 
+import { CreekKeepAlive, CreekKeepAliveProps } from '../creek-keep-alive';
 import { GlobalScrollbarStyle } from '../creek-style/scrollbar';
 import { FullScreen, UserInfo } from './ActionRender';
 import { CollapsedButton, useCollapsedStore } from './CollapseButton';
@@ -23,10 +24,11 @@ export type LayoutProps = ProLayoutProps & {
     loading: boolean;
     setInitialState: () => void;
   };
+  keepAlive?: boolean | CreekKeepAliveProps;
 };
 
 export const CreekLayout = (props: LayoutProps) => {
-  const { route, userConfig, runtimeConfig, children, location, navigate, showFullScreen, userInfo, ...more } = props;
+  const { route, userConfig, runtimeConfig, children, location, navigate, showFullScreen, userInfo, keepAlive = true, ...more } = props;
 
   const { useToken } = theme;
   const { token } = useToken();
@@ -47,6 +49,20 @@ export const CreekLayout = (props: LayoutProps) => {
     );
   });
 
+  const getTabTitle = useMemoizedFn((pathname: string) => {
+    const findTitle = (routes: any[]): string | React.ReactNode | undefined => {
+      for (const r of routes) {
+        if (r.path === pathname) return r.name || r.title;
+        if (r.children) {
+          const found = findTitle(r.children);
+          if (found) return found;
+        }
+      }
+      return undefined;
+    };
+    return findTitle(route?.routes || []) || pathname;
+  });
+
   const actions: React.ReactNode[] = [];
   if (showFullScreen) {
     actions.push(<FullScreen key="full-screen" />);
@@ -54,6 +70,8 @@ export const CreekLayout = (props: LayoutProps) => {
   if (userInfo) {
     actions.push(<UserInfo key="user-info" {...userInfo} />);
   }
+
+  const keepAliveProps = typeof keepAlive === 'boolean' ? {} : keepAlive;
 
   return (
     <ProLayout
@@ -94,7 +112,13 @@ export const CreekLayout = (props: LayoutProps) => {
       {...more}
     >
       <GlobalScrollbarStyle />  
-      <Exception>{children}</Exception>
+      <Exception>
+        {keepAlive ? (
+          <CreekKeepAlive getTabTitle={getTabTitle} {...keepAliveProps} />
+        ) : (
+          children
+        )}
+      </Exception>
     </ProLayout>
   );
 };

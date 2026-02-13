@@ -19,7 +19,7 @@ export const layout: RunTimeLayoutConfig = () => {
     menu: {
       locale: false,
     },
-    layout: "top",
+    layout: "mix",
     iconFontCNs: ['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js'],
   };
 };

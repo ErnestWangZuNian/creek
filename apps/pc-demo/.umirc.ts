@@ -15,7 +15,12 @@ export default defineConfig({
     {
       path: '/',
       name: '首页',
-      component: './Home',
+      component: './Demo',
+    },
+    {
+      path: '/test',
+      name: '测试',
+      component: './Test',
     },
   ],
   mfsu: false,
@@ -23,7 +28,6 @@ export default defineConfig({
   openApi: {
     schemaPath: 'https://petstore.swagger.io/v2/swagger.json',
     requestLibPath: "import { request } from '@creekjs/request';",
-    mock: false,
   },
   proxy: {
     '/pet': {
