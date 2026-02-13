@@ -57,6 +57,7 @@ const PetList = () => {
     {
       title: '名称',
       dataIndex: 'name',
+      hideInSearch: true,
     },
     {
       title: '状态',

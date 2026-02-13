@@ -1,7 +1,7 @@
 import { Avatar, Dropdown, DropDownProps, Space } from "antd";
 import { createStyles } from "antd-style";
 
-const useStyles = createStyles(({ token }) => ({
+const useStyles = createStyles(({ token}) => ({
   avatarContainer: {
     backgroundColor: token.colorPrimary,
     width: 24,

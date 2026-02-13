@@ -3,6 +3,7 @@ import { useMemoizedFn } from 'ahooks';
 import { theme } from 'antd';
 import classnames from 'classnames';
 
+import { GlobalScrollbarStyle } from '../creek-style/scrollbar';
 import { FullScreen, UserInfo } from './ActionRender';
 import { CollapsedButton, useCollapsedStore } from './CollapseButton';
 import { Exception } from './Exception';
@@ -92,6 +93,7 @@ export const CreekLayout = (props: LayoutProps) => {
       }}
       {...more}
     >
+      <GlobalScrollbarStyle />  
       <Exception>{children}</Exception>
     </ProLayout>
   );

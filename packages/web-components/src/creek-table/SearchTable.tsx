@@ -5,50 +5,32 @@ import classnames from 'classnames';
 import _ from 'lodash';
 import { useRef } from 'react';
 
+import { GlobalScrollbarStyle } from '../creek-style';
 import { useAutoWidthColumns, useTableScrollHeight } from './hooks';
 import { TableOptionRender } from './TableOptionRender';
 import { toolBarRender } from './toolBarRender';
 import { CreekTableProps } from './type';
 
-const useStyles = createStyles(({ css, token }, { scrollY, prefixCls }: { scrollY?: number | string; prefixCls: string }) => {
+export type SearchTableStyleOptions = {
+  prefixCls?: string;
+  scrollY?: number;
+};
+
+const useStyles = createStyles(({ token }, options: SearchTableStyleOptions) => {
+  const { prefixCls = 'ant', scrollY } = options;
   return {
-    'creek-table-container': css`
-      .${prefixCls}-table-body {
-        overflow-y: auto !important;
-        min-height: ${typeof scrollY === 'number' ? `${scrollY}px` : (scrollY ?? 'auto')};
+    'creek-table-container': {
+      [`.${prefixCls}-table-body`]: {
+        overflowY: 'auto',
+        minHeight: `${scrollY}px`,
+      },
 
-        /* Firefox 滚动条样式 */
-        scrollbar-width: thin;
-        scrollbar-color: ${token.colorFillSecondary} transparent;
-      }
-
-      /* Webkit (Chrome, Safari, Edge) 滚动条样式 */
-      & *::-webkit-scrollbar {
-        width: 6px !important;
-        height: 6px !important;
-        background-color: transparent !important;
-      }
-
-      & *::-webkit-scrollbar-thumb {
-        background-color: ${token.colorFillSecondary} !important;
-        border-radius: 3px !important;
-        transition: all 0.3s;
-      }
-
-      & *::-webkit-scrollbar-thumb:hover {
-        background-color: ${token.colorFill} !important;
-      }
-
-      & *::-webkit-scrollbar-track {
-        background-color: transparent !important;
-      }
-
-      .${prefixCls}-pagination {
-        .${prefixCls}-pagination-total-text {
-          flex: 1;
-        }
-      }
-    `,
+      [`.${prefixCls}-pagination`]: {
+        [`.${prefixCls}-pagination-total-text`]: {
+          flex: 1,
+        },
+      },
+    },
   };
 });
 
@@ -59,23 +41,16 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
   const proTableRef = useRef<HTMLDivElement>(null);
 
   const { token } = theme.useToken();
-
-  // // 使用自定义 hook 处理工具栏的自适应功能
-  // const { shouldCollapse } = useAdaptiveToolBar({
-  //   containerRef: proTableRef,
-  //   prefixCls,
-  // });ƒ
-
+  
   const { columns: adaptiveColumns, totalWidth } = useAutoWidthColumns(columns, proTableRef);
 
   const scrollY = useTableScrollHeight(prefixCls, proTableRef, pageFixedBottom, token.paddingContentVerticalLG, pageFixedBottomConfig?.bottomFix || token.padding);
 
   const { styles } = useStyles({ scrollY, prefixCls });
 
-  console.log('scrollY', scrollY);
-
   return (
     <div ref={proTableRef}>
+      <GlobalScrollbarStyle />
       <ProTable<T, U, ValueType>
         {...props}
         className={classnames(styles['creek-table-container'], className)}

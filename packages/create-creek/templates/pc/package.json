@@ -13,8 +13,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
     "@ant-design/pro-components": "^2.7.18",
-    "@creekjs/lint": "^0.0.4",
-    "@creekjs/openapi": "^0.0.4",
+    "@creekjs/openapi": "latest",
     "@creekjs/request": "latest",
     "@creekjs/web-components": "latest",
     "@umijs/max": "^4.6.1",
