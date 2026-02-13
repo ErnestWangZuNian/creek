@@ -30,6 +30,12 @@ const useStyles = createStyles(({ token }, options: SearchTableStyleOptions) => 
           flex: 1,
         },
       },
+
+      [`.${prefixCls}-pro-query-filter-container`]: {
+        [`.${prefixCls}-pro-query-filter`]: {
+          padding: token.paddingXS,
+        },
+      },
     },
   };
 });
@@ -41,7 +47,7 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
   const proTableRef = useRef<HTMLDivElement>(null);
 
   const { token } = theme.useToken();
-  
+
   const { columns: adaptiveColumns, totalWidth } = useAutoWidthColumns(columns, proTableRef);
 
   const scrollY = useTableScrollHeight(prefixCls, proTableRef, pageFixedBottom, token.paddingContentVerticalLG, pageFixedBottomConfig?.bottomFix || token.padding);
