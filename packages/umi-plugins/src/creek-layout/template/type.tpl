@@ -13,24 +13,14 @@
      type InitDataType = any;
     {{/hasInitialStatePlugin}}
     import type { IConfigFromPlugins } from '@@/core/pluginConfig';
+    import { CreekKeepAliveProps } from '{{{creekWebComponentsPath}}}';
 
     export type RunTimeLayoutConfig = (initData: InitDataType) => ProLayoutProps & {
-      dropdownProps?: DropDownProps;
       showDarkButton?: boolean;
-      showFooter?: boolean;
       provider?:  React.ReactNode;
-      userName?: string;
-      hideKeepalive?: boolean;
-      rightContentExtra?: React.ReactNode;
-      childrenRender?: (dom: JSX.Element, props: ProLayoutProps) => React.ReactNode;
+      keepAlive?: boolean | CreekKeepAliveProps;
+      extraActions?: React.ReactNode[];
       unAccessible?: JSX.Element;
-      logout?: (initialState: InitDataType['initialState']) => Promise<void> | void;
       iconFontCNs?: string[];
-      rightRender?: (
-        initialState: InitDataType['initialState'],
-        setInitialState: InitDataType['setInitialState'],
-        runtimeConfig: RunTimeLayoutConfig,
-      ) => JSX.Element;
-      
     };
     

@@ -2,10 +2,11 @@ import { ProLayout, ProLayoutProps } from '@ant-design/pro-components';
 import { useMemoizedFn } from 'ahooks';
 import { theme } from 'antd';
 import classnames from 'classnames';
+import _ from 'lodash';
 
 import { CreekKeepAlive, CreekKeepAliveProps } from '../creek-keep-alive';
 import { GlobalScrollbarStyle } from '../creek-style/scrollbar';
-import { FullScreen, UserInfo } from './ActionRender';
+import { FullScreen } from './ActionRender';
 import { CollapsedButton, useCollapsedStore } from './CollapseButton';
 import { Exception } from './Exception';
 
@@ -14,21 +15,17 @@ export type LayoutProps = ProLayoutProps & {
   userConfig?: ProLayoutProps;
   navigate?: (path?: string | number) => void;
   showFullScreen?: boolean;
-  userInfo?: {
-    name?: React.ReactNode;
-    avatar?: string;
-    menu?: any;
-  };
   initialInfo?: {
     initialState: any;
     loading: boolean;
     setInitialState: () => void;
   };
   keepAlive?: boolean | CreekKeepAliveProps;
+  extraActions?: React.ReactNode[];
 };
 
 export const CreekLayout = (props: LayoutProps) => {
-  const { route, userConfig, runtimeConfig, children, location, navigate, showFullScreen, userInfo, keepAlive = true, ...more } = props;
+  const { route, userConfig, runtimeConfig, children, location, navigate, showFullScreen, keepAlive = true, extraActions = [], ...more } = props;
 
   const { useToken } = theme;
   const { token } = useToken();
@@ -63,22 +60,22 @@ export const CreekLayout = (props: LayoutProps) => {
     return findTitle(route?.routes || []) || pathname;
   });
 
-  const actions: React.ReactNode[] = [];
+  const actions: React.ReactNode[] = [...extraActions];
+
   if (showFullScreen) {
     actions.push(<FullScreen key="full-screen" />);
   }
-  if (userInfo) {
-    actions.push(<UserInfo key="user-info" {...userInfo} />);
-  }
 
-  const keepAliveProps = typeof keepAlive === 'boolean' ? {} : keepAlive;
+  const keepAliveProps = _.isBoolean(keepAlive) ? {} : keepAlive;
+
+  const _userConfig = { ...userConfig, ...runtimeConfig };
 
   return (
     <ProLayout
-      className={classnames('creek-layout-container', userConfig?.className)}
+      className={classnames('creek-layout-container', _userConfig?.className)}
       route={route}
-      title={userConfig?.title}
-      siderWidth={212}
+      title={_userConfig?.title}
+      siderWidth={200}
       location={location}
       menuItemRender={menuItemRender}
       actionsRender={() => actions}
@@ -98,8 +95,8 @@ export const CreekLayout = (props: LayoutProps) => {
           colorTextMenu: '#333',
         },
         pageContainer: {
-          paddingBlockPageContainerContent: token.padding,
-          paddingInlinePageContainerContent: token.padding,
+          paddingBlockPageContainerContent: 0,
+          paddingInlinePageContainerContent: 0,
           colorBgPageContainer: 'linear-gradient(180deg, #F7F9FF 0%, #FFF 45.59%);',
         },
       }}
@@ -111,14 +108,8 @@ export const CreekLayout = (props: LayoutProps) => {
       }}
       {...more}
     >
-      <GlobalScrollbarStyle />  
-      <Exception>
-        {keepAlive ? (
-          <CreekKeepAlive getTabTitle={getTabTitle} {...keepAliveProps} />
-        ) : (
-          children
-        )}
-      </Exception>
+      <GlobalScrollbarStyle />
+      <Exception>{keepAlive ? <CreekKeepAlive getTabTitle={getTabTitle} {...keepAliveProps} /> : children}</Exception>
     </ProLayout>
   );
 };

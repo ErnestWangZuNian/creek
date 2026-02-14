@@ -30,6 +30,10 @@ const useStyles = createStyles(({ token }, options: SearchTableStyleOptions) => 
           flex: 1,
         },
       },
+      [`.${prefixCls}-pro-table-search`]: {
+        marginBlockEnd: 0,
+        borderBottom: `1px solid ${token.colorBorderSecondary}`,
+      },
 
       [`.${prefixCls}-pro-query-filter-container`]: {
         [`.${prefixCls}-pro-query-filter`]: {
