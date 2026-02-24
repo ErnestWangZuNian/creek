@@ -83,20 +83,31 @@ export const useAutoWidthColumns = <T, ValueType>(
 ): { columns: ProColumns<T, ValueType>[] | undefined; totalWidth: number | undefined } => {
   // 存储每个列的最大宽度：key 是 dataIndex 或 title，value 是最大宽度
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
-  const [tableWidth, setTableWidth] = useState<number>(0);
+  // 初始时尝试直接获取宽度，如果 tableRef 已经有值
+  const [tableWidth, setTableWidth] = useState<number>(() => {
+      if (tableRef.current) {
+          return tableRef.current.offsetWidth;
+      }
+      return 0;
+  });
 
   // 监听 table 容器宽度变化
   useEffect(() => {
     if (!tableRef.current) return;
-
-    // 立即获取一次宽度
-    setTableWidth(tableRef.current.offsetWidth);
+    
+    // 如果初始状态是0（因为ref.current可能在render时为null），这里补救一下
+    if (tableWidth === 0) {
+        setTableWidth(tableRef.current.offsetWidth);
+    }
 
     // 使用 requestAnimationFrame + setTimeout 防抖
     let rafId: number;
     let timerId: NodeJS.Timeout;
 
     const updateWidth = (width: number) => {
+      // 忽略 0 宽度的更新（通常是由于 display: none 引起的）
+      if (width === 0) return;
+
       cancelAnimationFrame(rafId);
       clearTimeout(timerId);
 

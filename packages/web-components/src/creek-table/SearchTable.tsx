@@ -1,5 +1,4 @@
 import { ParamsType, ProTable } from '@ant-design/pro-components';
-import { theme } from 'antd';
 import { createStyles } from 'antd-style';
 import classnames from 'classnames';
 import _ from 'lodash';
@@ -20,6 +19,7 @@ const useStyles = createStyles(({ token }, options: SearchTableStyleOptions) => 
   const { prefixCls = 'ant', scrollY } = options;
   return {
     'creek-table-container': {
+      overflow: 'hidden',
       [`.${prefixCls}-table-body`]: {
         overflowY: 'auto',
         minHeight: `${scrollY}px`,
@@ -46,15 +46,13 @@ const useStyles = createStyles(({ token }, options: SearchTableStyleOptions) => 
 
 // 独立的 ProTable 组件
 export const SearchProTable = <T extends ParamsType, U extends ParamsType, ValueType = 'text'>(props: CreekTableProps<T, U, ValueType>) => {
-  const { columns, prefixCls = 'ant', autoAddFilterForColumn = true, className, optionsRender, tableViewRender, pagination, pageFixedBottom = true, pageFixedBottomConfig, ...restProps } = props;
+  const { columns, prefixCls = 'ant', autoAddFilterForColumn = true, className, optionsRender, tableViewRender, pagination, pageFixedBottom = true,  pageFixedBottomConfig, ...restProps } = props;
 
   const proTableRef = useRef<HTMLDivElement>(null);
 
-  const { token } = theme.useToken();
-
   const { columns: adaptiveColumns, totalWidth } = useAutoWidthColumns(columns, proTableRef);
 
-  const scrollY = useTableScrollHeight(prefixCls, proTableRef, pageFixedBottom, token.paddingContentVerticalLG, pageFixedBottomConfig?.bottomFix || token.padding);
+  const scrollY = useTableScrollHeight(prefixCls, proTableRef, pageFixedBottom, pageFixedBottomConfig?.bottomFix );
 
   const { styles } = useStyles({ scrollY, prefixCls });
 
@@ -81,10 +79,6 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
         }}
         toolBarRender={(...args) => {
           return toolBarRender({ shouldCollapse: false, restProps, args });
-        }}
-        // 在表格内容区上方显示筛选条件
-        tableViewRender={(defaultProps, defaultDom) => {
-          return _.isFunction(tableViewRender) ? <>{tableViewRender(defaultProps, defaultDom)}</> : defaultDom;
         }}
       />
     </div>
