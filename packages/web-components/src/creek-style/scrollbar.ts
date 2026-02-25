@@ -3,7 +3,7 @@ import { createGlobalStyle } from 'antd-style';
 export const GlobalScrollbarStyle = createGlobalStyle(({ theme: token }) => {
   return {
     '*': {
-      scrollbarWidth: 'thin',
+      scrollbarWidth: 'auto',
       scrollbarColor: `${token.colorFillSecondary} transparent !important`,
     },
     /* Webkit (Chrome, Safari, Edge) 滚动条样式 */

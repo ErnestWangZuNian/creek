@@ -60,6 +60,31 @@ const PetList = () => {
       hideInSearch: true,
     },
     {
+      title: '名称1',
+      dataIndex: 'name1',
+      hideInSearch: true,
+    },
+    {
+      title: '名称2',
+      dataIndex: 'name2',
+      hideInSearch: true,
+    },
+    {
+      title: '名称3',
+      dataIndex: 'name3',
+      hideInSearch: true,
+    },
+    {
+      title: '名称4',
+      dataIndex: 'name4',
+      hideInSearch: true,
+    },
+     {
+      title: '名称5',
+      dataIndex: 'name5',
+      hideInSearch: true,
+    },
+    {
       title: '状态',
       dataIndex: 'status',
       valueEnum: {

@@ -80,6 +80,8 @@ const MeasureWrapper = ({ children, onResize }: { children: React.ReactNode; onR
 export const useAutoWidthColumns = <T, ValueType>(
   columns: ProColumns<T, ValueType>[] | undefined,
   tableRef: RefObject<HTMLDivElement>,
+  resizedWidths?: Record<string, number>,
+  bordered?: boolean,
 ): { columns: ProColumns<T, ValueType>[] | undefined; totalWidth: number | undefined } => {
   // 存储每个列的最大宽度：key 是 dataIndex 或 title，value 是最大宽度
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
@@ -157,20 +159,29 @@ export const useAutoWidthColumns = <T, ValueType>(
 
     // 1. 先计算所有列的理想宽度（不考虑 table 宽度）
     const calculatedColumns = columns.map((col, index) => {
-      const colKey = (col.dataIndex as string) || (col.key as string) || `col-${index}`;
+      const colKey = (col.key as string) || (col.dataIndex as string) || `col-${index}`;
       const measuredWidth = columnWidths[colKey];
-      let width: number;
+      
+      let baseWidth: number;
       if (col.width) {
-        width = typeof col.width === 'number' ? col.width : 100; // 暂时给个默认值如果手动设了 string width
+        baseWidth = typeof col.width === 'number' ? col.width : 100; // 暂时给个默认值如果手动设了 string width
       } else if (col.valueType === 'option' && measuredWidth) {
-        width = measuredWidth + DEFAULT_PADDING_WIDTH;
+        // bordered 模式下，需要额外的宽度来容纳边框和视觉间距，避免换行
+        const extraPadding = bordered ? 4: 0;
+        baseWidth = measuredWidth + DEFAULT_PADDING_WIDTH + extraPadding;
       } else {
-        width = Math.max(estimateWidth(col.title as string), getValueTypeWidth(col.valueType as string));
+        baseWidth = Math.max(estimateWidth(col.title as string), getValueTypeWidth(col.valueType as string));
+      }
+
+      let width = baseWidth;
+      if (resizedWidths && resizedWidths[colKey]) {
+        width = resizedWidths[colKey];
       }
 
       return {
         ...col,
         _calculatedWidth: width,
+        _baseWidth: baseWidth, // 新增 _baseWidth 用于后续 minWidth 限制
         _colKey: colKey,
       };
     });
@@ -180,11 +191,18 @@ export const useAutoWidthColumns = <T, ValueType>(
 
     // 3. 判断是否需要自适应
     // 如果总宽度小于 table 宽度，说明空间足够，除了 option 列，其他列可以不设宽度让 table 自动撑开
-    const isOverflow = totalCalculatedWidth > tableWidth;
+    // 但如果有任何列被用户手动 resize 了，我们认为用户希望精确控制，此时也应该返回 totalWidth
+    const hasResized = resizedWidths && Object.keys(resizedWidths).length > 0;
+    const isOverflow = totalCalculatedWidth > tableWidth || hasResized;
+
+    // 只有在内容真实溢出（即总宽度 > 容器宽度）时，才强制给未设置宽度的列设置最小估算宽度。
+    // 如果仅仅是用户调整了某列宽度但总宽度仍小于容器宽度，此时不应该限制其他列的宽度，
+    // 而是利用 table 的自动布局特性让它们填充剩余空间。
+    const shouldForceWidth = totalCalculatedWidth > tableWidth;
 
     const processedColumns = calculatedColumns.map((col) => {
       // 提取内部使用的字段
-      const { _calculatedWidth, _colKey, ...originalCol } = col;
+      const { _calculatedWidth, _baseWidth, _colKey, ...originalCol } = col;
 
       // 针对 valueType === 'option' (操作列)，始终需要特殊处理（包裹测量组件）
       if (col.valueType === 'option') {
@@ -206,7 +224,9 @@ export const useAutoWidthColumns = <T, ValueType>(
         ...originalCol,
         // 只有当内容溢出（需要滚动）或者手动设置了宽度时，才应用计算出的宽度
         // 否则不设置 width，让 Antd Table 自动布局占满剩余空间
-        width: isOverflow || col.width ? _calculatedWidth : undefined,
+        width: shouldForceWidth || col.width || (resizedWidths && resizedWidths[_colKey]) ? _calculatedWidth : undefined,
+        // 添加 calculatedWidth 以供后续 useResizableColumns 使用，这里使用 _baseWidth (即不受 resize 影响的宽度)
+        calculatedWidth: _baseWidth,
       };
     });
 
@@ -214,7 +234,7 @@ export const useAutoWidthColumns = <T, ValueType>(
       columns: processedColumns,
       totalWidth: isOverflow ? totalCalculatedWidth : undefined,
     };
-  }, [columns, columnWidths, tableWidth]);
+  }, [columns, columnWidths, tableWidth, resizedWidths]);
 
   return {
     columns: finalColumns,
