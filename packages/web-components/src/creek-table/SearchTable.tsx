@@ -2,12 +2,10 @@ import { ParamsType, ProTable } from '@ant-design/pro-components';
 import { useSafeState } from 'ahooks';
 import { createStyles } from 'antd-style';
 import classnames from 'classnames';
-import _ from 'lodash';
 import { useRef } from 'react';
 
 import { GlobalScrollbarStyle } from '../creek-style';
-import { useAutoWidthColumns, useResizableColumns, useTableScrollHeight } from './hooks';
-import { TableOptionRender } from './TableOptionRender';
+import { useAutoWidthColumns, useResizableColumns, useTableOptions, useTableScrollHeight } from './hooks';
 import { toolBarRender } from './toolBarRender';
 import { CreekTableProps } from './type';
 
@@ -15,10 +13,11 @@ export type SearchTableStyleOptions = {
   prefixCls?: string;
   scrollY?: number;
   bordered?: boolean;
+  hasHeaderTitle?: boolean;
 };
 
 const useStyles = createStyles(({ token }, options: SearchTableStyleOptions) => {
-  const { prefixCls = 'ant', scrollY, bordered } = options;
+  const { prefixCls = 'ant', scrollY, bordered, hasHeaderTitle } = options;
   return {
     'creek-table-container': {
       overflow: 'hidden',
@@ -52,6 +51,18 @@ const useStyles = createStyles(({ token }, options: SearchTableStyleOptions) => 
           padding: token.paddingXS,
         },
       },
+
+      // 如果没有 headerTitle，toolbar 展示在 headerTitle 的区域
+      [`.${prefixCls}-pro-table-list-toolbar-right`]: !hasHeaderTitle
+        ? {
+            flex: 1,
+          }
+        : {},
+      [`.${prefixCls}-pro-table-list-toolbar-setting-items`]: !hasHeaderTitle
+        ? {
+            marginLeft: 'auto',
+          }
+        : {},
     },
   };
 });
@@ -70,6 +81,9 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
     pageFixedBottomConfig,
     resizable = true,
     bordered = true,
+    options,
+    size,
+    headerTitle,
     ...restProps
   } = props;
 
@@ -78,24 +92,30 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
   // 状态提升：管理列宽调整状态，以便 useAutoWidthColumns 能感知到
   const [resizedWidths, setResizedWidths] = useSafeState<Record<string, number>>({});
 
+  // 使用自定义 Hook 管理 options 和 size
+  const { finalOptions, tableSize, setTableSize } = useTableOptions<T, U, ValueType>(options, size);
 
-  const { columns: adaptiveColumns, totalWidth } = useAutoWidthColumns<T, ValueType>(columns, proTableRef, resizedWidths, bordered);
+  const { columns: adaptiveColumns, totalWidth } = useAutoWidthColumns<T, ValueType>(columns, proTableRef, resizedWidths, bordered, tableSize);
 
   const { columns: resizableColumns, components } = useResizableColumns<T, ValueType>(adaptiveColumns, resizable, resizedWidths, setResizedWidths, proTableRef);
 
   const scrollY = useTableScrollHeight(prefixCls, proTableRef, pageFixedBottom, pageFixedBottomConfig?.bottomFix);
 
-  const { styles } = useStyles({ scrollY, prefixCls,  bordered });
+  const { styles } = useStyles({ scrollY, prefixCls, bordered, hasHeaderTitle: !!headerTitle });
 
   return (
     <div ref={proTableRef}>
       <GlobalScrollbarStyle />
       {/* 自定义滚动条 */}
       <ProTable<T, U, ValueType>
-        {...props}
+        components={components}
+        headerTitle={headerTitle}
+        options={finalOptions}
+        size={tableSize}
+        onSizeChange={setTableSize}
+        {...restProps}
         className={classnames(styles['creek-table-container'], className)}
         columns={resizableColumns}
-        components={components}
         bordered={bordered}
         scroll={{
           y: scrollY ?? restProps.scroll?.y,
@@ -103,13 +123,6 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
         }}
         toolbar={{
           ...restProps.toolbar,
-        }}
-        optionsRender={(defaultProps, dom) => {
-          return _.isFunction(optionsRender)
-            ? optionsRender(defaultProps, dom)
-            : restProps?.options
-              ? [<TableOptionRender key="option" defaultDom={dom} importConfig={restProps?.options?.importConfig} exportConfig={restProps?.options?.exportConfig} />]
-              : [];
         }}
         toolBarRender={(...args) => {
           return toolBarRender({ shouldCollapse: false, restProps, args });

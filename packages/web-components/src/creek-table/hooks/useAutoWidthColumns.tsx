@@ -3,12 +3,13 @@ import { useMemoizedFn } from 'ahooks';
 import { Space } from 'antd';
 import { RefObject, useEffect, useMemo, useRef, useState } from 'react';
 
-const DEFAULT_PADDING_WIDTH = 16;
+const DEFAULT_PADDING_WIDTH_SMALL = 16; // small size (compact)
+const DEFAULT_PADDING_WIDTH_LARGE = 24; // large size (default)
 
 /**
- * 估算字符串宽度（简单估算：汉字 14px，非汉字 8px，左右 padding 16px）
+ * 估算字符串宽度（简单估算：汉字 14px，非汉字 8px）
  */
-const estimateWidth = (text: string) => {
+const estimateWidth = (text: string, padding: number) => {
   let width = 0;
   for (const char of text) {
     if (/[\u4e00-\u9fa5]/.test(char)) {
@@ -17,7 +18,7 @@ const estimateWidth = (text: string) => {
       width += 8;
     }
   }
-  return width + DEFAULT_PADDING_WIDTH; // padding
+  return width + padding;
 };
 
 /**
@@ -63,7 +64,9 @@ const MeasureWrapper = ({ children, onResize }: { children: React.ReactNode; onR
     // 监听变化
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        onResize((entry.target as HTMLElement).offsetWidth);
+        // 使用 scrollWidth 来获取完整内容宽度，防止被截断时的测量误差
+        const width = (entry.target as HTMLElement).scrollWidth;
+        onResize(width);
       }
     });
 
@@ -74,7 +77,20 @@ const MeasureWrapper = ({ children, onResize }: { children: React.ReactNode; onR
     };
   }, []); // 依赖为空，只在挂载时设置监听
 
-  return <Space ref={ref}>{children}</Space>;
+  // 使用 inline-block 和 nowrap 防止内容被父容器宽度挤压导致测量不准
+  return (
+    <div
+      ref={ref}
+      style={{
+        display: 'inline-block',
+        whiteSpace: 'nowrap',
+        width: 'max-content', // 确保宽度由内容决定
+        minWidth: 'min-content',
+      }}
+    >
+      <Space>{children}</Space>
+    </div>
+  );
 };
 
 export const useAutoWidthColumns = <T, ValueType>(
@@ -82,6 +98,7 @@ export const useAutoWidthColumns = <T, ValueType>(
   tableRef: RefObject<HTMLDivElement>,
   resizedWidths?: Record<string, number>,
   bordered?: boolean,
+  size?: 'large' | 'middle' | 'small',
 ): { columns: ProColumns<T, ValueType>[] | undefined; totalWidth: number | undefined } => {
   // 存储每个列的最大宽度：key 是 dataIndex 或 title，value 是最大宽度
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
@@ -162,15 +179,21 @@ export const useAutoWidthColumns = <T, ValueType>(
       const colKey = (col.key as string) || (col.dataIndex as string) || `col-${index}`;
       const measuredWidth = columnWidths[colKey];
       
+      // 根据 size 确定 padding
+      let padding = DEFAULT_PADDING_WIDTH_SMALL;
+       if (size === 'large') {
+        padding = DEFAULT_PADDING_WIDTH_LARGE;
+      }
+      
       let baseWidth: number;
       if (col.width) {
         baseWidth = typeof col.width === 'number' ? col.width : 100; // 暂时给个默认值如果手动设了 string width
       } else if (col.valueType === 'option' && measuredWidth) {
         // bordered 模式下，需要额外的宽度来容纳边框和视觉间距，避免换行
         const extraPadding = bordered ? 4: 0;
-        baseWidth = measuredWidth + DEFAULT_PADDING_WIDTH + extraPadding;
+        baseWidth = measuredWidth + padding + extraPadding;
       } else {
-        baseWidth = Math.max(estimateWidth(col.title as string), getValueTypeWidth(col.valueType as string));
+        baseWidth = Math.max(estimateWidth(col.title as string, padding), getValueTypeWidth(col.valueType as string));
       }
 
       let width = baseWidth;

@@ -29,6 +29,7 @@ export const rootContainer = (children: React.ReactNode) => {
   return (
     <ConfigProvider
       locale={zhCN}
+      componentSize="small"
       theme={{
         token: {
           colorPrimary: '#00c07f',

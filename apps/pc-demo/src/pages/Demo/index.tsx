@@ -1,6 +1,6 @@
-import { PlusOutlined } from '@ant-design/icons';
+import { DownloadOutlined } from '@ant-design/icons';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Button, message, Space } from 'antd';
+import { Button, message } from 'antd';
 import { useRef } from 'react';
 
 import { CreekTable, useApp } from '@creekjs/web-components';
@@ -79,7 +79,7 @@ const PetList = () => {
       dataIndex: 'name4',
       hideInSearch: true,
     },
-     {
+    {
       title: '名称5',
       dataIndex: 'name5',
       hideInSearch: true,
@@ -116,18 +116,14 @@ const PetList = () => {
   return (
     <div>
       <CreekTable
-        headerTitle="宠物列表"
         actionRef={actionRef}
         rowKey={(row) => `${row.id}-${row.status}-${row.name}`}
         search={{
           labelWidth: 120,
         }}
         toolBarRender={() => [
-          <Button type="primary" key="primary" onClick={() => openEditModal()}>
-            <Space>
-              <PlusOutlined />
-              <span>新建</span>
-            </Space>
+          <Button type="primary" icon={<DownloadOutlined />} key="primary" onClick={() => openEditModal()}>
+            新建
           </Button>,
         ]}
         request={async (params) => {

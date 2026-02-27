@@ -3,5 +3,6 @@ export * from './useAutoWidthColumns';
 export * from './useElementDistance';
 export * from './useResizableColumns';
 export * from './useTableScrollHeight';
+export * from './useTableOptions';
 
 
