@@ -5,7 +5,7 @@ import classnames from 'classnames';
 import { useRef } from 'react';
 
 import { GlobalScrollbarStyle } from '../creek-style';
-import { useAutoWidthColumns, useResizableColumns, useTableOptions, useTableScrollHeight } from './hooks';
+import { useAutoWidthColumns, useEllipsisColumns, useResizableColumns, useTableOptions, useTableScrollHeight } from './hooks';
 import { toolBarRender } from './toolBarRender';
 import { CreekTableProps } from './type';
 
@@ -95,7 +95,10 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
   // 使用自定义 Hook 管理 options 和 size
   const { finalOptions, tableSize, setTableSize } = useTableOptions<T, U, ValueType>(options, size);
 
-  const { columns: adaptiveColumns, totalWidth } = useAutoWidthColumns<T, ValueType>(columns, proTableRef, resizedWidths, bordered, tableSize);
+  // 处理 columns，默认开启 ellipsis
+  const processedColumns = useEllipsisColumns(columns);
+
+  const { columns: adaptiveColumns, totalWidth } = useAutoWidthColumns<T, ValueType>(processedColumns, proTableRef, resizedWidths, bordered, tableSize);
 
   const { columns: resizableColumns, components } = useResizableColumns<T, ValueType>(adaptiveColumns, resizable, resizedWidths, setResizedWidths, proTableRef);
 

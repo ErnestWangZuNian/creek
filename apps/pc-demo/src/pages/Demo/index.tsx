@@ -55,9 +55,12 @@ const PetList = () => {
 
   const columns: ProColumns<API.Pet>[] = [
     {
-      title: '名称',
+      title: '名称111',
       dataIndex: 'name',
       hideInSearch: true,
+      render(_, record) {
+        return `${record.name}-${record.name}-${record.name}`;
+      },
     },
     {
       title: '名称1',

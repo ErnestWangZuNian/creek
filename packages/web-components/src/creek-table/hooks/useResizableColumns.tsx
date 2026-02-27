@@ -8,6 +8,7 @@ import { Resizable, ResizeCallbackData } from 'react-resizable';
 interface ResizableTitleProps extends React.HTMLAttributes<HTMLTableCellElement> {
   onResize?: (e: React.SyntheticEvent, data: ResizeCallbackData) => void;
   onResizeStart?: (e: React.SyntheticEvent, data: ResizeCallbackData) => void;
+  onResizeStop?: (e: React.SyntheticEvent, data: ResizeCallbackData) => void;
   width?: number | string;
   minWidth?: number;
 }
@@ -55,7 +56,7 @@ const useStyles = createStyles(({ token }) => ({
 }));
 
 const ResizableTitle = (props: ResizableTitleProps) => {
-  const { onResize, onResizeStart, width, className, minWidth, ...restProps } = props;
+  const { onResize, onResizeStart, onResizeStop, width, className, minWidth, ...restProps } = props;
   const { styles } = useStyles();
 
   // 2. 如果 width 不是数字，尝试测量（降级处理）
@@ -100,8 +101,8 @@ const ResizableTitle = (props: ResizableTitleProps) => {
     document.body.style.userSelect = '';
     document.body.style.cursor = '';
     // 拖动结束时，确保最后一次更新传递出去
-    if (onResize) {
-      onResize(e, data);
+    if (onResizeStop) {
+      onResizeStop(e, data);
     }
   };
 
@@ -131,6 +132,14 @@ const ResizableTitle = (props: ResizableTitleProps) => {
             onClick={(e) => {
               e.stopPropagation();
             }}
+            onMouseEnter={(e) => {
+               // 鼠标进入 handle 时触发一次 onResizeStart，用于预先锁定其他列宽度
+               // 这样可以避免在 onResizeStart (mousedown) 时触发重渲染导致 drag 失败
+               if (onResizeStart) {
+                 // 构造一个假的 event 和 data，因为这里只需要触发锁定逻辑
+                 onResizeStart(e, { node: e.currentTarget, size: { width: currentWidth, height: 0 }, handle: 'e' as any });
+               }
+            }}
           />
         }
         onResize={handleResize}
@@ -159,6 +168,11 @@ const ResizableTitle = (props: ResizableTitleProps) => {
           className={classnames(styles['resizable-handle'], 'resizable-handle')}
           onClick={(e) => {
             e.stopPropagation();
+          }}
+          onMouseEnter={(e) => {
+             if (onResizeStart) {
+               onResizeStart(e, { node: e.currentTarget, size: { width: realWidth, height: 0 }, handle: 'e' as any });
+             }
           }}
         />
       }
@@ -192,32 +206,18 @@ export const useResizableColumns = <T, ValueType>(
   const resizedWidths = resizedWidthsProp || internalResizedWidths;
   const setResizedWidths = setResizedWidthsProp || setInternalResizedWidths;
 
-  const rafRef = useRef<Record<string, number>>({});
-
-  // 组件卸载时清理 RAF
-  useEffect(() => {
-    return () => {
-      Object.values(rafRef.current).forEach(cancelAnimationFrame);
-    };
-  }, []);
-
+  // 性能优化：Resize 过程中不更新 state，只在 Stop 时更新
+  // handleResize 仅用于 potential future usage (e.g. events) or removed if not needed
   const handleResize = useMemoizedFn((key: string) => (_: React.SyntheticEvent, { size }: ResizeCallbackData) => {
-    // 节流逻辑：如果有 pending 的更新，先取消
-    if (rafRef.current[key]) {
-      cancelAnimationFrame(rafRef.current[key]);
-    }
-
-    rafRef.current[key] = requestAnimationFrame(() => {
-      setResizedWidths((prev) => {
-        // 如果宽度没有变化，不更新状态
-        if (prev[key] === size.width) return prev;
-        return {
-          ...prev,
-          [key]: size.width,
-        };
-      });
-      delete rafRef.current[key];
-    });
+     // Intentionally empty or minimal logic to avoid re-renders during drag
+     // ResizableTitle handles visual updates locally
+  });
+  
+  const handleResizeStop = useMemoizedFn((key: string) => (_: React.SyntheticEvent, { size }: ResizeCallbackData) => {
+    setResizedWidths((prev) => ({
+        ...prev,
+        [key]: size.width,
+    }));
   });
 
   const handleResizeStart = useMemoizedFn(() => {
@@ -297,12 +297,13 @@ export const useResizableColumns = <T, ValueType>(
           minWidth: minWidth,
           onResize: handleResize(key),
           onResizeStart: handleResizeStart,
+          onResizeStop: handleResizeStop(key),
           'data-column-key': key, // 用于在 DOM 中查找
           ...(col.onHeaderCell ? col.onHeaderCell(column) : null),
         }) as React.HTMLAttributes<HTMLElement>,
       };
     });
-  }, [columns, resizable, resizedWidths, handleResize]);
+  }, [columns, resizable, resizedWidths, handleResize, handleResizeStart, handleResizeStop]);
 
   const components = useMemo(() => {
     if (!resizable) return undefined;
