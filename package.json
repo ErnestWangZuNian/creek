@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "clear": "rimraf apps/*/src/.umi*  && rimraf apps*/*/dist &&  rimraf packages*/*/dist &&  rimraf apps/*/.turbo && rimraf packages/*/node_modules && rimraf apps/*/node_modules && rimraf node_modules",
+    "clear": "rimraf apps/*/src/.umi* && rimraf apps/*/.umi && rimraf apps/*/dist && rimraf packages/*/dist && rimraf apps/*/.turbo && rimraf packages/*/node_modules && rimraf apps/*/node_modules && rimraf node_modules && rimraf pnpm-lock.yaml",
     "dev": "turbo base:build && concurrently \"turbo dev\" \"turbo father:dev\"",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint": "turbo lint",
@@ -25,7 +25,7 @@
     "@creekjs/web-components": "workspace:^",
     "@umijs/max": "^4.4.12",
     "ahooks": "^3.9.3",
-    "antd": "^5.27.0",
+    "antd": "^6.3.1",
     "classnames": "^2.5.1",
     "dayjs": "^1.11.13",
     "lodash": "^4.17.21",

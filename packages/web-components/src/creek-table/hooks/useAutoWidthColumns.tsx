@@ -98,7 +98,7 @@ export const useAutoWidthColumns = <T, ValueType>(
   tableRef: RefObject<HTMLDivElement>,
   resizedWidths?: Record<string, number>,
   bordered?: boolean,
-  size?: 'large' | 'middle' | 'small',
+  size?: 'large' | 'middle' | 'small' | 'medium',
 ): { columns: ProColumns<T, ValueType>[] | undefined; totalWidth: number | undefined } => {
   // 存储每个列的最大宽度：key 是 dataIndex 或 title，value 是最大宽度
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
