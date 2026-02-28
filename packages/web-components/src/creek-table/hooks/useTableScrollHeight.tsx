@@ -48,7 +48,6 @@ export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObjec
 
       let top = 0;
       if (tableHeader) {
-        console.log(tableHeader.getBoundingClientRect(), 'tableHeader.getBoundingClientRect().bottom');
         top = tableHeader.getBoundingClientRect().bottom;
       } else if (tableBody) {
         top = tableBody.getBoundingClientRect().top;
@@ -57,8 +56,6 @@ export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObjec
       const windowHeight = window.innerHeight;
 
       let height = windowHeight - top - currentContentPadding -  currentCardContentPadding - offsetBottom;
-
-      console.log( currentContentPadding, currentCardContentPadding, offsetBottom, cardContentEl, 'dddddd111');
 
       const pagination = tableEl.querySelector(`.${prefixCls}-pagination`);
 
