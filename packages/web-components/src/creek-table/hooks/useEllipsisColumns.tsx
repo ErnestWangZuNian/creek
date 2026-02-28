@@ -1,6 +1,6 @@
 import type { ParamsType, ProColumns } from '@ant-design/pro-components';
 import React, { useMemo } from 'react';
-import { EllipsisTooltip } from '../EllipsisTooltip';
+import { EllipsisTooltip } from '../components';
 
 /**
  * 默认开启 ellipsis 的 Hook

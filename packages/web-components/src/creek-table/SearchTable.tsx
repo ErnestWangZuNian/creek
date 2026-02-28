@@ -6,7 +6,6 @@ import { useRef } from 'react';
 
 import { GlobalScrollbarStyle } from '../creek-style';
 import { useAutoWidthColumns, useEllipsisColumns, useResizableColumns, useTableOptions, useTableScrollHeight } from './hooks';
-import { toolBarRender } from './toolBarRender';
 import { CreekTableProps } from './type';
 
 export type SearchTableStyleOptions = {
@@ -126,9 +125,6 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
         }}
         toolbar={{
           ...restProps.toolbar,
-        }}
-        toolBarRender={(...args) => {
-          return toolBarRender({ shouldCollapse: false, restProps, args });
         }}
       />
     </div>
