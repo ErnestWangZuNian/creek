@@ -1,7 +1,7 @@
 import { CopyOutlined } from '@ant-design/icons';
-import { Flex, message, Tooltip, Typography } from 'antd';
+import { ConfigProvider, Flex, message, Tooltip, Typography } from 'antd';
 import { createStyles } from 'antd-style';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 const useStyles = createStyles(({ css, token }) => {
   return {
@@ -11,6 +11,16 @@ const useStyles = createStyles(({ css, token }) => {
       padding: 0;
       // Ensure the wrapper behaves like a block/inline-block that can have width
       display: block; 
+      overflow: hidden;
+    `,
+    tooltipContent: css`
+      max-width: 500px;
+      max-height: 300px;
+      overflow-y: auto;
+    `,
+    tooltipText: css`
+      word-break: break-all;
+      white-space: pre-wrap;
     `,
     copyIcon: css`
       cursor: pointer;
@@ -31,6 +41,7 @@ const useStyles = createStyles(({ css, token }) => {
  */
 export const EllipsisTooltip = ({ children }: { children: React.ReactNode }) => {
   const { styles } = useStyles();
+  const { getPrefixCls } = useContext(ConfigProvider.ConfigContext);
   const textRef = useRef<HTMLDivElement>(null);
   const [isEllipsis, setIsEllipsis] = useState(false);
   const isSimpleContent = typeof children === 'string' || typeof children === 'number';
@@ -38,8 +49,9 @@ export const EllipsisTooltip = ({ children }: { children: React.ReactNode }) => 
   useEffect(() => {
     const checkEllipsis = () => {
       if (textRef.current) {
+        const prefixCls = getPrefixCls('typography');
         // Typography.Text renders a span or div with .ant-typography
-        const typographyEl = textRef.current.querySelector('.ant-typography');
+        const typographyEl = textRef.current.querySelector(`.${prefixCls}`);
         if (typographyEl) {
            // For simple ellipsis={true}, Antd uses CSS ellipsis.
            // We can detect if it's truncated by comparing scrollWidth and clientWidth
@@ -83,8 +95,8 @@ export const EllipsisTooltip = ({ children }: { children: React.ReactNode }) => 
         return children;
     }
     return (
-        <Flex align="center" gap={8}>
-          <span>{children}</span>
+        <Flex align="center" gap={8} className={styles.tooltipContent}>
+          <span className={styles.tooltipText}>{children}</span>
           <CopyOutlined
             onClick={handleCopy}
             className={styles.copyIcon}
@@ -92,15 +104,16 @@ export const EllipsisTooltip = ({ children }: { children: React.ReactNode }) => 
           />
         </Flex>
     );
-  }, [children, isSimpleContent, styles.copyIcon]);
+  }, [children, isSimpleContent]);
 
   return (
     <Tooltip 
       title={isEllipsis ? tooltipTitle : undefined} 
       placement="topLeft" 
       mouseLeaveDelay={0.2}
+      getPopupContainer={() => document.body}
     >
-       <div ref={textRef} className={styles.text} style={{ overflow: 'hidden' }}>
+       <div ref={textRef} className={styles.text}>
           <Typography.Text ellipsis={true}>
             {children}
           </Typography.Text>

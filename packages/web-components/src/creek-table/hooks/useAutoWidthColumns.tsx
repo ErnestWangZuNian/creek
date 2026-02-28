@@ -250,6 +250,26 @@ export const useAutoWidthColumns = <T, ValueType>(
         width: shouldForceWidth || col.width || (resizedWidths && resizedWidths[_colKey]) ? _calculatedWidth : undefined,
         // 添加 calculatedWidth 以供后续 useResizableColumns 使用，这里使用 _baseWidth (即不受 resize 影响的宽度)
         calculatedWidth: _baseWidth,
+        onHeaderCell: (column: any) => {
+          const originalProps = originalCol.onHeaderCell ? originalCol.onHeaderCell(column) : {};
+          return {
+            ...originalProps,
+            style: {
+              ...originalProps.style,
+              minWidth: _calculatedWidth,
+            },
+          };
+        },
+        onCell: (record: any, index: any) => {
+          const originalProps = originalCol.onCell ? originalCol.onCell(record, index) : {};
+          return {
+            ...originalProps,
+            style: {
+              ...originalProps.style,
+              minWidth: _calculatedWidth,
+            },
+          };
+        },
       };
     });
 
