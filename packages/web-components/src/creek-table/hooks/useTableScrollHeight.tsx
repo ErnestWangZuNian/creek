@@ -1,8 +1,9 @@
 import { useDebounceFn, useEventListener } from 'ahooks';
 import { useEffect, useState } from 'react';
 
-export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObject<HTMLDivElement>, pageFixedBottom: boolean = true, offsetBottom: number =0) => {
+export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObject<HTMLDivElement>, pageFixedBottom: boolean = true, offsetBottom: number = 0) => {
   const [scrollY, setScrollY] = useState<number | undefined>(undefined);
+  const [tableHeight, setTableHeight] = useState<number | undefined>(undefined);
 
   const { run: calcHeight } = useDebounceFn(
     () => {
@@ -31,7 +32,7 @@ export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObjec
         }
       }
 
-       // 尝试动态获取 layout content padding
+      // 尝试动态获取 layout content padding
       // Ant Design Pro Layout 的 content 容器通常有 class 包含 'pro-layout-content'
       // 例如：ant-pro-layout-content, my-prefix-pro-layout-content
       let currentCardContentPadding = 0; // 默认使用传入的
@@ -55,7 +56,8 @@ export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObjec
 
       const windowHeight = window.innerHeight;
 
-      let height = windowHeight - top - currentContentPadding -  currentCardContentPadding - offsetBottom;
+      let height = windowHeight - top - currentContentPadding - currentCardContentPadding - offsetBottom;
+      let currentTableHeight = windowHeight - tableEl.getBoundingClientRect().top;
 
       const pagination = tableEl.querySelector(`.${prefixCls}-pagination`);
 
@@ -66,10 +68,13 @@ export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObjec
         const totalPaginationMargin = parseFloat(styles.marginTop) + parseFloat(styles.marginBottom);
 
         height = height - paginationHeight - totalPaginationMargin;
+        setTableHeight(0);
       } else {
         // 如果没有找到分页，预留一个高度（假设分页高度为 24px + margin 16px = 40px）
         // 这样可以避免初始加载时高度过大，导致出现滚动条，然后分页出现后高度又变小
-        height = height;
+        height = height - 40;
+
+        setTableHeight(currentTableHeight);
       }
 
       // Minimum height to avoid crashes or ugly rendering
@@ -92,5 +97,8 @@ export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObjec
 
   useEventListener('resize', calcHeight);
 
-  return scrollY;
+  return {
+    scrollY,
+    tableHeight
+  };
 };

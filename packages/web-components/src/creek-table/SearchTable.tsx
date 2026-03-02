@@ -12,16 +12,19 @@ import { CreekTableProps } from './type';
 export type SearchTableStyleOptions = {
   prefixCls?: string;
   scrollY?: number;
+  tableHeight?: number;
   bordered?: boolean;
   hasHeaderTitle?: boolean;
 };
 
 const useStyles = createStyles(({ token }, options: SearchTableStyleOptions) => {
-  const { prefixCls = 'ant', scrollY, bordered, hasHeaderTitle } = options;
+  const { prefixCls = 'ant', scrollY, tableHeight, bordered, hasHeaderTitle } = options;
   return {
     'creek-table-container': {
       overflow: 'hidden',
       position: 'relative',
+      height: tableHeight ? `${tableHeight}px` : 'auto',
+      backgroundColor: token.colorBgContainer,
       [`.${prefixCls}-table-header`]: {
         borderRight: bordered ? `1px solid ${token.colorBorderSecondary}` : 'none',
       },
@@ -102,9 +105,9 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
 
   const { columns: resizableColumns, components } = useResizableColumns<T, ValueType>(adaptiveColumns, resizable, resizedWidths, setResizedWidths, proTableRef);
 
-  const scrollY = useTableScrollHeight(prefixCls, proTableRef, pageFixedBottom, pageFixedBottomConfig?.bottomFix);
-
-  const { styles } = useStyles({ scrollY, prefixCls, bordered, hasHeaderTitle: !!headerTitle });
+  const {scrollY, tableHeight, } = useTableScrollHeight(prefixCls, proTableRef, pageFixedBottom, pageFixedBottomConfig?.bottomFix);
+ 
+  const { styles } = useStyles({ scrollY, tableHeight, prefixCls, bordered, hasHeaderTitle: !!headerTitle });
 
   return (
     <div ref={proTableRef}>
