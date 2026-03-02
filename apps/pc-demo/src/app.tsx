@@ -15,6 +15,7 @@ export async function getInitialState(): Promise<{ name: string }> {
 //  布局
 export const layout: RunTimeLayoutConfig = () => {
   return {
+    keepAlive: false,
     logo: 'https://img.alicdn.com/tfs/TB1YHEpwUT1gK0jSZFhXXaAtVXa-28-27.svg',
     menu: {
       locale: false,

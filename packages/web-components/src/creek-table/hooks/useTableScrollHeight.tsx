@@ -65,8 +65,6 @@ export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObjec
         const styles = window.getComputedStyle(pagination);
         const totalPaginationMargin = parseFloat(styles.marginTop) + parseFloat(styles.marginBottom);
 
-        console.log(height, paginationHeight, totalPaginationMargin, 'eee');
-
         height = height - paginationHeight - totalPaginationMargin;
       } else {
         // 如果没有找到分页，预留一个高度（假设分页高度为 24px + margin 16px = 40px）
