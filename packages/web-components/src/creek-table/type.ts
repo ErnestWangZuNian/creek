@@ -18,6 +18,8 @@ export type CreekTableProps<T extends ParamsType, U extends ParamsType, ValueTyp
   };
   // 是否自动为列添加筛选功能，默认 true
   autoAddFilterForColumn?: boolean;
+  // 是否显示序号列，默认 true
+  showIndex?: boolean;
   /** 是否可拖动列宽，默认 true */
   resizable?: boolean;
 };
