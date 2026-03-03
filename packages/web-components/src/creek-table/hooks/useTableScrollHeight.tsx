@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObject<HTMLDivElement>, pageFixedBottom: boolean = true, offsetBottom: number = 0) => {
   const [scrollY, setScrollY] = useState<number | undefined>(undefined);
   const [tableHeight, setTableHeight] = useState<number | undefined>(undefined);
+  const [tableContainerHeight, setTableContainerHeight] = useState<number | undefined>(0);
+  const [hasScroll, setHasScroll] = useState<boolean>(false);
 
   const { run: calcHeight } = useDebounceFn(
     () => {
@@ -15,7 +17,7 @@ export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObjec
       if (tableEl.offsetParent === null) return;
 
       const tableHeader = tableEl.querySelector(`.${prefixCls}-table-thead`);
-      const tableBody = tableEl.querySelector(`.${prefixCls}-table-body`);
+      const tableBody = tableEl.querySelector(`.${prefixCls}-table-tbody`);
 
       // 尝试动态获取 layout content padding
       // Ant Design Pro Layout 的 content 容器通常有 class 包含 'pro-layout-content'
@@ -77,10 +79,20 @@ export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObjec
         setTableHeight(currentTableHeight);
       }
 
+      let currentHasScroll = false;
+      if (tableBody) {
+        currentHasScroll = tableBody.scrollHeight > height;
+      }
+      setHasScroll(currentHasScroll);
+
       // Minimum height to avoid crashes or ugly rendering
       setScrollY(height);
+
+      if (tableHeader) {
+        setTableContainerHeight(height + tableHeader?.clientHeight);
+      }
     },
-    { wait: 100 },
+    { wait: 16,leading: true },
   );
 
   useEffect(() => {
@@ -99,6 +111,8 @@ export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObjec
 
   return {
     scrollY,
-    tableHeight
+    tableHeight,
+    tableContainerHeight,
+    hasScroll,
   };
 };

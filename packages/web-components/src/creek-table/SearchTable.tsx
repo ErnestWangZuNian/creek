@@ -12,31 +12,52 @@ import { CreekTableProps } from './type';
 export type SearchTableStyleOptions = {
   prefixCls?: string;
   scrollY?: number;
+  tableContainerHeight?: number;
   tableHeight?: number;
   bordered?: boolean;
   hasHeaderTitle?: boolean;
+  hasScroll?: boolean;
 };
 
 const useStyles = createStyles(({ token }, options: SearchTableStyleOptions) => {
-  const { prefixCls = 'ant', scrollY, tableHeight, bordered, hasHeaderTitle } = options;
+  const { prefixCls = 'ant', scrollY, tableHeight, bordered, hasHeaderTitle, tableContainerHeight, hasScroll } = options;
   return {
     'creek-table-container': {
       overflow: 'hidden',
       position: 'relative',
       height: tableHeight ? `${tableHeight}px` : 'auto',
       backgroundColor: token.colorBgContainer,
+      [`.${prefixCls}-table`]: {
+        minHeight: `${tableContainerHeight}px`,
+      },
+      [`.${prefixCls}-table-container`]: {
+        borderBottom: 'none',
+        overflow: 'hidden'
+      },
+     
       [`.${prefixCls}-table-header`]: {
-        borderRight: bordered ? `1px solid ${token.colorBorderSecondary}` : 'none',
+        borderRight: (bordered && hasScroll) ? `1px solid ${token.colorBorderSecondary}` : 'none',
       },
       [`.${prefixCls}-table-body`]: {
         overflowY: 'auto',
-        minHeight: `${scrollY}px`,
-        borderRight: bordered ? `1px solid ${token.colorBorderSecondary}` : 'none',
+        maxHeight: `${scrollY}px`,
+        borderRight: (bordered && hasScroll) ? `1px solid ${token.colorBorderSecondary}` : 'none',
+      },
+      // 兼容非 scroll.y 模式下的 table 容器
+      [`.${prefixCls}-table-content`]: {
+        overflowY: 'hidden',
+        maxHeight: scrollY ? `${scrollY}px` : undefined,
       },
 
       [`.${prefixCls}-table-cell-scrollbar`]: {
         boxShadow: bordered ? 'none!important' : 'inherit',
         borderInlineEnd: bordered ? `none!important` : 'none',
+        display: hasScroll ? 'table-cell' : 'none',
+        width: hasScroll ? 'initial' : '0px!important',
+        minWidth: hasScroll ? 'initial' : '0px!important',
+        maxWidth: hasScroll ? 'initial' : '0px!important',
+        padding: hasScroll ? 'initial' : '0px!important',
+        margin: hasScroll ? 'initial' : '0px!important',
       },
 
       [`.${prefixCls}-pagination`]: {
@@ -105,9 +126,10 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
 
   const { columns: resizableColumns, components } = useResizableColumns<T, ValueType>(adaptiveColumns, resizable, resizedWidths, setResizedWidths, proTableRef);
 
-  const {scrollY, tableHeight, } = useTableScrollHeight(prefixCls, proTableRef, pageFixedBottom, pageFixedBottomConfig?.bottomFix);
- 
-  const { styles } = useStyles({ scrollY, tableHeight, prefixCls, bordered, hasHeaderTitle: !!headerTitle });
+  const { scrollY, tableHeight, tableContainerHeight, hasScroll } = useTableScrollHeight(prefixCls, proTableRef, pageFixedBottom, pageFixedBottomConfig?.bottomFix);
+
+  const { styles } = useStyles({ scrollY, tableHeight, prefixCls, bordered, hasHeaderTitle: !!headerTitle, tableContainerHeight, hasScroll });
+
 
   return (
     <div ref={proTableRef}>
@@ -124,7 +146,7 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
         columns={resizableColumns}
         bordered={bordered}
         scroll={{
-          y: scrollY ?? restProps.scroll?.y,
+          y: hasScroll ? scrollY || restProps.scroll?.y : undefined,
           x: totalWidth ?? restProps.scroll?.x,
         }}
         toolbar={{
