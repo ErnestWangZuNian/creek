@@ -15,6 +15,7 @@ export const useIndexColumn = <T = any, ValueType = 'text'>(
       width: 48,
       fixed: 'left',
       disable: true,
+      hideInSearch: true,
       render: (dom, entity, index, action, schema) => {
         const { current = 1, pageSize = 20 } = action?.pageInfo || {};
         return (current - 1) * pageSize + index + 1;
