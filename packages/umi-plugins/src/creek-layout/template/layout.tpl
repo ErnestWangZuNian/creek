@@ -1,4 +1,4 @@
-import { useLocation, useAppData, IRoute, matchRoutes, Outlet, useNavigate } from 'umi';
+import { useLocation, useAppData, IRoute, matchRoutes, Outlet, useNavigate, useIntl } from 'umi';
 import { useMemo } from 'react';
 import _ from 'lodash';
 import { CreekLayout, CreekLayoutProps } from '{{{creekWebComponentsPath}}}';
@@ -74,6 +74,7 @@ const Layout = (props: CreekLayoutProps) => {
     loading: false,
     setInitialState: null,
   };
+  const { formatMessage } = useIntl();
   const userConfig = {{{userConfig}}};
   const creekLocaleConfig = {{{creekLocaleConfig}}};
   const runtimeConfig = pluginManager.applyPlugins({
@@ -114,6 +115,7 @@ const Layout = (props: CreekLayoutProps) => {
         navigate={navigate}
         userConfig={userConfig}
         route={route}
+        formatMessage={formatMessage}
         initialInfo={initialInfo}
         {...layoutRestProps}
         children={
