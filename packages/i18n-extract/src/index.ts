@@ -30,13 +30,13 @@ async function run() {
   // Global collection of locales
   const collectedLocales: CollectedLocales = {};
 
-  files.forEach(file => {
+  for (const file of files) {
     try {
-      processFile(file, config, collectedLocales);
+      await processFile(file, config, collectedLocales);
     } catch (error) {
       console.error(chalk.red(`Error processing ${file}:`), error);
     }
-  });
+  }
 
   // Generate Locale Files
   await generateLocales(collectedLocales, config);

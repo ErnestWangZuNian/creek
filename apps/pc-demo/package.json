@@ -5,22 +5,22 @@
   "scripts": {
     "build": "max build",
     "dev": "max dev",
+    "extract": "creek-i18n extract",
     "format": "prettier --cache --write .",
     "openApi": "max openApi",
     "setup": "max setup",
-    "start": "npm run dev",
-    "extract": "creek-i18n extract"
+    "start": "npm run dev"
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
     "@ant-design/pro-components": "^2.8.10",
+    "@creekjs/i18n-extract": "workspace:^",
     "@creekjs/openapi": "workspace:^",
     "@creekjs/request": "workspace:^",
     "@creekjs/web-components": "workspace:^",
-    "@creekjs/i18n-extract": "workspace:^",
     "@umijs/max": "^4.6.1",
     "ahooks": "^3.9.6",
-     "antd": "^6.3.1",
+    "antd": "^6.3.1",
     "axios": "1.7.9",
     "lodash": "^4.17.23"
   },

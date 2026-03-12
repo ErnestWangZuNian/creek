@@ -19,7 +19,7 @@ export default defineConfig({
     {
       path: '/',
       name: '首页',
-      component: './Demo'
+      component: './Demo',
     },
     {
       path: '/test',

@@ -5,6 +5,7 @@
   "scripts": {
     "build": "max build",
     "dev": "max dev",
+    "extract": "creek-i18n extract",
     "format": "prettier --cache --write .",
     "openApi": "max openApi",
     "setup": "max setup",
@@ -12,7 +13,8 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
-   "@ant-design/pro-components": "^2.8.10",
+    "@ant-design/pro-components": "^2.8.10",
+    "@creekjs/i18n-extract": "latest",
     "@creekjs/openapi": "latest",
     "@creekjs/request": "latest",
     "@creekjs/web-components": "latest",

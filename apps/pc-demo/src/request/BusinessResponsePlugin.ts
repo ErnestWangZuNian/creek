@@ -1,4 +1,4 @@
-import { t } from "@/utils/i18n";
+import { t } from '@/utils/i18n';
 import { AxiosPlugin, AxiosPluginConfigType, AxiosPluginErrorType, AxiosPluginResponseType } from '@creekjs/request';
 import { message } from 'antd';
 import _ from 'lodash';
@@ -21,24 +21,20 @@ export class BusinessResponsePlugin extends AxiosPlugin {
     this.options = {
       listField: 'records',
       totalField: 'total',
-      ...options
+      ...options,
     };
   }
 
   // 处理请求前的参数映射 (ProTable 兼容)
   beforeRequest(config: AxiosPluginConfigType) {
     if (config.params) {
-      const {
-        current,
-        pageSize,
-        ...rest
-      } = config.params;
+      const { current, pageSize, ...rest } = config.params;
       // 如果存在 current/pageSize 且不存在 page/size，则进行映射
       if (current !== undefined || pageSize !== undefined) {
         config.params = {
           ...rest,
           page: current,
-          size: pageSize
+          size: pageSize,
         };
       }
     }
@@ -47,22 +43,16 @@ export class BusinessResponsePlugin extends AxiosPlugin {
 
   // 处理请求成功后的响应
   afterRequest<T>(response: AxiosPluginResponseType<BackendResult<T>>) {
-    const {
-      data: resData
-    } = response;
+    const { data: resData } = response;
 
     // 检查是否为后端返回的标准结构
     if (resData && typeof resData === 'object' && 'code' in resData) {
-      const {
-        code,
-        msg,
-        message: msgAlt
-      } = resData;
+      const { code, msg, message: msgAlt } = resData;
 
       // 兼容 code 为 number 或 string 的情况，以及 000000/0000 成功码
       const successCodes = [200, '200', '0000', '000000'];
       if (!successCodes.includes(code)) {
-        const errorMsg = msg || msgAlt || t("request.BusinessResponsePlugin.qingQiuShiBai", "请求失败");
+        const errorMsg = msg || msgAlt || t('request.BusinessResponsePlugin.qingQiuShiBai', '请求失败');
         message.error(errorMsg);
         return Promise.reject(response);
       }
@@ -80,14 +70,14 @@ export class BusinessResponsePlugin extends AxiosPlugin {
           // ProTable 需要 data 为数组
           success: true,
           // ProTable 需要 success 为 true
-          total: finalData[totalField] || 0
+          total: finalData[totalField] || 0,
         };
       }
 
       // 解包，只返回 data 字段
       return {
         ...resData,
-        success: true
+        success: true,
       };
     }
 
@@ -96,13 +86,13 @@ export class BusinessResponsePlugin extends AxiosPlugin {
     return {
       data: _resData,
       success: response.status === 200,
-      total: _.isArray(_resData) ? _resData.length : 0
+      total: _.isArray(_resData) ? _resData.length : 0,
     };
   }
 
   // 处理 HTTP 错误（如 404, 500 等）
   onError(error: AxiosPluginErrorType) {
-    const errorMsg = error.message || t("request.BusinessResponsePlugin.wangLuoQingQiuCuoWu", "网络请求错误");
+    const errorMsg = error.message || t('request.BusinessResponsePlugin.wangLuoQingQiuCuoWu', '网络请求错误');
     message.error(errorMsg);
     return Promise.reject(error);
   }

@@ -11,38 +11,82 @@ import * as t from '@babel/types';
 import chalk from 'chalk';
 import { CollectedLocales, Config } from '../types';
 
-function mergeIntoAst(ast: any, newEntries: Record<string, string>) {
+function mergeIntoAst(ast: any, newEntries: Record<string, string>, cleanup: boolean = false) {
     // Expecting export default { ... }
     let properties: any[] = [];
+    let objectExpression: any = null;
     
     traverse(ast, {
         ExportDefaultDeclaration(path: any) {
             if (t.isObjectExpression(path.node.declaration)) {
+                objectExpression = path.node.declaration;
                 properties = path.node.declaration.properties;
             }
         }
     });
 
-    if (!properties) return;
+    if (!properties || !objectExpression) return;
 
+    const newKeys = new Set(Object.keys(newEntries));
+
+    // 1. Update or Add new entries
     Object.entries(newEntries).forEach(([key, value]) => {
         // Check if key exists
-        const exists = properties.some((prop: any) => {
+        const existingProp = properties.find((prop: any) => {
             return (t.isIdentifier(prop.key) && prop.key.name === key) ||
                    (t.isStringLiteral(prop.key) && prop.key.value === key);
         });
 
-        if (!exists) {
+        if (!existingProp) {
             const prop = t.objectProperty(
                 t.stringLiteral(key),
                 t.stringLiteral(value)
             );
             properties.push(prop);
+        } else {
+             // Optional: Update value if changed? 
+             // Usually for zh-CN we want to update the source text if it changed in code.
+             // But for en-US we might want to keep the translation.
+             // Let's assume for now we don't overwrite existing values unless it's the source language file (zh-CN).
+             // But we don't know which file this is easily here without passing more context.
+             // However, the user asked about "cleaning up unused keys".
         }
     });
+
+    // 2. Remove unused keys if cleanup is true
+    if (cleanup) {
+        // Filter out properties that are NOT in newEntries
+        // We need to mutate the properties array in place or replace it.
+        // AST manipulation: we can remove paths if we were traversing, but here we have the array.
+        // We can filter the array and reassign to objectExpression.properties.
+        
+        const filteredProperties = properties.filter((prop: any) => {
+            let key = '';
+            if (t.isIdentifier(prop.key)) key = prop.key.name;
+            else if (t.isStringLiteral(prop.key)) key = prop.key.value;
+            
+            // If key is not in newKeys, it's unused.
+            // BUT we must be careful about comments. 
+            // If we remove the property, comments attached might be lost or shifted.
+            // And manual keys?
+            
+            // User requirement: "我在项目的文件中我又给张三这个删除了 但是在zh-CN 中这个中文已经存在了 这样的话在zh-cn或者en-us中都会存在很多废弃的代码"
+            // So they WANT to remove keys that are no longer in source.
+            
+            return newKeys.has(key);
+        });
+        
+        objectExpression.properties = properties.filter((prop: any) => {
+            let key = '';
+            if (t.isIdentifier(prop.key)) key = prop.key.name;
+            else if (t.isStringLiteral(prop.key)) key = prop.key.value;
+            
+            return newKeys.has(key);
+        });
+    }
 }
 
-async function writeLocaleFile(filePath: string, entries: Record<string, string>) {
+async function writeLocaleFile(filePath: string, entries: Record<string, string>, cleanup: boolean = true) {
     fs.ensureDirSync(path.dirname(filePath));
     
     if (fs.existsSync(filePath)) {
@@ -50,7 +94,7 @@ async function writeLocaleFile(filePath: string, entries: Record<string, string>
         const content = fs.readFileSync(filePath, 'utf-8');
         try {
             const ast = parser.parse(content, { sourceType: 'module' });
-            mergeIntoAst(ast, entries);
+            mergeIntoAst(ast, entries, cleanup);
             const { code } = generate(ast, { jsescOption: { minimal: true } }, content);
             fs.writeFileSync(filePath, code, 'utf-8');
             console.log(chalk.cyan(`Merged locale file: ${filePath}`));
@@ -81,7 +125,7 @@ export async function generateLocales(collectedLocales: CollectedLocales, config
           }
           
           const targetFile = path.join(baseDir, `${relativePath}.ts`);
-          await writeLocaleFile(targetFile, entries);
+          await writeLocaleFile(targetFile, entries, true);
       }
   } else {
       // Single file mode
@@ -99,7 +143,8 @@ export async function generateLocales(collectedLocales: CollectedLocales, config
           });
       }
       
-      await writeLocaleFile(zhTargetFile, allEntries);
+      // Cleanup for zh-CN.ts (source of truth)
+      await writeLocaleFile(zhTargetFile, allEntries, true);
 
       // Generate en-US.ts (if it doesn't exist, create empty or merge)
       // Assume en-US.ts is in the same directory as zh-CN.ts
@@ -110,29 +155,24 @@ export async function generateLocales(collectedLocales: CollectedLocales, config
       // But typically we don't want to overwrite existing translations.
       // Let's create an object with same keys but empty values for new keys.
       
-      const enEntries: Record<string, string> = {};
-       Object.keys(allEntries).forEach(key => {
-           enEntries[key] = key; // Or leave empty? Usually better to put key as placeholder or Chinese text
-           // Let's use Chinese text as placeholder so it's visible what needs translation
-           // OR use key.
-           // Let's use empty string or a placeholder.
-           // User said: "没有英文就是默认的中文" -> implies fallback or just copy Chinese?
-           // "只生成一个zh-cn.ts就好了" -> User initially said "默认生成zh-CN.ts和en-US", then "没有英文就是默认的中文 只生成一个zh-cn.ts就好了"
-           // Wait, the user said: "默认生成zh-CN.ts和en-US 没有英文就是默认的中文 只生成一个zh-cn.ts就好了"
-           // This is contradictory. 
-           // Interpretation 1: Generate both. If no EN translation, use CN text.
-           // Interpretation 2: "只生成一个zh-cn.ts就好了" overrides the first part?
-           // Let's look at the prompt again: "默认生成zh-CN.ts和en-US 没有英文就是默认的中文 只生成一个zh-cn.ts就好了 不用按照目录和文件区分"
-           // It seems the user changed their mind mid-sentence? Or maybe "只生成一个zh-cn.ts就好了" refers to the file structure (single file vs multiple)?
-           // "不用按照目录和文件区分" -> Single file mode.
-           
-           // Let's assume the user wants BOTH files (zh-CN and en-US), single file for each language.
-           // And for en-US, if no translation, use Chinese text (default behavior of some tools) or just empty.
-           // I will generate en-US.ts as well, populating it with Chinese values as placeholders (or empty strings if preferred).
-           // Let's use Chinese values as placeholders so the app doesn't break/show blank.
-           enEntries[key] = allEntries[key]; 
-       });
-
-       await writeLocaleFile(enTargetFile, enEntries);
+      // We read existing en-US file if it exists to preserve translations
+      let existingEnEntries: Record<string, string> = {};
+      if (fs.existsSync(enTargetFile)) {
+            // This is tricky without parsing. But mergeIntoAst handles merge.
+            // The issue is mergeIntoAst(..., cleanup=true) will remove keys not in input.
+            // So if we pass `enEntries` which is `allEntries` (Chinese values), 
+            // mergeIntoAst will add missing keys (good) and remove extra keys (good for cleanup).
+            // But it won't overwrite existing values (because of !existingProp check).
+            
+            // So simply passing `allEntries` to `writeLocaleFile(enTargetFile, allEntries, true)`
+            // will:
+            // 1. Add new keys (with Chinese value as placeholder)
+            // 2. Keep existing keys (with existing English value)
+            // 3. Remove keys that are no longer in `allEntries` (cleanup)
+            
+            // This is exactly what is needed!
+      }
+      
+      await writeLocaleFile(enTargetFile, allEntries, true);
   }
 }

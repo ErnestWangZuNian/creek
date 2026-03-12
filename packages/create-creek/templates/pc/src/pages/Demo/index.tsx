@@ -1,5 +1,6 @@
 import { DownloadOutlined } from '@ant-design/icons';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
+import { useSafeState } from 'ahooks';
 import { Button, message } from 'antd';
 import { useRef } from 'react';
 
@@ -13,7 +14,12 @@ import CreateUpdateForm from './components/CreateUpdateForm';
 const PetList = () => {
   const actionRef = useRef<ActionType>();
   const { modal } = useApp();
+
+  /*i18n-ignore*/
+  const b = '被忽略提取的文案';
   
+  //  这是一段中文注释代码
+  const [currentPet] = useSafeState<{ name: string }>({ name: t('pages.Demo.index.zhangSan', '张三') });
 
   const handleAdd = async (fields: API.Pet) => {
     await addPet({
@@ -135,6 +141,9 @@ const PetList = () => {
   ];
   return (
     <div>
+      <span>{currentPet.name}</span>
+      <p title={t('pages.Demo.index.biaoTi', '标题')}>{b + t('pages.Demo.index.heHe', '呵呵')}</p>
+
       <CreekTable
         actionRef={actionRef}
         rowKey={(row) => `${row.id}-${row.status}-${row.name}`}

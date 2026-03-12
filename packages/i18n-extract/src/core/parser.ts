@@ -9,8 +9,19 @@ import generate from '@babel/generator';
 import * as t from '@babel/types';
 // @ts-ignore
 import chalk from 'chalk';
+import prettier from 'prettier';
 import { CollectedLocales, Config } from '../types';
 import { getNamespace } from '../utils';
+
+async function formatCode(code: string, filePath: string) {
+    try {
+        const options = await prettier.resolveConfig(filePath) || {};
+        return await prettier.format(code, { ...options, filepath: filePath });
+    } catch (e) {
+        console.warn(chalk.yellow(`Prettier formatting failed for ${filePath}: ${e}`));
+        return code;
+    }
+}
 
 function getImportAst(statement: string): t.ImportDeclaration {
     try {
@@ -28,12 +39,12 @@ function getImportAst(statement: string): t.ImportDeclaration {
     );
 }
 
-function processCode(
+async function processCode(
     content: string, 
     filePath: string, 
     config: Config, 
     collectedLocales: CollectedLocales
-): { code: string; hasChanges: boolean } {
+): Promise<{ code: string; hasChanges: boolean }> {
   try {
       const ast = parser.parse(content, {
         sourceType: 'module',
@@ -42,11 +53,52 @@ function processCode(
 
       let hasChanges = false;
       const namespace = getNamespace(filePath, config);
+      const replacements: Array<{ start: number; end: number; text: string }> = [];
 
       traverse(ast, {
+        CallExpression(path: any) {
+            // Check for t('key')
+            if (t.isIdentifier(path.node.callee) && path.node.callee.name === config.tFunction) {
+                const args = path.node.arguments;
+                if (args.length > 0 && t.isStringLiteral(args[0])) {
+                    const key = args[0].value;
+                    if (!collectedLocales[namespace]) collectedLocales[namespace] = {};
+                    
+                    // Mark as used. We don't know the value, so we use a special marker or the key itself.
+                    // If the key already exists in collectedLocales (from Chinese string), we don't overwrite it.
+                    if (!collectedLocales[namespace][key]) {
+                        collectedLocales[namespace][key] = 'PRESERVED_TRANSLATION'; 
+                        // Note: If 'PRESERVED_TRANSLATION' ends up in the file, it means it's a new key without translation.
+                        // But usually this key should already exist in the locale file.
+                        // The generator will see this key and KEEP it in the locale file.
+                        // If it's a new key, it will be added with this value (which is not ideal, but better than crashing).
+                        // Ideally we should use the key as the default value if we don't know the Chinese.
+                         collectedLocales[namespace][key] = key; 
+                    }
+                }
+            }
+        },
         StringLiteral(path: any) {
           const { value } = path.node;
           if (/[\u4e00-\u9fa5]/.test(value)) {
+            // Check for ignore comments
+            let comments: any[] = [];
+            let p = path;
+            // Check current node and parents up to 3 levels (e.g. VariableDeclarator -> VariableDeclaration)
+            for (let i = 0; i < 3; i++) {
+                if (p.node) {
+                     comments.push(...(p.node.leadingComments || []));
+                     comments.push(...(p.node.trailingComments || []));
+                     comments.push(...(p.node.innerComments || []));
+                }
+                if (p.parentPath) {
+                    p = p.parentPath;
+                } else {
+                    break;
+                }
+            }
+            if (comments.some((c: any) => c.value.includes('i18n-ignore'))) return;
+
             if (path.parent.type === 'ImportDeclaration') return;
             if (
               path.parent.type === 'CallExpression' &&
@@ -64,24 +116,11 @@ function processCode(
                 return;
             }
             
-            // Generate full key if single file mode
-            // With the new default config, customizeKey ALREADY returns the full key (with prefix)
-            // But we need to handle if user provided custom logic that doesn't include prefix
-            
-            // Actually, let's simplify. 
-            // If useDirectoryAsNamespace is false, we assume customizeKey returns the key we want to use in code.
-            // And generator will use that same key.
-            
             const fullKey = config.customizeKey(value, filePath);
 
             // JSX Attribute check (e.g. title="中文")
             if (path.parent.type === 'JSXAttribute') {
                 if (!collectedLocales[namespace]) collectedLocales[namespace] = {};
-                
-                // We store the key as returned by customizeKey.
-                // Generator needs to be updated to NOT prepend prefix if customizeKey already does it?
-                // Or we rely on generator to flatten.
-                
                 collectedLocales[namespace][fullKey] = value;
 
                 const tCall = t.jsxExpressionContainer(
@@ -90,9 +129,16 @@ function processCode(
                         t.stringLiteral(value)
                     ])
                 );
-                 path.replaceWith(tCall);
-                 hasChanges = true;
-                 return;
+                 
+                // Generate code for replacement
+                const { code: newCode } = generate(tCall, { jsescOption: { minimal: true } });
+                replacements.push({
+                    start: path.node.start,
+                    end: path.node.end,
+                    text: newCode
+                });
+                hasChanges = true;
+                return;
             }
 
             if (!collectedLocales[namespace]) collectedLocales[namespace] = {};
@@ -103,13 +149,52 @@ function processCode(
               t.stringLiteral(value),
             ]);
             
-            path.replaceWith(tCall);
+            const { code: newCode } = generate(tCall, { jsescOption: { minimal: true } });
+            replacements.push({
+                start: path.node.start,
+                end: path.node.end,
+                text: newCode
+            });
             hasChanges = true;
           }
         },
         JSXText(path: any) {
           const { value } = path.node;
           if (/[\u4e00-\u9fa5]/.test(value)) {
+            // Check for ignore comments
+            // For JSX Text, comments are typically in a JSXExpressionContainer sibling
+            // e.g. {/* i18n-ignore */} 中文
+            if (path.container && typeof path.key === 'number') {
+                const prevSibling = path.container[path.key - 1];
+                if (
+                    prevSibling && 
+                    t.isJSXExpressionContainer(prevSibling) && 
+                    t.isJSXEmptyExpression(prevSibling.expression) &&
+                    prevSibling.expression.innerComments &&
+                    prevSibling.expression.innerComments.some((c: any) => c.value.includes('i18n-ignore'))
+                ) {
+                    return;
+                }
+            }
+            
+            // Also check parent (JSXElement) comments
+             let p = path;
+             for (let i = 0; i < 3; i++) {
+                 if (p.node) {
+                      const comments = [
+                        ...(p.node.leadingComments || []),
+                        ...(p.node.trailingComments || []),
+                        ...(p.node.innerComments || [])
+                      ];
+                      if (comments.some((c: any) => c.value.includes('i18n-ignore'))) return;
+                 }
+                 if (p.parentPath) {
+                     p = p.parentPath;
+                 } else {
+                     break;
+                 }
+             }
+
             const cleanValue = value.trim();
             if (!cleanValue) return;
 
@@ -123,16 +208,36 @@ function processCode(
               t.stringLiteral(cleanValue),
             ]);
             
-            path.replaceWith(t.jsxExpressionContainer(tCall));
+            const { code: newCode } = generate(t.jsxExpressionContainer(tCall), { jsescOption: { minimal: true } });
+            replacements.push({
+                start: path.node.start,
+                end: path.node.end,
+                text: newCode
+            });
             hasChanges = true;
           }
         },
       });
 
       if (hasChanges) {
+        // Apply replacements in reverse order
+        replacements.sort((a, b) => b.start - a.start);
+        
+        let newContent = content;
+        for (const { start, end, text } of replacements) {
+            // Check boundaries
+            if (start !== undefined && end !== undefined) {
+                 newContent = newContent.slice(0, start) + text + newContent.slice(end);
+            }
+        }
+
+        // Check for import
         let hasImportT = false;
+        let lastImportEnd = 0;
+        
         traverse(ast, {
             ImportDeclaration(path: any) {
+                lastImportEnd = path.node.end;
                 path.node.specifiers.forEach((spec: any) => {
                     if (t.isImportSpecifier(spec) && t.isIdentifier(spec.imported) && spec.imported.name === config.tFunction) {
                         hasImportT = true;
@@ -142,16 +247,18 @@ function processCode(
         });
 
         if (!hasImportT) {
-            const importDecl = getImportAst(config.importStatement);
-            ast.program.body.unshift(importDecl);
+            const importStr = config.importStatement || "import { t } from '@/utils/i18n';";
+            // Insert after last import if exists, else at top
+            if (lastImportEnd > 0) {
+                 // Try to insert on a new line after the last import
+                 newContent = newContent.slice(0, lastImportEnd) + '\n' + importStr + newContent.slice(lastImportEnd);
+            } else {
+                 newContent = importStr + '\n' + newContent;
+            }
         }
-
-        const { code } = generate(ast, {
-            decoratorsBeforeExport: true,
-            jsescOption: { minimal: true },
-        }, content);
         
-        return { code, hasChanges: true };
+        const formatted = await formatCode(newContent, filePath);
+        return { code: formatted, hasChanges: true };
       }
       return { code: content, hasChanges: false };
   } catch (e) {
@@ -160,29 +267,52 @@ function processCode(
   }
 }
 
-function processReactFile(filePath: string, content: string, config: Config, collectedLocales: CollectedLocales) {
-    const { code, hasChanges } = processCode(content, filePath, config, collectedLocales);
+async function processReactFile(filePath: string, content: string, config: Config, collectedLocales: CollectedLocales) {
+    const { code, hasChanges } = await processCode(content, filePath, config, collectedLocales);
     if (hasChanges) {
         fs.writeFileSync(filePath, code, 'utf-8');
         console.log(chalk.green(`Processed: ${filePath}`));
     }
 }
 
-function processVueFile(filePath: string, content: string, config: Config, collectedLocales: CollectedLocales) {
+async function processVueFile(filePath: string, content: string, config: Config, collectedLocales: CollectedLocales) {
     let newContent = content;
     let hasChanges = false;
     const namespace = getNamespace(filePath, config);
 
     // 1. Process Script Block
     const scriptRegex = /(<script[^>]*>)([\s\S]*?)(<\/script>)/g;
-    newContent = newContent.replace(scriptRegex, (match, openTag, scriptContent, closeTag) => {
-        const { code, hasChanges: scriptChanged } = processCode(scriptContent, filePath, config, collectedLocales);
+    // We cannot use replace with async callback. We must use a loop or something else.
+    // Or just format the whole file at the end.
+    
+    // For script block, we need to extract and process.
+    // Since replace callback cannot be async, we have to collect replacements first.
+    
+    // Actually, processCode is async now. So we can't use replace(regex, callback).
+    
+    // Let's refactor script processing.
+    const matches = [];
+    let match;
+    while ((match = scriptRegex.exec(newContent)) !== null) {
+        matches.push({
+            fullMatch: match[0],
+            openTag: match[1],
+            content: match[2],
+            closeTag: match[3],
+            index: match.index
+        });
+    }
+    
+    // Process in reverse so indices don't shift? No, we replace specific parts.
+    // Or just replace sequentially.
+    
+    for (const m of matches) {
+        const { code, hasChanges: scriptChanged } = await processCode(m.content, filePath, config, collectedLocales);
         if (scriptChanged) {
-            hasChanges = true;
-            return `${openTag}${code}${closeTag}`;
+             hasChanges = true;
+             newContent = newContent.replace(m.fullMatch, `${m.openTag}${code}${m.closeTag}`);
         }
-        return match;
-    });
+    }
 
     // 2. Template Text: >中文<
     const templateTextRegex = />([^<]*?[\u4e00-\u9fa5]+[^<]*?)</g;
@@ -199,6 +329,17 @@ function processVueFile(filePath: string, content: string, config: Config, colle
         return `>{{ $${config.tFunction}('${keyPart}') }}<`; 
     });
 
+    // 2.1 Scan for existing {{ $t('key') }} in template
+    const existingTemplateRegex = new RegExp(`\\{\\{\\s*\\$${config.tFunction}\\('([^']+)'\\)\\s*\\}\\}`, 'g');
+    let tm;
+    while ((tm = existingTemplateRegex.exec(newContent)) !== null) {
+        const key = tm[1];
+        if (!collectedLocales[namespace]) collectedLocales[namespace] = {};
+        if (!collectedLocales[namespace][key]) {
+            collectedLocales[namespace][key] = key;
+        }
+    }
+
     // 3. Attributes: title="中文"
     const attrRegex = /\s([a-zA-Z0-9-]+)="([^"]*?[\u4e00-\u9fa5]+[^"]*?)"/g;
     newContent = newContent.replace(attrRegex, (match, attr, value) => {
@@ -211,20 +352,32 @@ function processVueFile(filePath: string, content: string, config: Config, colle
         return ` :${attr}="$${config.tFunction}('${keyPart}')"`;
     });
 
+    // 3.1 Scan for existing :title="$t('key')" in attributes
+    const existingAttrRegex = new RegExp(`:[a-zA-Z0-9-]+="\\$${config.tFunction}\\('([^']+)'\\)"`, 'g');
+    let am;
+    while ((am = existingAttrRegex.exec(newContent)) !== null) {
+        const key = am[1];
+        if (!collectedLocales[namespace]) collectedLocales[namespace] = {};
+        if (!collectedLocales[namespace][key]) {
+            collectedLocales[namespace][key] = key;
+        }
+    }
+
     if (hasChanges) {
-        fs.writeFileSync(filePath, newContent, 'utf-8');
+        const formatted = await formatCode(newContent, filePath);
+        fs.writeFileSync(filePath, formatted, 'utf-8');
         console.log(chalk.green(`Processed Vue: ${filePath}`));
     }
 }
 
-export function processFile(filePath: string, config: Config, collectedLocales: CollectedLocales) {
+export async function processFile(filePath: string, config: Config, collectedLocales: CollectedLocales) {
   const content = fs.readFileSync(filePath, 'utf-8');
   if (!/[\u4e00-\u9fa5]/.test(content)) return;
 
   const ext = path.extname(filePath);
   if (ext === '.vue') {
-      processVueFile(filePath, content, config, collectedLocales);
+      await processVueFile(filePath, content, config, collectedLocales);
   } else {
-      processReactFile(filePath, content, config, collectedLocales);
+      await processReactFile(filePath, content, config, collectedLocales);
   }
 }
