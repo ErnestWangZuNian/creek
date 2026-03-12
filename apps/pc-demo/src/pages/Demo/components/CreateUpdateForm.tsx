@@ -1,6 +1,9 @@
-import { t } from '@/utils/i18n';
-import { ProFormSelect, ProFormText } from '@ant-design/pro-components';
 import React from 'react';
+
+import { ProFormSelect, ProFormText } from '@ant-design/pro-components';
+
+import { t } from '@/utils/i18n';
+
 const CreateUpdateForm: React.FC = () => {
   return (
     <>

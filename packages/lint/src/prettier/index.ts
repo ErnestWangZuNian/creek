@@ -11,6 +11,14 @@ module.exports = {
       options: { parser: 'html' },
     },
   ],
-  plugins: [require.resolve('prettier-plugin-packagejson'), require.resolve('prettier-plugin-organize-imports')],
-  pluginSearchDirs: false,
+  plugins: [require.resolve('prettier-plugin-packagejson'), require.resolve('@trivago/prettier-plugin-sort-imports')],
+  importOrder: [
+    "^(react|react-dom|antd|@ant-design|ahooks|axios|lodash|@umijs)(.*)$",
+    "<THIRD_PARTY_MODULES>",
+    "^@creekjs/(.*)$",
+    "^@/(.*)$",
+    "^[./]",
+  ],
+  importOrderSeparation: true,
+  importOrderSortSpecifiers: true,
 };

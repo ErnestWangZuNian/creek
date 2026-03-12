@@ -1,10 +1,12 @@
-import { t } from '@/utils/i18n';
 // 运行时配置
-import { getIntl, getLocale, RawIntlProvider, RunTimeLayoutConfig, setLocale } from '@umijs/max';
+import { RawIntlProvider, RunTimeLayoutConfig, getIntl, getLocale, setLocale } from '@umijs/max';
 import { App, Button, ConfigProvider } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 import { AppProvider } from '@creekjs/web-components';
+
+import { t } from '@/utils/i18n';
+
 import { initRequest } from './request';
 
 const IntlWrapper = ({ children }: { children: React.ReactNode }) => {
