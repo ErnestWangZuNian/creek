@@ -29,8 +29,5 @@ export default {
   'pages.Demo.index.xinJian': '新建',
   'request.BusinessResponsePlugin.qingQiuShiBai': '请求失败',
   'request.BusinessResponsePlugin.wangLuoQingQiuCuoWu': '网络请求错误',
-  'pages.Demo.index.zhangSan': '张三',
-  'pages.Demo.index.biaoTi': '标题',
-  'pages.Demo.index.heHe': '呵呵',
-  'pages.Demo.index.beiHuLveTiQuDeWenAn': '被忽略提取的文案',
+  "pages.Test.index.qingShuRuCeShiWenZi": "请输入测试文字"
 };

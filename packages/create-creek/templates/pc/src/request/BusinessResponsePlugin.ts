@@ -1,7 +1,10 @@
-import { t } from '@/utils/i18n';
-import { AxiosPlugin, AxiosPluginConfigType, AxiosPluginErrorType, AxiosPluginResponseType } from '@creekjs/request';
 import { message } from 'antd';
 import _ from 'lodash';
+
+import { AxiosPlugin, AxiosPluginConfigType, AxiosPluginErrorType, AxiosPluginResponseType } from '@creekjs/request';
+
+import { t } from '@/utils/i18n';
+
 export interface BackendResult<T = any> {
   code: string | number;
   data: T;

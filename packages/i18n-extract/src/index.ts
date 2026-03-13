@@ -15,7 +15,7 @@ const initConfigTemplate = `import { UserConfig } from '@creekjs/i18n-extract';
 
 const config: UserConfig = {
   // 语言文件类型 (ts/js/json)
-  localeFileType: 'ts',
+  localeFileType: 'ts',1
   
   // 语言包输出的主入口文件路径
   // 注意：实际生成的翻译文件会存放在该文件同级目录下以文件名命名的文件夹中

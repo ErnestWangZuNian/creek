@@ -82,18 +82,24 @@ async function processCode(
                 const args = path.node.arguments;
                 if (args.length > 0 && t.isStringLiteral(args[0])) {
                     const key = args[0].value;
+                    let value = key;
+                    let hasDefault = false;
+
+                    if (args.length > 1 && t.isStringLiteral(args[1])) {
+                        value = args[1].value;
+                        hasDefault = true;
+                    }
+
                     if (!collectedLocales[namespace]) collectedLocales[namespace] = {};
                     
-                    // Mark as used. We don't know the value, so we use a special marker or the key itself.
-                    // If the key already exists in collectedLocales (from Chinese string), we don't overwrite it.
-                    if (!collectedLocales[namespace][key]) {
-                        collectedLocales[namespace][key] = 'PRESERVED_TRANSLATION'; 
-                        // Note: If 'PRESERVED_TRANSLATION' ends up in the file, it means it's a new key without translation.
-                        // But usually this key should already exist in the locale file.
-                        // The generator will see this key and KEEP it in the locale file.
-                        // If it's a new key, it will be added with this value (which is not ideal, but better than crashing).
-                        // Ideally we should use the key as the default value if we don't know the Chinese.
-                         collectedLocales[namespace][key] = key; 
+                    // Mark as used. 
+                    // If we found a default value (2nd arg), use it.
+                    // If not, and key doesn't exist yet, use key as placeholder.
+                    // If key exists (e.g. from another extraction), don't overwrite with key placeholder.
+                    if (hasDefault) {
+                        collectedLocales[namespace][key] = value;
+                    } else if (!collectedLocales[namespace][key]) {
+                        collectedLocales[namespace][key] = key; 
                     }
                 }
             }
@@ -280,7 +286,7 @@ async function processCode(
                     if (!hasUseT) {
                          const hookName = config.useTFunction || 'useT';
                          const tName = config.tFunction || 't';
-                         const hookCall = `\n  const ${tName} = ${hookName}();`;
+                         const hookCall = `\n  const ${tName} = ${hookName}();\n`;
                          // Insert at beginning of body
                          const start = body.node.start + 1;
                          replacements.push({

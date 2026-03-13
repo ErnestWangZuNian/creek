@@ -27,7 +27,7 @@ export default {
   "pages.Demo.index.bianJi": "Edit",
   "pages.Demo.index.shanChu": "Delete",
   "pages.Demo.index.xinJian": "Create",
-  "pages.Test.index.qingShuRuCeShiWenZi": "pages.Test.index.qingShuRuCeShiWenZi",
+  "pages.Test.index.qingShuRuCeShiWenZi": "Please Input Test Text",
   "request.BusinessResponsePlugin.qingQiuShiBai": "Request Failed",
   "request.BusinessResponsePlugin.wangLuoQingQiuCuoWu": "Network Request Error"
 };

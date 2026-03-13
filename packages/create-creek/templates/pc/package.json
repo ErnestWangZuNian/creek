@@ -5,7 +5,8 @@
   "scripts": {
     "build": "max build",
     "dev": "max dev",
-    "extract": "creek-i18n extract",
+    "i18n-init": "creek-i18n init",
+    "i18n-extract": "creek-i18n extract",
     "format": "prettier --cache --write .",
     "openApi": "max openApi",
     "setup": "max setup",
@@ -30,8 +31,6 @@
     "@types/react-dom": "^18.3.1",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
-    "prettier-plugin-organize-imports": "^4.1.0",
-    "prettier-plugin-packagejson": "^2.5.3",
     "typescript": "^5.6.3",
     "@creekjs/umi-plugins": "latest"
   }

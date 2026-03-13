@@ -78,12 +78,56 @@ function mergeIntoAst(ast: any, newEntries: Record<string, string>, cleanup: boo
             );
             properties.push(prop);
         } else {
-             // Optional: Update value if changed? 
-             // Usually for zh-CN we want to update the source text if it changed in code.
-             // But for en-US we might want to keep the translation.
-             // Let's assume for now we don't overwrite existing values unless it's the source language file (zh-CN).
-             // But we don't know which file this is easily here without passing more context.
-             // However, the user asked about "cleaning up unused keys".
+             // If the existing value is same as key (placeholder) AND new value is different, update it?
+             // Or if we are in zh-CN file, we always want to update the value to match source code.
+             // But mergeIntoAst doesn't know if it's zh-CN or en-US.
+             
+             // However, for en-US generation logic below, we are passing `enEntries` where new keys have zh value.
+             // If `existingProp` exists, it means key is already there.
+             // If we want to update it only if it was a placeholder (key === value), we can check.
+             
+             // But usually, `mergeIntoAst` is used for 2 purposes:
+             // 1. zh-CN: Sync with source code. Should UPDATE value if changed.
+             // 2. en-US: Add new keys. Should KEEP existing value.
+             
+             // Maybe we need a flag `updateValue`?
+             // Or we can infer?
+             
+             // Let's add `updateValue` parameter to `mergeIntoAst`.
+             // But wait, changing function signature affects callers.
+             // `cleanup` is already a flag.
+             
+             // Let's assume:
+             // If `cleanup` is true (which is used for zh-CN generation), we probably want to update values too?
+             // Actually `cleanup` is also used for en-US generation in my previous change.
+             
+             // If I change the value here, I risk overwriting manual English translations with Chinese if I'm not careful.
+             // BUT, `newEntries` passed for en-US only contains Chinese values for NEW keys or Fallback.
+             // It also contains existing translations if we read them correctly.
+             
+             // In `generateLocales`:
+             // For zh-CN: `entries` comes from `collectedLocales` (source code values). We WANT to update.
+             // For en-US: `enSubEntries` or `allEnEntries` comes from merge of existing + new (zh).
+             // If we constructed `newEntries` correctly, it should contain the "correct" value we want to write.
+             // So if `newEntries` has a value, we should probably use it?
+             
+             // The issue is `existingEnMainEntries` read from file might be stale if we don't update it in memory?
+             // No, `readEntries` reads what's on disk.
+             
+             // If `generateLocales` constructs `allEnEntries` correctly:
+             // Priority 1: Existing main file (disk)
+             // Priority 2: Existing sub file (disk)
+             // Priority 3: Zh value (new)
+             
+             // So `allEnEntries` SHOULD have the correct value (preserving English).
+             // So if `mergeIntoAst` updates the value to `allEnEntries[key]`, it should be safe/correct!
+             // Because `allEnEntries[key]` IS the existing English value if it existed.
+             
+             // So, we SHOULD update the value here to `value` (from `newEntries`).
+             
+             if (t.isStringLiteral(existingProp.value)) {
+                 existingProp.value.value = value;
+             }
         }
     });
 
@@ -293,6 +337,36 @@ export async function generateLocales(collectedLocales: CollectedLocales, config
       // So we should try to read existing sub-files if they exist.
       let existingEnSubEntries: Record<string, string> = {};
       
+      // Also need to read existing en-US.ts content if it exists, to preserve translations that are already there
+      // (e.g. if we run multiple times in single file mode)
+      const readEntries = (filePath: string): Record<string, string> => {
+          if (!fs.existsSync(filePath)) return {};
+          try {
+              const content = fs.readFileSync(filePath, 'utf-8');
+              const ast = parser.parse(content, { sourceType: 'module' });
+              let props: any[] = [];
+              traverse(ast, {
+                  ExportDefaultDeclaration(path: any) {
+                      if (t.isObjectExpression(path.node.declaration)) {
+                          props = path.node.declaration.properties;
+                      }
+                  }
+              });
+              const entries: Record<string, string> = {};
+              props.forEach((prop: any) => {
+                 let key = '';
+                 let value = '';
+                 if (t.isIdentifier(prop.key)) key = prop.key.name;
+                 else if (t.isStringLiteral(prop.key)) key = prop.key.value;
+                 if (t.isStringLiteral(prop.value)) value = prop.value.value;
+                 if (key) entries[key] = value;
+              });
+              return entries;
+          } catch (e) { return {}; }
+      };
+
+      const existingEnMainEntries = readEntries(enEntryFile);
+
       if (fs.existsSync(enBaseDir)) {
           // Read all .ts files in enBaseDir recursively?
           // For simplicity, let's just assume flat structure or we can use glob if needed.
@@ -305,33 +379,6 @@ export async function generateLocales(collectedLocales: CollectedLocales, config
               }
               const enSubFile = path.join(enBaseDir, `${relativePath}.ts`);
               
-              // Helper to read default export
-              const readEntries = (filePath: string): Record<string, string> => {
-                  if (!fs.existsSync(filePath)) return {};
-                  try {
-                      const content = fs.readFileSync(filePath, 'utf-8');
-                      const ast = parser.parse(content, { sourceType: 'module' });
-                      let props: any[] = [];
-                      traverse(ast, {
-                          ExportDefaultDeclaration(path: any) {
-                              if (t.isObjectExpression(path.node.declaration)) {
-                                  props = path.node.declaration.properties;
-                              }
-                          }
-                      });
-                      const entries: Record<string, string> = {};
-                      props.forEach((prop: any) => {
-                         let key = '';
-                         let value = '';
-                         if (t.isIdentifier(prop.key)) key = prop.key.name;
-                         else if (t.isStringLiteral(prop.key)) key = prop.key.value;
-                         if (t.isStringLiteral(prop.value)) value = prop.value.value;
-                         if (key) entries[key] = value;
-                      });
-                      return entries;
-                  } catch (e) { return {}; }
-              };
-
               const subEntries = readEntries(enSubFile);
               Object.assign(existingEnSubEntries, subEntries);
            }
@@ -351,22 +398,22 @@ export async function generateLocales(collectedLocales: CollectedLocales, config
 
       // Generate en-US.ts
       // Merge:
-      // 1. Existing en-US.ts entries (handled by writeLocaleFile merge)
-      // 2. Existing en sub-files entries (migration)
+      // 1. Existing en-US.ts entries (from existingEnMainEntries)
+      // 2. Existing en sub-files entries (migration from existingEnSubEntries)
       // 3. New keys from allEntries (default to zh value)
       
       const allEnEntries: Record<string, string> = {};
       
       Object.keys(allEntries).forEach(key => {
            // Priority: 
-           // 1. Existing sub-file translation (if migrating)
-           // 2. Zh value (default)
-           // (Existing en-US.ts values are preserved by writeLocaleFile's merge logic, 
-           // but we need to pass something to it. If we pass zh value, mergeIntoAst will NOT overwrite if key exists.
-           // So passing zh value is safe for existing keys.
-           // But for keys that were in sub-files but not in main file yet, we need to pass them here.)
+           // 1. Existing main file translation (highest priority, keep what we have)
+           // 2. Existing sub-file translation (if migrating)
+           // 3. Zh value (default)
            
-           if (existingEnSubEntries[key]) {
+           // If existing value is same as key, we consider it as not translated and overwrite with zh value (placeholder)
+           if (existingEnMainEntries[key] && existingEnMainEntries[key] !== key) {
+               allEnEntries[key] = existingEnMainEntries[key];
+           } else if (existingEnSubEntries[key] && existingEnSubEntries[key] !== key) {
                allEnEntries[key] = existingEnSubEntries[key];
            } else {
                allEnEntries[key] = allEntries[key];
