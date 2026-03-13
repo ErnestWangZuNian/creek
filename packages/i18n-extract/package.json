@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "i18n extract tool for creekjs",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "creek-i18n": "bin/creek-i18n.js"
   },

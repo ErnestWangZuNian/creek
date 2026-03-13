@@ -8,11 +8,13 @@ import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { CreekTable, useApp } from '@creekjs/web-components';
 
 import { addPet, deletePet, findPetsByStatus, updatePet } from '@/service/pet';
-import { t } from '@/utils/i18n';
+import { useT } from '@/utils/i18n';
 
 import CreateUpdateForm from './components/CreateUpdateForm';
 
 const PetList = () => {
+  const t = useT();
+  
   const actionRef = useRef<ActionType>();
   const { modal } = useApp();
 

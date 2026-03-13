@@ -2,9 +2,10 @@ import React from 'react';
 
 import { ProFormSelect, ProFormText } from '@ant-design/pro-components';
 
-import { t } from '@/utils/i18n';
+import { useT } from '@/utils/i18n';
 
 const CreateUpdateForm: React.FC = () => {
+  const t = useT();
   return (
     <>
       <ProFormText

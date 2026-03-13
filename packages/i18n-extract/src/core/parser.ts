@@ -39,6 +39,23 @@ function getImportAst(statement: string): t.ImportDeclaration {
     );
 }
 
+function isComponentOrHook(path: any): boolean {
+    if (path.isFunctionDeclaration()) {
+        const name = path.node.id?.name;
+        return name ? (name[0] === name[0].toUpperCase() || name.startsWith('use')) : false;
+    }
+    if (path.isArrowFunctionExpression() || path.isFunctionExpression()) {
+         if (path.parentPath.isVariableDeclarator() && t.isIdentifier(path.parentPath.node.id)) {
+             const name = path.parentPath.node.id.name;
+             return name && (name[0] === name[0].toUpperCase() || name.startsWith('use'));
+         }
+         if (path.parentPath.isExportDefaultDeclaration()) {
+             return true;
+         }
+    }
+    return false;
+}
+
 async function processCode(
     content: string, 
     filePath: string, 
@@ -54,6 +71,9 @@ async function processCode(
       let hasChanges = false;
       const namespace = getNamespace(filePath, config);
       const replacements: Array<{ start: number; end: number; text: string }> = [];
+      
+      const isUseTMode = config.useT && config.useTDirs && config.useTDirs.some(dir => filePath.split(path.sep).includes(dir));
+      const functionsToInject = new Set<any>();
 
       traverse(ast, {
         CallExpression(path: any) {
@@ -118,6 +138,16 @@ async function processCode(
             
             const fullKey = config.customizeKey(value, filePath);
 
+            if (isUseTMode) {
+                 let fn = path.getFunctionParent();
+                 while (fn && !isComponentOrHook(fn)) {
+                     fn = fn.getFunctionParent();
+                 }
+                 if (fn) {
+                     functionsToInject.add(fn);
+                 }
+            }
+
             // JSX Attribute check (e.g. title="中文")
             if (path.parent.type === 'JSXAttribute') {
                 if (!collectedLocales[namespace]) collectedLocales[namespace] = {};
@@ -156,6 +186,7 @@ async function processCode(
                 text: newCode
             });
             hasChanges = true;
+            return;
           }
         },
         JSXText(path: any) {
@@ -200,6 +231,16 @@ async function processCode(
 
             const fullKey = config.customizeKey(cleanValue, filePath);
 
+            if (isUseTMode) {
+                 let fn = path.getFunctionParent();
+                 while (fn && !isComponentOrHook(fn)) {
+                     fn = fn.getFunctionParent();
+                 }
+                 if (fn) {
+                     functionsToInject.add(fn);
+                 }
+            }
+
             if (!collectedLocales[namespace]) collectedLocales[namespace] = {};
             collectedLocales[namespace][fullKey] = cleanValue;
 
@@ -220,6 +261,38 @@ async function processCode(
       });
 
       if (hasChanges) {
+        // Inject hooks
+        if (isUseTMode && functionsToInject.size > 0) {
+            functionsToInject.forEach(fnPath => {
+                const body = fnPath.get('body');
+                if (body.isBlockStatement()) {
+                    // Check if variable already declared
+                    let hasUseT = false;
+                    body.traverse({
+                        VariableDeclarator(path: any) {
+                            if (t.isIdentifier(path.node.id) && path.node.id.name === config.tFunction) {
+                                hasUseT = true;
+                                path.stop();
+                            }
+                        }
+                    });
+
+                    if (!hasUseT) {
+                         const hookName = config.useTFunction || 'useT';
+                         const tName = config.tFunction || 't';
+                         const hookCall = `\n  const ${tName} = ${hookName}();`;
+                         // Insert at beginning of body
+                         const start = body.node.start + 1;
+                         replacements.push({
+                             start: start,
+                             end: start,
+                             text: hookCall
+                         });
+                    }
+                }
+            });
+        }
+
         // Apply replacements in reverse order
         replacements.sort((a, b) => b.start - a.start);
         
@@ -233,27 +306,44 @@ async function processCode(
 
         // Check for import
         let hasImportT = false;
+        let hasImportUseT = false;
         let lastImportEnd = 0;
         
         traverse(ast, {
             ImportDeclaration(path: any) {
                 lastImportEnd = path.node.end;
                 path.node.specifiers.forEach((spec: any) => {
-                    if (t.isImportSpecifier(spec) && t.isIdentifier(spec.imported) && spec.imported.name === config.tFunction) {
-                        hasImportT = true;
+                    if (t.isImportSpecifier(spec) && t.isIdentifier(spec.imported)) {
+                        if (spec.imported.name === config.tFunction) {
+                            hasImportT = true;
+                        }
+                        if (spec.imported.name === config.useTFunction) {
+                            hasImportUseT = true;
+                        }
                     }
                 });
             }
         });
 
-        if (!hasImportT) {
-            const importStr = config.importStatement || "import { t } from '@/utils/i18n';";
-            // Insert after last import if exists, else at top
-            if (lastImportEnd > 0) {
-                 // Try to insert on a new line after the last import
-                 newContent = newContent.slice(0, lastImportEnd) + '\n' + importStr + newContent.slice(lastImportEnd);
-            } else {
-                 newContent = importStr + '\n' + newContent;
+        if (isUseTMode && functionsToInject.size > 0) {
+            if (!hasImportUseT) {
+                 const importStr = config.useTImportStatement || `import { ${config.useTFunction || 'useT'} } from '@/utils/i18n';`;
+                 // Insert after last import if exists, else at top
+                 if (lastImportEnd > 0) {
+                      newContent = newContent.slice(0, lastImportEnd) + '\n' + importStr + newContent.slice(lastImportEnd);
+                 } else {
+                      newContent = importStr + '\n' + newContent;
+                 }
+            }
+        } else {
+            if (!hasImportT) {
+                const importStr = config.importStatement || "import { t } from '@/utils/i18n';";
+                // Insert after last import if exists, else at top
+                if (lastImportEnd > 0) {
+                     newContent = newContent.slice(0, lastImportEnd) + '\n' + importStr + newContent.slice(lastImportEnd);
+                } else {
+                     newContent = importStr + '\n' + newContent;
+                }
             }
         }
         

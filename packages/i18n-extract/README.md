@@ -79,8 +79,69 @@ module.exports = {
   // customizeKey: (text, filePath) => {
   //   return someHashFunction(text); 
   // }
+  
+  // 开启 React Hooks 模式 (useT)
+  // 默认为 false
+  useT: false,
+
+  // 指定哪些目录下的文件使用 useT 模式
+  // 默认为 ['pages', 'components']
+  // 只有在这些目录下的文件，并且是 React 组件或 Hook 时，才会注入 useT
+  useTDirs: ['pages', 'components'],
+
+  // useT 的 Hook 名称
+  // 默认为 'useT'
+  useTFunction: 'useT',
+
+  // useT 的导入语句
+  // 默认为 'import { useT } from "@/utils/i18n"'
+  useTImportStatement: 'import { useT } from "@/utils/i18n"',
 };
 ```
+
+## 响应式支持 (useT)
+
+为了支持 React 组件中的语言切换响应式更新，工具支持 `useT` Hook 模式。
+
+### 配置
+
+在 `i18n.config.ts` 中开启 `useT`：
+
+```typescript
+module.exports = {
+  // ... 其他配置
+  useT: true,
+  useTDirs: ['pages', 'components'], // 指定生效目录
+};
+```
+
+### 效果
+
+**处理前：**
+
+```tsx
+import React from 'react';
+
+export const Demo = () => {
+  return <div>你好</div>;
+};
+```
+
+**处理后：**
+
+```tsx
+import { useT } from '@/utils/i18n'; // 自动添加 useT 导入
+import React from 'react';
+
+export const Demo = () => {
+  const t = useT(); // 自动注入 hook 调用
+  return <div>{t('demo.nihao', '你好')}</div>;
+};
+```
+
+注意：
+- `useT` 模式只会在 `useTDirs` 配置的目录下的 React 组件或自定义 Hook 中生效。
+- 对于非组件函数或不在指定目录下的文件，仍然会使用全局 `t` 函数。
 
 ## 示例
 

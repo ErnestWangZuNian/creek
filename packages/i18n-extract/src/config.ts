@@ -29,6 +29,10 @@ export const defaultConfig: Config = {
     return pinyinKey;
   },
   useDirectoryAsNamespace: false,
+  useT: true,
+  useTDirs: ['pages', 'components'],
+  useTFunction: 'useT',
+  useTImportStatement: 'import { useT } from "@/utils/i18n"',
 };
 
 export function resolveConfig(cliOptions: any): Config {

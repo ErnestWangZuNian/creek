@@ -16,7 +16,39 @@ function mergeIntoAst(ast: any, newEntries: Record<string, string>, cleanup: boo
     let properties: any[] = [];
     let objectExpression: any = null;
     
+    // Also need to remove ImportDeclarations if we are switching from multi-file to single-file
+    // The previous multi-file entry file has imports.
+    // If we are now writing a single file with all keys, we should remove those imports.
+    // But `mergeIntoAst` is generic.
+    
+    // We can filter out imports in traverse.
+    const importsToRemove: any[] = [];
+
     traverse(ast, {
+        ImportDeclaration(path: any) {
+            // If we are cleaning up, we might want to remove imports that look like locale sub-files?
+            // Or if we are in single file mode, we probably don't want ANY imports if we are dumping all keys.
+            // But user might have other imports.
+            
+            // However, the issue is specifically about the generated imports from multi-file mode:
+            // import locale0 from './zh-CN/app';
+            
+            // If we detect we are writing a flat object (newEntries has keys), and the file has imports
+            // AND we are in cleanup mode, maybe we should remove imports that are used in the export default object spread?
+            
+            // But in single file mode, we replace the export default object with a flat object (properties).
+            // The spreads will be gone because we are rewriting the properties.
+            // But the imports will remain at the top.
+            
+            if (cleanup) {
+                 // Check if import source is from ./zh-CN/ or ./en-US/
+                 // This is a heuristic.
+                 const source = path.node.source.value;
+                 if (source.startsWith('./zh-CN/') || source.startsWith('./en-US/')) {
+                     importsToRemove.push(path);
+                 }
+            }
+        },
         ExportDefaultDeclaration(path: any) {
             if (t.isObjectExpression(path.node.declaration)) {
                 objectExpression = path.node.declaration;
@@ -24,6 +56,8 @@ function mergeIntoAst(ast: any, newEntries: Record<string, string>, cleanup: boo
             }
         }
     });
+
+    importsToRemove.forEach(p => p.remove());
 
     if (!properties || !objectExpression) return;
 
@@ -111,68 +145,244 @@ async function writeLocaleFile(filePath: string, entries: Record<string, string>
 }
 
 export async function generateLocales(collectedLocales: CollectedLocales, config: Config) {
+  const localeRoot = path.dirname(path.resolve(process.cwd(), config.localePath)); // src/locales
+  const localeFileName = path.basename(config.localePath, path.extname(config.localePath)); // zh-CN
+  const enFileName = 'en-US'; 
+
+  const zhEntryFile = path.resolve(process.cwd(), config.localePath);
+  const enEntryFile = path.join(localeRoot, `${enFileName}.ts`);
+  
+  const zhBaseDir = path.join(localeRoot, localeFileName); // src/locales/zh-CN
+  const enBaseDir = path.join(localeRoot, enFileName); // src/locales/en-US
+
   if (config.useDirectoryAsNamespace) {
       // Multiple files mode
-      const localeRoot = path.dirname(path.resolve(process.cwd(), config.localePath)); // src/locales
-      const localeFileName = path.basename(config.localePath, path.extname(config.localePath)); // zh-CN
+      
+      // Ensure directories exists
+      fs.ensureDirSync(zhBaseDir);
+      fs.ensureDirSync(enBaseDir);
 
-      const baseDir = path.join(localeRoot, localeFileName); // src/locales/zh-CN
+      const generatedFiles: string[] = [];
+      const allEntries: Record<string, string> = {};
 
+      // If switching from single file to multi file, we might want to read existing single file
+      // and populate sub-files if possible?
+      // But collectedLocales already has the structure based on file paths.
+      // So we just generate files.
+      
+      // However, existing translations in single file might be lost if we don't migrate them?
+      // collectedLocales only has keys found in source code (with Chinese values).
+      // It doesn't have English translations.
+      // So if we switch from single file to multi file, we lose English translations unless we read them.
+      
+      // Let's try to read existing single file translations if they exist.
+      let existingZhEntries: Record<string, string> = {};
+      let existingEnEntries: Record<string, string> = {};
+      
+      // Helper to read default export object from file
+      const readEntries = (filePath: string): Record<string, string> => {
+          if (!fs.existsSync(filePath)) return {};
+          try {
+              const content = fs.readFileSync(filePath, 'utf-8');
+              const ast = parser.parse(content, { sourceType: 'module' });
+              let props: any[] = [];
+              traverse(ast, {
+                  ExportDefaultDeclaration(path: any) {
+                      if (t.isObjectExpression(path.node.declaration)) {
+                          props = path.node.declaration.properties;
+                      }
+                  }
+              });
+              const entries: Record<string, string> = {};
+              props.forEach((prop: any) => {
+                 let key = '';
+                 let value = '';
+                 if (t.isIdentifier(prop.key)) key = prop.key.name;
+                 else if (t.isStringLiteral(prop.key)) key = prop.key.value;
+                 
+                 if (t.isStringLiteral(prop.value)) value = prop.value.value;
+                 if (key) entries[key] = value;
+              });
+              return entries;
+          } catch (e) {
+              return {};
+          }
+      };
+
+      // Check if entry files exist and are NOT just imports (i.e. old single file format)
+      // If they contain actual keys, we should load them.
+      // But how to distinguish? 
+      // Multi-file entry usually has imports and spread. Single file has big object.
+      // We can just load all keys.
+      
+      existingZhEntries = readEntries(zhEntryFile);
+      existingEnEntries = readEntries(enEntryFile);
+      
       for (const [namespace, entries] of Object.entries(collectedLocales)) {
           let relativePath = namespace;
           if (relativePath.startsWith('src/')) {
               relativePath = relativePath.replace('src/', '');
           }
           
-          const targetFile = path.join(baseDir, `${relativePath}.ts`);
-          await writeLocaleFile(targetFile, entries, true);
+          const zhTargetFile = path.join(zhBaseDir, `${relativePath}.ts`);
+          const enTargetFile = path.join(enBaseDir, `${relativePath}.ts`);
+          
+          generatedFiles.push(relativePath);
+
+          // 1. Generate/Update zh-CN sub-file
+          await writeLocaleFile(zhTargetFile, entries, true);
+          
+          // 2. Generate/Update en-US sub-file
+          // We need to construct entries for en-US.
+          // Sources: 
+          // a. Existing en sub-file (handled by writeLocaleFile merge)
+          // b. Existing single en file (migration)
+          // c. New keys from zh (use zh value as default)
+          
+          const enSubEntries: Record<string, string> = {};
+          
+          // Populate with existing translations from single file if available
+          Object.keys(entries).forEach(key => {
+              if (existingEnEntries[key]) {
+                  enSubEntries[key] = existingEnEntries[key];
+              } else {
+                  // Fallback to zh value
+                  enSubEntries[key] = entries[key] || key;
+              }
+          });
+
+          await writeLocaleFile(enTargetFile, enSubEntries, true);
       }
+
+      // Generate index.ts for export
+      const imports: string[] = [];
+      const spreads: string[] = [];
+      
+      generatedFiles.forEach((file, index) => {
+          const varName = `locale${index}`;
+          const importPath = `./${localeFileName}/${file}`;
+          imports.push(`import ${varName} from '${importPath}';`);
+          spreads.push(`...${varName},`);
+      });
+      
+      const entryContent = `${imports.join('\n')}\n\nexport default {\n  ${spreads.join('\n  ')}\n};\n`;
+      fs.writeFileSync(zhEntryFile, entryContent, 'utf-8');
+      console.log(chalk.green(`Updated entry file: ${zhEntryFile}`));
+
+      const enImports: string[] = [];
+      const enSpreads: string[] = [];
+      
+      generatedFiles.forEach((file, index) => {
+          const varName = `locale${index}`;
+          const importPath = `./${enFileName}/${file}`;
+          enImports.push(`import ${varName} from '${importPath}';`);
+          enSpreads.push(`...${varName},`);
+      });
+      
+      const enEntryContent = `${enImports.join('\n')}\n\nexport default {\n  ${enSpreads.join('\n  ')}\n};\n`;
+      fs.writeFileSync(enEntryFile, enEntryContent, 'utf-8');
+      console.log(chalk.green(`Updated entry file: ${enEntryFile}`));
+
   } else {
       // Single file mode
-      // Generate zh-CN.ts
-      const zhTargetFile = path.resolve(process.cwd(), config.localePath);
       
+      // If switching from multi-file to single file, we need to collect all sub-files?
+      // Actually, collectedLocales has all current keys.
+      // But we might lose existing English translations if they are in sub-files.
+      
+      // So we should try to read existing sub-files if they exist.
+      let existingEnSubEntries: Record<string, string> = {};
+      
+      if (fs.existsSync(enBaseDir)) {
+          // Read all .ts files in enBaseDir recursively?
+          // For simplicity, let's just assume flat structure or we can use glob if needed.
+          // But wait, collectedLocales has the namespace structure.
+          // We can construct the path and read.
+           for (const namespace of Object.keys(collectedLocales)) {
+              let relativePath = namespace;
+              if (relativePath.startsWith('src/')) {
+                  relativePath = relativePath.replace('src/', '');
+              }
+              const enSubFile = path.join(enBaseDir, `${relativePath}.ts`);
+              
+              // Helper to read default export
+              const readEntries = (filePath: string): Record<string, string> => {
+                  if (!fs.existsSync(filePath)) return {};
+                  try {
+                      const content = fs.readFileSync(filePath, 'utf-8');
+                      const ast = parser.parse(content, { sourceType: 'module' });
+                      let props: any[] = [];
+                      traverse(ast, {
+                          ExportDefaultDeclaration(path: any) {
+                              if (t.isObjectExpression(path.node.declaration)) {
+                                  props = path.node.declaration.properties;
+                              }
+                          }
+                      });
+                      const entries: Record<string, string> = {};
+                      props.forEach((prop: any) => {
+                         let key = '';
+                         let value = '';
+                         if (t.isIdentifier(prop.key)) key = prop.key.name;
+                         else if (t.isStringLiteral(prop.key)) key = prop.key.value;
+                         if (t.isStringLiteral(prop.value)) value = prop.value.value;
+                         if (key) entries[key] = value;
+                      });
+                      return entries;
+                  } catch (e) { return {}; }
+              };
+
+              const subEntries = readEntries(enSubFile);
+              Object.assign(existingEnSubEntries, subEntries);
+           }
+      }
+
       // Flatten entries 
       const allEntries: Record<string, string> = {};
       
       for (const [namespace, entries] of Object.entries(collectedLocales)) {
           Object.entries(entries).forEach(([key, value]) => {
-              // Since customizeKey now returns the full key (with prefix if needed),
-              // we just need to collect them.
               allEntries[key] = value;
           });
       }
       
       // Cleanup for zh-CN.ts (source of truth)
-      await writeLocaleFile(zhTargetFile, allEntries, true);
+      await writeLocaleFile(zhEntryFile, allEntries, true);
 
-      // Generate en-US.ts (if it doesn't exist, create empty or merge)
-      // Assume en-US.ts is in the same directory as zh-CN.ts
-      const localeDir = path.dirname(zhTargetFile);
-      const enTargetFile = path.join(localeDir, 'en-US.ts');
+      // Generate en-US.ts
+      // Merge:
+      // 1. Existing en-US.ts entries (handled by writeLocaleFile merge)
+      // 2. Existing en sub-files entries (migration)
+      // 3. New keys from allEntries (default to zh value)
       
-      // For en-US, we just want to ensure keys exist, value can be empty or same as key or TODO
-      // But typically we don't want to overwrite existing translations.
-      // Let's create an object with same keys but empty values for new keys.
+      const allEnEntries: Record<string, string> = {};
       
-      // We read existing en-US file if it exists to preserve translations
-      let existingEnEntries: Record<string, string> = {};
-      if (fs.existsSync(enTargetFile)) {
-            // This is tricky without parsing. But mergeIntoAst handles merge.
-            // The issue is mergeIntoAst(..., cleanup=true) will remove keys not in input.
-            // So if we pass `enEntries` which is `allEntries` (Chinese values), 
-            // mergeIntoAst will add missing keys (good) and remove extra keys (good for cleanup).
-            // But it won't overwrite existing values (because of !existingProp check).
-            
-            // So simply passing `allEntries` to `writeLocaleFile(enTargetFile, allEntries, true)`
-            // will:
-            // 1. Add new keys (with Chinese value as placeholder)
-            // 2. Keep existing keys (with existing English value)
-            // 3. Remove keys that are no longer in `allEntries` (cleanup)
-            
-            // This is exactly what is needed!
+      Object.keys(allEntries).forEach(key => {
+           // Priority: 
+           // 1. Existing sub-file translation (if migrating)
+           // 2. Zh value (default)
+           // (Existing en-US.ts values are preserved by writeLocaleFile's merge logic, 
+           // but we need to pass something to it. If we pass zh value, mergeIntoAst will NOT overwrite if key exists.
+           // So passing zh value is safe for existing keys.
+           // But for keys that were in sub-files but not in main file yet, we need to pass them here.)
+           
+           if (existingEnSubEntries[key]) {
+               allEnEntries[key] = existingEnSubEntries[key];
+           } else {
+               allEnEntries[key] = allEntries[key];
+           }
+      });
+      
+      await writeLocaleFile(enEntryFile, allEnEntries, true);
+
+      // Clean up directories if they exist
+      if (fs.existsSync(zhBaseDir)) {
+          fs.removeSync(zhBaseDir);
+          console.log(chalk.yellow(`Removed directory: ${zhBaseDir}`));
       }
-      
-      await writeLocaleFile(enTargetFile, allEntries, true);
+      if (fs.existsSync(enBaseDir)) {
+          fs.removeSync(enBaseDir);
+          console.log(chalk.yellow(`Removed directory: ${enBaseDir}`));
+      }
   }
 }
