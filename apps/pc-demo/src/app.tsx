@@ -3,7 +3,7 @@ import { RawIntlProvider, RunTimeLayoutConfig, getIntl, getLocale, setLocale } f
 import { App, Button, ConfigProvider } from 'antd';
 import React, { useEffect, useState } from 'react';
 
-import { AppProvider } from '@creekjs/web-components';
+import { AppProvider, CreekConfigProvider } from '@creekjs/web-components';
 
 import { t } from '@/utils/i18n';
 
@@ -33,7 +33,9 @@ const IntlWrapper = ({ children }: { children: React.ReactNode }) => {
         },
       }}
     >
-      <RawIntlProvider value={intl}>{children}</RawIntlProvider>
+      <RawIntlProvider value={intl}>
+        <CreekConfigProvider locale={locale}>{children} </CreekConfigProvider>
+      </RawIntlProvider>
     </ConfigProvider>
   );
 };

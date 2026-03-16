@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "father:build": "father build",
-    "father:dev": "father dev --no-clean"
+    "father:dev": "father dev --no-clean",
+    "i18n": "creek-i18n"
   },
   "keywords": [],
   "author": "",
@@ -20,7 +21,12 @@
     "zustand": "^5.0.1"
   },
   "devDependencies": {
+    "@creekjs/i18n-extract": "workspace:^",
     "@types/lodash": "^4.17.20",
-    "@types/react-resizable": "^3.0.8"
+    "@types/react-resizable": "^3.0.8",
+    "react-intl": "^6.0.0"
+  },
+  "peerDependencies": {
+    "react-intl": ">=3.0.0"
   }
 }

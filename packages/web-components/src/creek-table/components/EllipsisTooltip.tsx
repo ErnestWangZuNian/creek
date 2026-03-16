@@ -1,7 +1,9 @@
 import { CopyOutlined } from '@ant-design/icons';
-import { ConfigProvider, Flex, message, Tooltip, Typography } from 'antd';
+import { ConfigProvider, Flex, Tooltip, Typography, message } from 'antd';
 import { createStyles } from 'antd-style';
 import React, { useContext, useEffect, useRef, useState } from 'react';
+
+import { useT } from '@/utils/i18n';
 
 const useStyles = createStyles(({ css, token }) => {
   return {
@@ -10,7 +12,7 @@ const useStyles = createStyles(({ css, token }) => {
       margin: 0;
       padding: 0;
       // Ensure the wrapper behaves like a block/inline-block that can have width
-      display: block; 
+      display: block;
       overflow: hidden;
     `,
     tooltipContent: css`
@@ -26,7 +28,7 @@ const useStyles = createStyles(({ css, token }) => {
       cursor: pointer;
       color: inherit;
       transition: color 0.2s;
-      
+
       &:hover {
         color: ${token.colorPrimary};
       }
@@ -40,6 +42,8 @@ const useStyles = createStyles(({ css, token }) => {
  * 实现了智能提示：只有内容实际溢出时才显示 Tooltip
  */
 export const EllipsisTooltip = ({ children }: { children: React.ReactNode }) => {
+  const t = useT();
+
   const { styles } = useStyles();
   const { getPrefixCls } = useContext(ConfigProvider.ConfigContext);
   const textRef = useRef<HTMLDivElement>(null);
@@ -53,10 +57,10 @@ export const EllipsisTooltip = ({ children }: { children: React.ReactNode }) => 
         // Typography.Text renders a span or div with .ant-typography
         const typographyEl = textRef.current.querySelector(`.${prefixCls}`);
         if (typographyEl) {
-           // For simple ellipsis={true}, Antd uses CSS ellipsis.
-           // We can detect if it's truncated by comparing scrollWidth and clientWidth
-           // We add a small buffer (1px) for browser sub-pixel rendering differences
-           setIsEllipsis(typographyEl.scrollWidth > typographyEl.clientWidth + 1);
+          // For simple ellipsis={true}, Antd uses CSS ellipsis.
+          // We can detect if it's truncated by comparing scrollWidth and clientWidth
+          // We add a small buffer (1px) for browser sub-pixel rendering differences
+          setIsEllipsis(typographyEl.scrollWidth > typographyEl.clientWidth + 1);
         }
       }
     };
@@ -82,42 +86,31 @@ export const EllipsisTooltip = ({ children }: { children: React.ReactNode }) => 
     navigator.clipboard
       .writeText(text)
       .then(() => {
-        message.success('复制成功');
+        message.success(t('creek-table.components.EllipsisTooltip.fuZhiChengGong', '复制成功'));
       })
       .catch(() => {
-        message.error('复制失败');
+        message.error(t('creek-table.components.EllipsisTooltip.fuZhiShiBai', '复制失败'));
       });
   };
 
   // Memoize tooltip title content
   const tooltipTitle = React.useMemo(() => {
     if (!isSimpleContent) {
-        return children;
+      return children;
     }
     return (
-        <Flex align="center" gap={8} className={styles.tooltipContent}>
-          <span className={styles.tooltipText}>{children}</span>
-          <CopyOutlined
-            onClick={handleCopy}
-            className={styles.copyIcon}
-            title="复制"
-          />
-        </Flex>
+      <Flex align="center" gap={8} className={styles.tooltipContent}>
+        <span className={styles.tooltipText}>{children}</span>
+        <CopyOutlined onClick={handleCopy} className={styles.copyIcon} title={t('creek-table.components.EllipsisTooltip.fuZhi', '复制')} />
+      </Flex>
     );
   }, [children, isSimpleContent]);
 
   return (
-    <Tooltip 
-      title={isEllipsis ? tooltipTitle : undefined} 
-      placement="topLeft" 
-      mouseLeaveDelay={0.2}
-      getPopupContainer={() => document.body}
-    >
-       <div ref={textRef} className={styles.text}>
-          <Typography.Text ellipsis={true}>
-            {children}
-          </Typography.Text>
-       </div>
+    <Tooltip title={isEllipsis ? tooltipTitle : undefined} placement="topLeft" mouseLeaveDelay={0.2} getPopupContainer={() => document.body}>
+      <div ref={textRef} className={styles.text}>
+        <Typography.Text ellipsis={true}>{children}</Typography.Text>
+      </div>
     </Tooltip>
   );
 };

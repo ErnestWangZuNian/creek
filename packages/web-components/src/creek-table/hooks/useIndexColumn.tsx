@@ -1,16 +1,17 @@
 import { ProColumns } from '@ant-design/pro-components';
 import { useMemo } from 'react';
 
-export const useIndexColumn = <T = any, ValueType = 'text'>(
-  columns: ProColumns<T, ValueType>[] = [],
-  showIndex: boolean = true,
-) => {
+import { useT } from '@/utils/i18n';
+
+export const useIndexColumn = <T = any, ValueType = 'text'>(columns: ProColumns<T, ValueType>[] = [], showIndex: boolean = true) => {
+  const t = useT();
+
   return useMemo(() => {
     if (!showIndex) {
       return columns;
     }
     const indexColumn: ProColumns<T, ValueType> = {
-      title: '序号',
+      title: t('creek-table.hooks.useIndexColumn.xuHao', '序号'),
       dataIndex: 'index',
       width: 48,
       fixed: 'left',
@@ -22,5 +23,5 @@ export const useIndexColumn = <T = any, ValueType = 'text'>(
       },
     };
     return [indexColumn, ...columns];
-  }, [columns, showIndex]);
+  }, [columns, showIndex, t]);
 };
