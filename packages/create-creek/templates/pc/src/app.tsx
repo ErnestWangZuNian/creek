@@ -1,10 +1,10 @@
 // 运行时配置
 import { RunTimeLayoutConfig } from '@umijs/max';
-import { App, Button, ConfigProvider } from 'antd';
+import { Button, ConfigProvider } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { RawIntlProvider } from 'react-intl';
 
-import { AppProvider, CreekConfigProvider } from '@creekjs/web-components';
+import { CreekConfigProvider } from '@creekjs/web-components';
 
 import { getIntl, getLocale, setLocale, t } from '@/utils/i18n';
 
@@ -78,9 +78,7 @@ export const layout: RunTimeLayoutConfig = () => {
 export const rootContainer = (children: React.ReactNode) => {
   return (
     <IntlWrapper>
-      <App>
-        <AppProvider>{children}</AppProvider>
-      </App>
+      {children}
     </IntlWrapper>
   );
 };
