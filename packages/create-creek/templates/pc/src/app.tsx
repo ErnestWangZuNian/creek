@@ -1,11 +1,12 @@
 // 运行时配置
-import { RawIntlProvider, RunTimeLayoutConfig, getIntl, getLocale, setLocale } from '@umijs/max';
+import { RunTimeLayoutConfig } from '@umijs/max';
 import { App, Button, ConfigProvider } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { RawIntlProvider } from 'react-intl';
 
-import { AppProvider } from '@creekjs/web-components';
+import { AppProvider, CreekConfigProvider } from '@creekjs/web-components';
 
-import { t } from '@/utils/i18n';
+import { getIntl, getLocale, setLocale, t } from '@/utils/i18n';
 
 import { initRequest } from './request';
 
@@ -22,7 +23,7 @@ const IntlWrapper = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
-  const intl = getIntl(locale);
+  const intl = getIntl();
 
   return (
     <ConfigProvider
@@ -33,7 +34,9 @@ const IntlWrapper = ({ children }: { children: React.ReactNode }) => {
         },
       }}
     >
-      <RawIntlProvider value={intl}>{children}</RawIntlProvider>
+      <RawIntlProvider key={locale} value={intl}>
+        <CreekConfigProvider>{children} </CreekConfigProvider>
+      </RawIntlProvider>
     </ConfigProvider>
   );
 };

@@ -6,10 +6,6 @@ export default defineConfig({
   initialState: {},
   request: {},
   model: {},
-  locale: {
-    // 默认使用 src/locales/zh-CN.ts 作为多语言文件
-    default: 'zh-CN',
-  },
   creekLayout: {
     title: 'creekjs',
     iconFontCNs: ['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js'],

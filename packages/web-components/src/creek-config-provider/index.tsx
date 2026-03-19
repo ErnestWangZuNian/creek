@@ -31,8 +31,12 @@ export const CreekConfigProvider = (props: CreekConfigProviderProps) => {
   // Resolve locale: prop > parent > default
   const finalLocale = locale || parentIntl?.locale || 'zh-CN';
   
-  // Resolve messages: prop > map[finalLocale] > default
-  const finalMessages = messages || MESSAGES_MAP[finalLocale] || zhCN;
+  // Resolve messages: merge component messages with parent messages and explicit prop
+  const finalMessages = {
+    ...(MESSAGES_MAP[finalLocale] || zhCN),
+    ...(parentIntl?.messages as Record<string, string> || {}),
+    ...(messages || {})
+  };
   
   return (
     <IntlProvider locale={finalLocale} messages={finalMessages}>
