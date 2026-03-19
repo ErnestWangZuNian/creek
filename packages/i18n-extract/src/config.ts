@@ -33,6 +33,7 @@ export const defaultConfig: Config = {
   useTDirs: ['pages', 'components'],
   useTFunction: 'useT',
   useTImportStatement: 'import { useT } from "@/utils/i18n"',
+  extractMenus: '', // Default is empty, meaning disabled
 };
 
 export function resolveConfig(cliOptions: any): Config {

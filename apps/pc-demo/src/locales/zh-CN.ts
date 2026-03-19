@@ -1,5 +1,4 @@
 export default {
-  'app.qieHuanYuYan': "切换语言",
   'pages.Demo.components.CreateUpdateForm.chongWuID': "宠物ID",
   'pages.Demo.components.CreateUpdateForm.qingShuRuChongWuID': "请输入宠物ID",
   'pages.Demo.components.CreateUpdateForm.qingShuRuChongWuID！': "请输入宠物ID！",
@@ -27,7 +26,9 @@ export default {
   'pages.Demo.index.bianJi': "编辑",
   'pages.Demo.index.shanChu': "删除",
   'pages.Demo.index.xinJian': "新建",
-  'request.BusinessResponsePlugin.qingQiuShiBai': "请求失败",
-  'request.BusinessResponsePlugin.wangLuoQingQiuCuoWu': "网络请求错误",
-  "pages.Test.index.qingShuRuCeShiWenZi": "请输入测试文字"
+  "request.BusinessResponsePlugin.qingQiuShiBai": "请求失败",
+  "request.BusinessResponsePlugin.wangLuoQingQiuCuoWu": "网络请求错误",
+  "pages.Test.index.qingShuRuCeShiWenZi": "请输入测试文字",
+  "menu.home": "首页",
+  "menu.test": "更新测试"
 };

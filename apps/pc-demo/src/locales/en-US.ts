@@ -1,5 +1,4 @@
 export default {
-  "app.qieHuanYuYan": "Switch Language",
   "pages.Demo.components.CreateUpdateForm.chongWuID": "Pet ID",
   "pages.Demo.components.CreateUpdateForm.qingShuRuChongWuID": "Please enter Pet ID",
   "pages.Demo.components.CreateUpdateForm.qingShuRuChongWuID！": "Please enter Pet ID!",
@@ -29,5 +28,7 @@ export default {
   "pages.Demo.index.xinJian": "Create",
   "pages.Test.index.qingShuRuCeShiWenZi": "Please Input Test Text",
   "request.BusinessResponsePlugin.qingQiuShiBai": "Request Failed",
-  "request.BusinessResponsePlugin.wangLuoQingQiuCuoWu": "Network Request Error"
+  "request.BusinessResponsePlugin.wangLuoQingQiuCuoWu": "Network Request Error",
+  "menu.home": "Home",
+  "menu.test": "Test"
 };

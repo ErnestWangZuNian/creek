@@ -61,6 +61,10 @@ const config: UserConfig = {
   // useT 的导入语句
   // 默认为 'import { useT } from "@/utils/i18n"'
   useTImportStatement: 'import { useT } from "@/utils/i18n"',
+
+  // 提取菜单配置的文件路径 (可选)
+  // 例如：'.umirc.ts' 或 'config/routes.ts'
+  // extractMenus: '.umirc.ts',
 };
 
 export default config;
@@ -106,6 +110,49 @@ async function run(options: any) {
 
   // Global collection of locales
   const collectedLocales: CollectedLocales = {};
+
+  if (config.extractMenus) {
+    const menuPath = path.resolve(process.cwd(), config.extractMenus);
+    if (fs.existsSync(menuPath)) {
+      console.log(chalk.blue(`Extracting menus from ${menuPath}...`));
+      const content = fs.readFileSync(menuPath, 'utf-8');
+      const regex = /path:\s*['"]([^'"]+)['"][^{}]*?name:\s*['"]([^'"]+)['"]|name:\s*['"]([^'"]+)['"][^{}]*?path:\s*['"]([^'"]+)['"]/g;
+      
+      let match;
+      const menus = [];
+      while ((match = regex.exec(content)) !== null) {
+        const p = match[1] || match[4];
+        const n = match[2] || match[3];
+        menus.push({ path: p, name: n });
+      }
+
+      if (menus.length > 0) {
+        // Since menus are not associated with a specific component file,
+        // we can put them in a generic namespace or root.
+        // Let's use a dummy file path to trigger the default namespace resolution if needed,
+        // or just use a fixed namespace 'menu' or put it at the root.
+        // Here we just merge them into the global locale directly.
+        const namespace = config.useDirectoryAsNamespace ? 'menu' : ''; // Or whatever logic you prefer
+        
+        menus.forEach(menu => {
+           const key = (!menu.path || menu.path === '/') ? 'menu.home' : `menu${menu.path.replace(/\//g, '.')}`;
+           if (!collectedLocales[namespace]) collectedLocales[namespace] = {};
+           // Only add if not already translated or if it's Chinese
+           if (/[\u4e00-\u9fa5]/.test(menu.name)) {
+              collectedLocales[namespace][key] = menu.name;
+           } else {
+              // If it's not Chinese, we might still want to extract it as a placeholder
+              collectedLocales[namespace][key] = menu.name;
+           }
+        });
+        console.log(chalk.green(`Extracted ${menus.length} menu items.`));
+      } else {
+        console.log(chalk.yellow(`No menu items found in ${menuPath}.`));
+      }
+    } else {
+      console.warn(chalk.yellow(`Menu config file not found: ${menuPath}`));
+    }
+  }
 
   for (const file of files) {
     try {

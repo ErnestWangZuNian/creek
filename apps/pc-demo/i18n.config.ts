@@ -48,6 +48,10 @@ const config: UserConfig = {
   // useT 的导入语句
   // 默认为 'import { useT } from "@/utils/i18n"'
   useTImportStatement: 'import { useT } from "@/utils/i18n"',
+
+  // 提取菜单配置的文件路径 (可选)
+  // 例如：'.umirc.ts' 或 'config/routes.ts'
+  extractMenus: '.umirc.ts',
 };
 
 export default config;
