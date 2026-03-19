@@ -6,6 +6,7 @@ export * from './creek-keep-alive';
 export * from './creek-layout';
 export * from './creek-loading';
 export * from './creek-locale-button';
+export * from './creek-page-container';
 export * from './creek-style';
 export * from './creek-table';
 
