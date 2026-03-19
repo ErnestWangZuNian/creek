@@ -131,7 +131,8 @@ export default (api: IApi) => {
   });
 
   api.onGenerateFiles(() => {
-    const hasInitialStatePlugin = api.config.initialState;
+    const hasInitialStatePlugin = !!api.config.initialState;
+    const hasLocalePlugin = !!api.config.locale;
     const iconsInfo = getIconsInfoForRoutes(api);
 
     const iconFontCNs = Array.isArray(api.userConfig.creekLayout?.iconFontCNs) ? api.userConfig.creekLayout?.iconFontCNs : [];
@@ -142,6 +143,7 @@ export default (api: IApi) => {
       context: {
         creekWebComponentsPath,
         hasInitialStatePlugin,
+        hasLocalePlugin,
         access: api.config.access,
         creekLocaleConfig: api.config.creekLocaleConfig ? JSON.stringify(api.config.glocale, null, 2) : 'undefined',
         userConfig: JSON.stringify(api.config.creekLayout, null, 2),

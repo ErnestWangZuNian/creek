@@ -1,7 +1,14 @@
-import { useLocation, useAppData, IRoute, matchRoutes, Outlet, useNavigate, useIntl } from 'umi';
+import { useLocation, useAppData, IRoute, matchRoutes, Outlet, useNavigate } from 'umi';
 import { useMemo } from 'react';
 import _ from 'lodash';
 import { CreekLayout, CreekLayoutProps } from '{{{creekWebComponentsPath}}}';
+
+{{#hasLocalePlugin}}
+import { useIntl } from 'umi';
+{{/hasLocalePlugin}}
+{{^hasLocalePlugin}}
+const useIntl = () => ({ formatMessage: undefined });
+{{/hasLocalePlugin}}
 
 {{#hasInitialStatePlugin}}
 import { useModel } from '@@/plugin-model';

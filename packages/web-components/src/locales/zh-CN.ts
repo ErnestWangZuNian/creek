@@ -14,5 +14,6 @@ export default {
   "creek-table.components.EllipsisTooltip.fuZhiChengGong": "复制成功",
   "creek-table.components.EllipsisTooltip.fuZhiShiBai": "复制失败",
   "creek-table.components.EllipsisTooltip.fuZhi": "复制",
-  "creek-table.hooks.useIndexColumn.xuHao": "序号"
+  "creek-table.hooks.useIndexColumn.xuHao": "序号",
+  "creek-locale-button.qieHuanYuYan": "切换语言"
 };

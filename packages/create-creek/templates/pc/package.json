@@ -15,6 +15,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
     "@ant-design/pro-components": "^2.8.10",
+    "@creekjs/i18n": "latest",
     "@creekjs/i18n-extract": "latest",
     "@creekjs/openapi": "latest",
     "@creekjs/request": "latest",

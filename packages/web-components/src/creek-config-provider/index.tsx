@@ -1,47 +1,39 @@
-import { useContext } from 'react';
-import { IntlContext, IntlProvider } from 'react-intl';
-import enUS from '../locales/en-US';
-import zhCN from '../locales/zh-CN';
+import type { ConfigProviderProps } from 'antd';
+import { ConfigProvider } from 'antd';
+import enUS_antd from 'antd/locale/en_US';
+import zhCN_antd from 'antd/locale/zh_CN';
+
 import { CreekConfigContext, CreekConfigContextProps } from './CreekConfigContext';
+import { CreekI18nProvider, CreekI18nProviderProps, LocaleContext, useAppLocale } from './CreekI18nProvider';
 
-export type CreekConfigProviderProps = CreekConfigContextProps & {
-  children?: React.ReactNode;
-  /**
-   * 语言标识
-   * @default 'zh-CN'
-   */
-  locale?: string;
-  /**
-   * 国际化语言包，透传给 react-intl
-   */
-  messages?: Record<string, string>;
-};
+export type CreekConfigProviderProps = CreekConfigContextProps & Omit<ConfigProviderProps, 'locale'> & CreekI18nProviderProps;
 
-const MESSAGES_MAP: Record<string, Record<string, string>> = {
-  'zh-CN': zhCN,
-  'en-US': enUS,
+export { CreekI18nProvider, LocaleContext, useAppLocale };
+export type { CreekI18nProviderProps };
+
+const InnerConfigProvider = (props: Omit<CreekConfigProviderProps, 'locale' | 'messages'>) => {
+  const { children, ...more } = props;
+  const { locale } = useAppLocale();
+
+  return (
+    <ConfigProvider
+      locale={locale === 'en-US' ? enUS_antd : zhCN_antd}
+      {...more}
+    >
+      <CreekConfigContext.Provider value={more as any}>{children}</CreekConfigContext.Provider>
+    </ConfigProvider>
+  );
 };
 
 export const CreekConfigProvider = (props: CreekConfigProviderProps) => {
   const { children, locale, messages, ...more } = props;
-  
-  // Try to get parent intl context
-  const parentIntl = useContext(IntlContext);
-  
-  // Resolve locale: prop > parent > default
-  const finalLocale = locale || parentIntl?.locale || 'zh-CN';
-  
-  // Resolve messages: merge component messages with parent messages and explicit prop
-  const finalMessages = {
-    ...(MESSAGES_MAP[finalLocale] || zhCN),
-    ...(parentIntl?.messages as Record<string, string> || {}),
-    ...(messages || {})
-  };
-  
+
   return (
-    <IntlProvider locale={finalLocale} messages={finalMessages}>
-      <CreekConfigContext.Provider value={more}>{children}</CreekConfigContext.Provider>
-    </IntlProvider>
+    <CreekI18nProvider locale={locale} messages={messages}>
+      <InnerConfigProvider {...more}>
+        {children}
+      </InnerConfigProvider>
+    </CreekI18nProvider>
   );
 };
 
