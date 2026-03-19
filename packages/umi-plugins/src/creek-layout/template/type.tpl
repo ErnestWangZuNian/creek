@@ -20,6 +20,7 @@
       provider?:  React.ReactNode;
       keepAlive?: boolean | CreekKeepAliveProps;
       extraActions?: React.ReactNode[];
+      showLocaleButton?: boolean;
       unAccessible?: JSX.Element;
       iconFontCNs?: string[];
     };

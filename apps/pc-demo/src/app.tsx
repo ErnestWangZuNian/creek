@@ -3,16 +3,9 @@ import { RunTimeLayoutConfig } from '@umijs/max';
 import { App } from 'antd';
 import React from 'react';
 
-import { useT } from '@creekjs/i18n/react';
-import { AppProvider, CreekConfigProvider, CreekLocaleButton } from '@creekjs/web-components';
+import { AppProvider, CreekConfigProvider } from '@creekjs/web-components';
 
 import { initRequest } from './request';
-
-const MenuName = ({ name, path }: { name: string; path?: string }) => {
-  const t = useT();
-  const key = (!path || path === '/') ? 'menu.home' : `menu${path.replace(/\//g, '.')}`;
-  return <>{t(key, name)}</>;
-};
 
 // 全局初始化数据配置，用于 Layout 用户信息和权限初始化
 // 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate
@@ -28,21 +21,9 @@ export const layout: RunTimeLayoutConfig = () => {
     menu: {
       locale: false,
     },
-    menuDataRender: (menuData) => {
-      const mapMenu = (items: any[]): any[] => {
-        return items.map((item) => {
-          return {
-            ...item,
-            name: <MenuName name={item.name} path={item.path} />,
-            children: item.children ? mapMenu(item.children) : undefined,
-          };
-        });
-      };
-      return mapMenu(menuData);
-    },
     layout: 'mix',
     iconFontCNs: ['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js'],
-    extraActions: [<CreekLocaleButton key="change-language" />],
+    showLocaleButton: true,
   };
 };
 

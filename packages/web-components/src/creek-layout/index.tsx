@@ -4,7 +4,9 @@ import { theme } from 'antd';
 import classnames from 'classnames';
 import _ from 'lodash';
 
+import { useT } from '@creekjs/i18n/react';
 import { CreekKeepAlive, CreekKeepAliveProps } from '../creek-keep-alive';
+import { CreekLocaleButton } from '../creek-locale-button';
 import { GlobalScrollbarStyle } from '../creek-style/scrollbar';
 import { FullScreen } from './ActionRender';
 import { CollapsedButton, useCollapsedStore } from './CollapseButton';
@@ -15,6 +17,7 @@ export type LayoutProps = ProLayoutProps & {
   userConfig?: ProLayoutProps;
   navigate?: (path?: string | number) => void;
   showFullScreen?: boolean;
+  showLocaleButton?: boolean;
   initialInfo?: {
     initialState: any;
     loading: boolean;
@@ -24,13 +27,32 @@ export type LayoutProps = ProLayoutProps & {
   extraActions?: React.ReactNode[];
 };
 
+const MenuName = ({ name, path }: { name: string; path?: string }) => {
+  const t = useT();
+  const key = (!path || path === '/') ? 'menu.home' : `menu${path.replace(/\//g, '.')}`;
+  return <>{t(key, name)}</>;
+};
+
 export const CreekLayout = (props: LayoutProps) => {
-  const { route, userConfig, runtimeConfig, children, location, navigate, showFullScreen, keepAlive = true, extraActions = [], ...more } = props;
+  const { route, userConfig, runtimeConfig, children, location, navigate, showFullScreen, showLocaleButton = true, keepAlive = true, extraActions = [], ...more } = props;
 
   const { useToken } = theme;
   const { token } = useToken();
 
   const { collapsed } = useCollapsedStore();
+
+  const menuDataRender = useMemoizedFn((menuData: any[]) => {
+    const mapMenu = (items: any[]): any[] => {
+      return items.map((item) => {
+        return {
+          ...item,
+          name: <MenuName name={item.name} path={item.path} />,
+          children: item.children ? mapMenu(item.children) : undefined,
+        };
+      });
+    };
+    return mapMenu(menuData);
+  });
 
   const menuItemRender: ProLayoutProps['menuItemRender'] = useMemoizedFn((itemProps, defaultDom) => {
     return (
@@ -66,6 +88,10 @@ export const CreekLayout = (props: LayoutProps) => {
     actions.push(<FullScreen key="full-screen" />);
   }
 
+  if (showLocaleButton) {
+    actions.push(<CreekLocaleButton key="locale-button" />);
+  }
+
   const keepAliveProps = _.isBoolean(keepAlive) ? {} : keepAlive;
 
   const _userConfig = { ...userConfig, ...runtimeConfig };
@@ -77,6 +103,7 @@ export const CreekLayout = (props: LayoutProps) => {
       title={_userConfig?.title}
       siderWidth={200}
       location={location}
+      menuDataRender={menuDataRender}
       menuItemRender={menuItemRender}
       actionsRender={() => actions}
       token={{

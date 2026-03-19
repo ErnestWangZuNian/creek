@@ -1,20 +1,39 @@
-import { Button } from 'antd';
+import { GlobalOutlined } from '@ant-design/icons';
+import { Dropdown, Space, Typography } from 'antd';
 
-import { useT } from '@creekjs/i18n/react';
 import { useAppLocale } from '../creek-config-provider';
 
+
 export const CreekLocaleButton = () => {
-  const t = useT();
   const { locale, changeLocale } = useAppLocale();
 
-  const handleLanguageChange = () => {
-    const nextLocale = locale === 'zh-CN' ? 'en-US' : 'zh-CN';
-    changeLocale(nextLocale);
-  };
+  const items = [
+    {
+      key: 'zh-CN',
+      label: '简体中文',
+      disabled: locale === 'zh-CN',
+    },
+    {
+      key: 'en-US',
+      label: 'English',
+      disabled: locale === 'en-US',
+    },
+  ];
+
+  const currentLabel = items.find((item) => item.key === locale)?.label || 'Language';
 
   return (
-    <Button key="change-language" onClick={handleLanguageChange}>
-      {t('creek-locale-button.qieHuanYuYan', '切换语言')}
-    </Button>
+    <Dropdown
+      menu={{
+        items,
+        onClick: (e) => changeLocale(e.key),
+      }}
+      placement="bottomRight"
+    >
+      <Space size="small" align="center">
+        <GlobalOutlined />
+        <Typography.Text >{currentLabel}</Typography.Text>
+      </Space>
+    </Dropdown>
   );
 };
