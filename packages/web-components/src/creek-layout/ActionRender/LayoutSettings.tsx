@@ -36,6 +36,7 @@ const SettingsForm = ({ defaultShowFullScreen, defaultShowLocaleButton, defaultK
       </Form.Item>
     </Form>
   );
+};
 
 export const LayoutSettings = ({
   defaultShowFullScreen,
