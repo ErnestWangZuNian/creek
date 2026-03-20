@@ -164,19 +164,22 @@ request.pluginManager.use(loadingPlugin);
 ### DuplicatePlugin - 防重复请求
 
 ```typescript
-const duplicatePlugin = new plugins.DuplicatePlugin();
+const duplicatePlugin = new plugins.DuplicatePlugin({
+  throwDuplicateError: false, // 是否将重复请求的错误抛出，默认 false (静默拦截并打印警告)
+  cooldownInterval: 0,        // 请求完成后的冷却时间(ms)，默认 0
+});
 request.pluginManager.use(duplicatePlugin);
 
 // 快速连续发送相同请求，只有第一个会执行
 request.get('/api/users'); // 执行
-request.get('/api/users'); // 被阻止
-request.get('/api/users'); // 被阻止
+request.get('/api/users'); // 被静默拦截，控制台打印警告
 ```
 
 **特性：**
 - 基于请求 URL、方法和参数生成唯一标识
 - 自动管理请求队列
-- 请求完成后自动清理
+- 路由切换时自动清理锁（防止页面快速切换导致新请求被误拦截）
+- 默认静默处理重复请求，避免报错冒泡到业务层引发全局 Toast 提示
 
 ## 高级用法
 
