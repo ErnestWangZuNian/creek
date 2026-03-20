@@ -1,22 +1,13 @@
 <svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Soft, neutral, glassmorphism-inspired background -->
-  <rect width="256" height="256" rx="56" fill="url(#creek-gradient)" />
+  <!-- Minimalist, high-contrast, universally adaptable background (almost black) -->
+  <rect width="256" height="256" rx="56" fill="#111111" />
   
-  <!-- Back wave (lightest) -->
-  <path d="M40 110 C 80 50, 120 170, 180 80" stroke="rgba(255,255,255,0.4)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" />
+  <!-- Back wave (subtle) -->
+  <path d="M40 110 C 80 50, 120 170, 180 80" stroke="rgba(255,255,255,0.2)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" />
   
   <!-- Middle wave -->
-  <path d="M60 150 C 100 90, 140 210, 200 120" stroke="rgba(255,255,255,0.7)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M60 150 C 100 90, 140 210, 200 120" stroke="rgba(255,255,255,0.5)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" />
   
   <!-- Front wave (solid white) -->
   <path d="M80 190 C 120 130, 160 250, 220 160" stroke="#ffffff" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" />
-
-  <defs>
-    <!-- A universal, elegant dark gradient that pairs well with any primary color -->
-    <linearGradient id="creek-gradient" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#1A1F2C" />
-      <stop offset="50%" stop-color="#2D3748" />
-      <stop offset="100%" stop-color="#1A202C" />
-    </linearGradient>
-  </defs>
 </svg>

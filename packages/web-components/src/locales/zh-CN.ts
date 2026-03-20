@@ -19,5 +19,6 @@ export default {
   "creek-layout.ActionRender.LayoutSettings.themeColor": "主题色",
   "creek-layout.ActionRender.LayoutSettings.showFullScreen": "展示全屏按钮",
   "creek-layout.ActionRender.LayoutSettings.showLocaleButton": "展示国际化按钮",
-  "creek-locale-button.index.jianTiZhongWen": "简体中文"
+  "creek-locale-button.index.jianTiZhongWen": "简体中文",
+  "creek-layout.ActionRender.LayoutSettings.keepAlive": "开启页面缓存 (Keep Alive)"
 };
