@@ -2,8 +2,10 @@ import type { ConfigProviderProps } from 'antd';
 import { App, ConfigProvider } from 'antd';
 import enUS_antd from 'antd/locale/en_US';
 import zhCN_antd from 'antd/locale/zh_CN';
+import merge from 'lodash/merge';
 
 import { AppProvider } from '../creek-hooks';
+import { useLayoutSettingsStore } from '../creek-layout/useLayoutSettingsStore';
 import { CreekConfigContext, CreekConfigContextProps } from './CreekConfigContext';
 import { CreekI18nProvider, CreekI18nProviderProps, LocaleContext, useAppLocale } from './CreekI18nProvider';
 
@@ -13,19 +15,33 @@ export { CreekI18nProvider, LocaleContext, useAppLocale };
 export type { CreekI18nProviderProps };
 
 const InnerConfigProvider = (props: Omit<CreekConfigProviderProps, 'locale' | 'messages'>) => {
-  const { children, ...more } = props;
+  const { children, theme, ...more } = props;
   const { locale } = useAppLocale();
+  const settingsStore = useLayoutSettingsStore();
+
+  const activeColorPrimary = settingsStore.colorPrimary || theme?.token?.colorPrimary;
+
+  let finalTheme = merge(
+    {},
+    theme,
+    activeColorPrimary
+      ? {
+          token: {
+            colorPrimary: activeColorPrimary,
+            colorLink: activeColorPrimary,
+            colorLinkHover: activeColorPrimary,
+            colorLinkActive: activeColorPrimary,
+          },
+        }
+      : {}
+  );
+
 
   return (
-    <ConfigProvider
-      locale={locale === 'en-US' ? enUS_antd : zhCN_antd}
-      {...more}
-    >
+    <ConfigProvider locale={locale === 'en-US' ? enUS_antd : zhCN_antd} theme={finalTheme} {...more}>
       <CreekConfigContext.Provider value={more as any}>
         <App>
-          <AppProvider>
-            {children}
-          </AppProvider>
+          <AppProvider>{children}</AppProvider>
         </App>
       </CreekConfigContext.Provider>
     </ConfigProvider>
@@ -37,9 +53,7 @@ export const CreekConfigProvider = (props: CreekConfigProviderProps) => {
 
   return (
     <CreekI18nProvider locale={locale} messages={messages}>
-      <InnerConfigProvider {...more}>
-        {children}
-      </InnerConfigProvider>
+      <InnerConfigProvider {...more}>{children}</InnerConfigProvider>
     </CreekI18nProvider>
   );
 };

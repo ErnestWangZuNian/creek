@@ -9,15 +9,18 @@ import { useLayoutSettingsStore } from '../useLayoutSettingsStore';
 const SettingsForm = ({
   defaultShowFullScreen,
   defaultShowLocaleButton,
+  defaultKeepAlive,
 }: {
   defaultShowFullScreen?: boolean;
   defaultShowLocaleButton?: boolean;
+  defaultKeepAlive?: boolean;
 }) => {
   const t = useT();
-  const { colorPrimary, showFullScreen, showLocaleButton, setSettings } = useLayoutSettingsStore();
+  const { colorPrimary, showFullScreen, showLocaleButton, keepAlive, setSettings } = useLayoutSettingsStore();
 
   const currentShowFullScreen = showFullScreen ?? defaultShowFullScreen ?? false;
   const currentShowLocaleButton = showLocaleButton ?? defaultShowLocaleButton ?? true;
+  const currentKeepAlive = keepAlive ?? defaultKeepAlive ?? true;
 
   return (
     <Form layout="vertical">
@@ -42,6 +45,12 @@ const SettingsForm = ({
           onChange={(checked) => setSettings({ showLocaleButton: checked })}
         />
       </Form.Item>
+      <Form.Item label={t('creek-layout.ActionRender.LayoutSettings.keepAlive', '开启页面缓存 (Keep Alive)')}>
+        <Switch
+          checked={currentKeepAlive}
+          onChange={(checked) => setSettings({ keepAlive: checked })}
+        />
+      </Form.Item>
     </Form>
   );
 };
@@ -49,9 +58,11 @@ const SettingsForm = ({
 export const LayoutSettings = ({
   defaultShowFullScreen,
   defaultShowLocaleButton,
+  defaultKeepAlive,
 }: {
   defaultShowFullScreen?: boolean;
   defaultShowLocaleButton?: boolean;
+  defaultKeepAlive?: boolean;
 }) => {
   const t = useT();
   const { drawer } = useApp();
@@ -61,10 +72,12 @@ export const LayoutSettings = ({
       title: t('creek-layout.ActionRender.LayoutSettings.title', '系统设置'),
       placement: 'right',
       size: 'default',
+      width: 300,
       content: (
         <SettingsForm
           defaultShowFullScreen={defaultShowFullScreen}
           defaultShowLocaleButton={defaultShowLocaleButton}
+          defaultKeepAlive={defaultKeepAlive}
         />
       ),
     });

@@ -5,6 +5,7 @@ export type LayoutSettingsStore = {
   colorPrimary?: string;
   showFullScreen?: boolean;
   showLocaleButton?: boolean;
+  keepAlive?: boolean;
   setSettings: (settings: Partial<LayoutSettingsStore>) => void;
 };
 
@@ -12,8 +13,9 @@ export const useLayoutSettingsStore = create<LayoutSettingsStore>()(
   persist(
     (set) => ({
       colorPrimary: undefined,
-      showFullScreen: undefined,
-      showLocaleButton: undefined,
+      showFullScreen: true,
+      showLocaleButton: true,
+      keepAlive: true,
       setSettings: (settings) => set((state) => ({ ...state, ...settings })),
     }),
     {

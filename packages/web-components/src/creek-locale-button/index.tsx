@@ -1,11 +1,13 @@
 import { GlobalOutlined } from '@ant-design/icons';
 import { Dropdown, Space, Typography } from 'antd';
 
-import { t } from '@/utils/i18n';
+import { useT } from '@creekjs/i18n/react';
 
 import { useAppLocale } from '../creek-config-provider';
 
 export const CreekLocaleButton = () => {
+  const t = useT();
+
   const { locale, changeLocale } = useAppLocale();
 
   const items = [

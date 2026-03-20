@@ -1,6 +1,6 @@
 import { ProLayout, ProLayoutProps } from '@ant-design/pro-components';
 import { useMemoizedFn } from 'ahooks';
-import { ConfigProvider, theme } from 'antd';
+import { theme } from 'antd';
 import _ from 'lodash';
 
 import classnames from 'classnames';
@@ -49,6 +49,7 @@ export const CreekLayout = (props: LayoutProps) => {
   const actualShowFullScreen = settingsStore.showFullScreen ?? showFullScreen ?? false;
   const actualShowLocaleButton = settingsStore.showLocaleButton ?? showLocaleButton ?? true;
   const colorPrimary = settingsStore.colorPrimary || token.colorPrimary;
+  const actualKeepAlive = settingsStore.keepAlive ?? keepAlive ?? true;
 
   const menuDataRender = useMemoizedFn((menuData: any[]) => {
     const mapMenu = (items: any[]): any[] => {
@@ -107,6 +108,7 @@ export const CreekLayout = (props: LayoutProps) => {
         key="settings"
         defaultShowFullScreen={showFullScreen}
         defaultShowLocaleButton={showLocaleButton}
+        defaultKeepAlive={_.isBoolean(keepAlive) ? keepAlive : true}
       />
     );
   }
@@ -155,17 +157,11 @@ export const CreekLayout = (props: LayoutProps) => {
       {...more}
     >
       <GlobalScrollbarStyle />
-      <Exception>{keepAlive ? <CreekKeepAlive getTabTitle={getTabTitle} {...keepAliveProps} /> : children}</Exception>
+      <Exception>{actualKeepAlive ? <CreekKeepAlive getTabTitle={getTabTitle} {...keepAliveProps} /> : children}</Exception>
     </ProLayout>
   );
 
-  return settingsStore.colorPrimary ? (
-    <ConfigProvider theme={{ token: { colorPrimary: settingsStore.colorPrimary } }}>
-      {layoutContent}
-    </ConfigProvider>
-  ) : (
-    layoutContent
-  );
+  return layoutContent;
 };
 
 export * from './Exception';

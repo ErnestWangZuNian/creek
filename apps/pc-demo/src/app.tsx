@@ -1,9 +1,8 @@
 // 运行时配置
 import { RunTimeLayoutConfig } from '@umijs/max';
-import { App } from 'antd';
 import React from 'react';
 
-import { AppProvider, CreekConfigProvider } from '@creekjs/web-components';
+import { CreekConfigProvider } from '@creekjs/web-components';
 
 import { initRequest } from './request';
 
@@ -38,9 +37,7 @@ export const rootContainer = (children: React.ReactNode) => {
         },
       }}
     >
-      <App>
-        <AppProvider>{children}</AppProvider>
-      </App>
+      {children}
     </CreekConfigProvider>
   );
 };
