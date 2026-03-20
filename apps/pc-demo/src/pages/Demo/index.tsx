@@ -1,9 +1,7 @@
-import { useRef } from 'react';
-
-import { Button, message } from 'antd';
-
 import { DownloadOutlined } from '@ant-design/icons';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
+import { Button, message } from 'antd';
+import { useRef } from 'react';
 
 import { CreekTable, useApp } from '@creekjs/web-components';
 
@@ -14,7 +12,7 @@ import CreateUpdateForm from './components/CreateUpdateForm';
 
 const PetList = () => {
   const t = useT();
-  
+
   const actionRef = useRef<ActionType>();
   const { modal } = useApp();
 
