@@ -1,16 +1,19 @@
 import { ProLayout, ProLayoutProps } from '@ant-design/pro-components';
 import { useMemoizedFn } from 'ahooks';
-import { theme } from 'antd';
-import classnames from 'classnames';
+import { ConfigProvider, theme } from 'antd';
 import _ from 'lodash';
 
+import classnames from 'classnames';
+
 import { useT } from '@creekjs/i18n/react';
+
 import { CreekKeepAlive, CreekKeepAliveProps } from '../creek-keep-alive';
 import { CreekLocaleButton } from '../creek-locale-button';
 import { GlobalScrollbarStyle } from '../creek-style/scrollbar';
-import { FullScreen } from './ActionRender';
+import { FullScreen, LayoutSettings } from './ActionRender';
 import { CollapsedButton, useCollapsedStore } from './CollapseButton';
 import { Exception } from './Exception';
+import { useLayoutSettingsStore } from './useLayoutSettingsStore';
 
 export type LayoutProps = ProLayoutProps & {
   runtimeConfig: ProLayoutProps;
@@ -18,6 +21,7 @@ export type LayoutProps = ProLayoutProps & {
   navigate?: (path?: string | number) => void;
   showFullScreen?: boolean;
   showLocaleButton?: boolean;
+  showSettingsButton?: boolean;
   initialInfo?: {
     initialState: any;
     loading: boolean;
@@ -29,17 +33,22 @@ export type LayoutProps = ProLayoutProps & {
 
 const MenuName = ({ name, path }: { name: string; path?: string }) => {
   const t = useT();
-  const key = (!path || path === '/') ? 'menu.home' : `menu${path.replace(/\//g, '.')}`;
+  const key = !path || path === '/' ? 'menu.home' : `menu${path.replace(/\//g, '.')}`;
   return <>{t(key, name)}</>;
 };
 
 export const CreekLayout = (props: LayoutProps) => {
-  const { route, userConfig, runtimeConfig, children, location, navigate, showFullScreen, showLocaleButton = true, keepAlive = true, extraActions = [], ...more } = props;
+  const { route, userConfig, runtimeConfig, children, location, navigate, showFullScreen, showLocaleButton = true, showSettingsButton = true, keepAlive = true, extraActions = [], ...more } = props;
 
   const { useToken } = theme;
   const { token } = useToken();
 
   const { collapsed } = useCollapsedStore();
+  const settingsStore = useLayoutSettingsStore();
+
+  const actualShowFullScreen = settingsStore.showFullScreen ?? showFullScreen ?? false;
+  const actualShowLocaleButton = settingsStore.showLocaleButton ?? showLocaleButton ?? true;
+  const colorPrimary = settingsStore.colorPrimary || token.colorPrimary;
 
   const menuDataRender = useMemoizedFn((menuData: any[]) => {
     const mapMenu = (items: any[]): any[] => {
@@ -84,19 +93,29 @@ export const CreekLayout = (props: LayoutProps) => {
 
   const actions: React.ReactNode[] = [...extraActions];
 
-  if (showFullScreen) {
+  if (actualShowFullScreen) {
     actions.push(<FullScreen key="full-screen" />);
   }
 
-  if (showLocaleButton) {
+  if (actualShowLocaleButton) {
     actions.push(<CreekLocaleButton key="locale-button" />);
+  }
+
+  if (showSettingsButton) {
+    actions.push(
+      <LayoutSettings
+        key="settings"
+        defaultShowFullScreen={showFullScreen}
+        defaultShowLocaleButton={showLocaleButton}
+      />
+    );
   }
 
   const keepAliveProps = _.isBoolean(keepAlive) ? {} : keepAlive;
 
   const _userConfig = { ...userConfig, ...runtimeConfig };
 
-  return (
+  const layoutContent = (
     <ProLayout
       className={classnames('creek-layout-container', _userConfig?.className)}
       route={route}
@@ -110,15 +129,15 @@ export const CreekLayout = (props: LayoutProps) => {
         header: {
           colorBgHeader: '#fff',
           colorHeaderTitle: 'rgba(0, 0, 0, 0.80);',
-          colorTextMenuSelected: token.colorPrimary,
+          colorTextMenuSelected: colorPrimary,
           heightLayoutHeader: 48,
         },
         sider: {
           colorMenuBackground: '#f7f8fa',
           colorBgMenuItemSelected: 'transparent',
-          colorTextMenuActive: token.colorPrimary,
-          colorTextMenuSelected: token.colorPrimary,
-          colorTextMenuItemHover: token.colorPrimary,
+          colorTextMenuActive: colorPrimary,
+          colorTextMenuSelected: colorPrimary,
+          colorTextMenuItemHover: colorPrimary,
           colorTextMenu: '#333',
         },
         pageContainer: {
@@ -138,6 +157,14 @@ export const CreekLayout = (props: LayoutProps) => {
       <GlobalScrollbarStyle />
       <Exception>{keepAlive ? <CreekKeepAlive getTabTitle={getTabTitle} {...keepAliveProps} /> : children}</Exception>
     </ProLayout>
+  );
+
+  return settingsStore.colorPrimary ? (
+    <ConfigProvider theme={{ token: { colorPrimary: settingsStore.colorPrimary } }}>
+      {layoutContent}
+    </ConfigProvider>
+  ) : (
+    layoutContent
   );
 };
 

@@ -1,8 +1,9 @@
 import { GlobalOutlined } from '@ant-design/icons';
 import { Dropdown, Space, Typography } from 'antd';
 
-import { useAppLocale } from '../creek-config-provider';
+import { t } from '@/utils/i18n';
 
+import { useAppLocale } from '../creek-config-provider';
 
 export const CreekLocaleButton = () => {
   const { locale, changeLocale } = useAppLocale();
@@ -10,7 +11,7 @@ export const CreekLocaleButton = () => {
   const items = [
     {
       key: 'zh-CN',
-      label: '简体中文',
+      label: t('creek-locale-button.index.jianTiZhongWen', '简体中文'),
       disabled: locale === 'zh-CN',
     },
     {
@@ -32,7 +33,7 @@ export const CreekLocaleButton = () => {
     >
       <Space size="small" align="center">
         <GlobalOutlined />
-        <Typography.Text >{currentLabel}</Typography.Text>
+        <Typography.Text>{currentLabel}</Typography.Text>
       </Space>
     </Dropdown>
   );

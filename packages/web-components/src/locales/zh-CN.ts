@@ -15,5 +15,9 @@ export default {
   "creek-table.components.EllipsisTooltip.fuZhiShiBai": "复制失败",
   "creek-table.components.EllipsisTooltip.fuZhi": "复制",
   "creek-table.hooks.useIndexColumn.xuHao": "序号",
-  "creek-locale-button.qieHuanYuYan": "切换语言"
+  "creek-layout.ActionRender.LayoutSettings.title": "系统设置",
+  "creek-layout.ActionRender.LayoutSettings.themeColor": "主题色",
+  "creek-layout.ActionRender.LayoutSettings.showFullScreen": "展示全屏按钮",
+  "creek-layout.ActionRender.LayoutSettings.showLocaleButton": "展示国际化按钮",
+  "creek-locale-button.index.jianTiZhongWen": "简体中文"
 };

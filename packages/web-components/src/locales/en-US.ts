@@ -15,5 +15,9 @@ export default {
   "creek-table.components.EllipsisTooltip.fuZhiShiBai": "Copy Failed",
   "creek-table.components.EllipsisTooltip.fuZhi": "Copy",
   "creek-table.hooks.useIndexColumn.xuHao": "No.",
-  "creek-locale-button.qieHuanYuYan": "Change Language"
+  "creek-layout.ActionRender.LayoutSettings.title": "System Settings",
+  "creek-layout.ActionRender.LayoutSettings.themeColor": "Theme Color",
+  "creek-layout.ActionRender.LayoutSettings.showFullScreen": "Show Full Screen Button",
+  "creek-layout.ActionRender.LayoutSettings.showLocaleButton": "Show Locale Button",
+  "creek-locale-button.index.jianTiZhongWen": "Simplified Chinese"
 };

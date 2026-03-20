@@ -6,7 +6,7 @@
   "scripts": {
     "father:build": "father build",
     "father:dev": "father dev --no-clean",
-    "i18n": "creek-i18n"
+    "i18n-extract": "creek-i18n extract"
   },
   "keywords": [],
   "author": "",
