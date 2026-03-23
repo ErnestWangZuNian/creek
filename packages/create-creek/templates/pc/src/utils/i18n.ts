@@ -9,4 +9,5 @@ const locales: Record<string, Record<string, string>> = {
 
 initI18n('zh-CN', locales);
 
-export { getIntl, getLocale, setLocale, t, useT, globalIntl } from '@creekjs/i18n/react';
+export { getIntl, getLocale, globalIntl, setLocale, t, useT } from '@creekjs/i18n/react';
+

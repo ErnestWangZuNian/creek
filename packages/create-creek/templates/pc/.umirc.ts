@@ -19,7 +19,7 @@ export default defineConfig({
     },
     {
       path: '/test',
-      name: '测试',
+      name: '更新测试',
       component: './Test',
     },
   ],

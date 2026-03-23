@@ -1,9 +1,7 @@
-import { useRef } from 'react';
-
-import { Button, message } from 'antd';
-
 import { DownloadOutlined } from '@ant-design/icons';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
+import { Button, message, Typography } from 'antd';
+import { useRef } from 'react';
 
 import { CreekTable, useApp } from '@creekjs/web-components';
 
@@ -14,7 +12,7 @@ import CreateUpdateForm from './components/CreateUpdateForm';
 
 const PetList = () => {
   const t = useT();
-  
+
   const actionRef = useRef<ActionType>();
   const { modal } = useApp();
 
@@ -122,17 +120,17 @@ const PetList = () => {
       dataIndex: 'option',
       valueType: 'option',
       render: (_, record) => [
-        <a key="config" onClick={() => openEditModal(record)}>
+        <Typography.Link key="config" onClick={() => openEditModal(record)}>
           {t('pages.Demo.index.bianJi', '编辑')}
-        </a>,
-        <a
+        </Typography.Link>,
+        <Typography.Link
           key="delete"
           onClick={() => {
             handleRemove(record);
           }}
         >
           {t('pages.Demo.index.shanChu', '删除')}
-        </a>,
+        </Typography.Link>,
       ],
     },
   ];

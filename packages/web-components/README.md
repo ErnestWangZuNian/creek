@@ -43,6 +43,19 @@ function App() {
 }
 ```
 
+**新增 API 属性**:
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `runtimeConfig` | 运行时布局配置 | `ProLayoutProps` | 必填 |
+| `userConfig` | 用户自定义布局配置 | `ProLayoutProps` | - |
+| `navigate` | 路由跳转方法 | `(path?: string \| number) => void` | - |
+| `showFullScreen` | 是否展示顶部全屏切换按钮 | `boolean` | `false` |
+| `showLocaleButton` | 是否展示顶部国际化切换按钮 | `boolean` | `true` |
+| `showSettingsButton` | 是否展示顶部系统设置按钮 | `boolean` | `true` |
+| `keepAlive` | 是否开启多标签页缓存能力 | `boolean \| CreekKeepAliveProps` | `true` |
+| `initialInfo` | 初始化信息 (如 Umi 的 initialState) | `{ initialState: any; loading: boolean; setInitialState: () => void }` | - |
+| `extraActions` | 顶部右侧额外注入的操作区域节点 | `React.ReactNode[]` | `[]` |
+
 **特性**:
 - 响应式布局 & 侧边栏折叠
 - 面包屑导航与页面保活 (`CreekKeepAlive`)
@@ -61,61 +74,13 @@ import { BgCenter } from '@creekjs/web-components';
 </BgCenter>
 ```
 
-### 🔍 搜索组件
-
-#### CreekSearch
-高级搜索组件，支持多种搜索条件和筛选器。
-
-```tsx
-import { CreekSearch } from '@creekjs/web-components';
-
-const searchConfig = {
-  fields: [
-    {
-      name: 'keyword',
-      label: '关键词',
-      type: 'input'
-    },
-    {
-      name: 'status',
-      label: '状态',
-      type: 'select',
-      options: [
-        { label: '启用', value: 'active' },
-        { label: '禁用', value: 'inactive' }
-      ]
-    }
-  ]
-};
-
-function SearchDemo() {
-  const handleSearch = (values) => {
-    console.log('搜索条件:', values);
-  };
-
-  return (
-    <CreekSearch
-      config={searchConfig}
-      onSearch={handleSearch}
-    />
-  );
-}
-```
-
-**特性**:
-- 多种搜索字段类型
-- 搜索条件显示
-- 值选择器
-- 搜索输入框
-- 筛选器显示
-
 ### 📊 表格组件
 
-#### SearchTable (原 CreekTable)
+#### CreekTable
 基于 Ant Design ProTable 的增强型业务表格组件。它在 `ProTable` 的基础上解决了高度计算、列宽自适应、表头溢出、列宽拖拽等常见痛点，真正做到开箱即用。
 
 ```tsx
-import { SearchTable } from '@creekjs/web-components';
+import { CreekTable } from '@creekjs/web-components';
 
 const columns = [
   {
@@ -142,7 +107,7 @@ const columns = [
 
 function TableDemo() {
   return (
-    <SearchTable
+    <CreekTable
       columns={columns}
       request={async (params) => {
         // 请求数据
@@ -162,6 +127,15 @@ function TableDemo() {
   );
 }
 ```
+
+**新增 API 属性**:
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `pageFixedBottom` | 是否自动计算高度并将分页器固定在底部 | `boolean` | `true` |
+| `pageFixedBottomConfig` | 固定在底部时的细粒度配置（如额外保留底部空间） | `{ bottomFix?: number }` | - |
+| `showIndex` | 是否自动生成全局连续的序号列 | `boolean` | `true` |
+| `resizable` | 是否支持拖拽调整列宽（需在 column 配置 width） | `boolean` | `true` |
+| `scrollbarColumn` | 是否自动追加一个滚动条占位列，防止滚动条遮挡内容 | `boolean \| number` | `true` (宽度 17px) |
 
 **增强特性**:
 - **自动高度计算 (`useTableScrollHeight`)**：根据页面剩余空间自动计算表格内容区域高度 (`scroll.y`)，确保分页器固定在底部 (`pageFixedBottom: true`)，页面不会出现双滚动条。
@@ -369,5 +343,3 @@ pnpm run father:build
 3. **类型定义**：使用 TypeScript 严格模式
 4. **样式方案**：使用 `antd-style`
 5. **状态管理**：使用 `zustand`
-
-### 组件结构示例
