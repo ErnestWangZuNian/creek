@@ -1,1 +1,1 @@
-export { default as Foo } from './CreekTable';
+export { default as CreekTable } from './CreekTable';

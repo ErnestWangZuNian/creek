@@ -1,3 +1,14 @@
+---
+nav:
+  title: 组件
+  path: /components
+group:
+  title: 核心组件
+  order: 1
+apiHeader:
+  pkg: '@creekjs/web-components'
+---
+
 # CreekTable (高阶表格)
 
 `CreekTable` (在底层导出为 `SearchTable`) 是基于 `@ant-design/pro-components` 中 `ProTable` 的深度封装。
@@ -36,12 +47,15 @@
 
 ---
 
-## 交互演示
+## 额外高阶 API 
 
-下面是一个包含了上述所有特性的综合演示（由于在文档环境中，高度计算特性可能表现与全屏系统略有差异）：
+`CreekTable` 完全继承了 `ProTable` 的所有属性，并在此基础上新增了以下高阶属性配置：
 
-```jsx
-import CreekTableDemo from './index.tsx';
+| 属性 | 说明 | 类型 | 默认值 |
+| --- | --- | --- | --- |
+| `pageFixedBottom` | 是否自动计算高度并将分页器固定在底部 | `boolean` | `true` |
+| `pageFixedBottomConfig` | 固定在底部时的细粒度配置（如额外保留 `bottomFix` 底部空间） | `{ bottomFix?: number }` | - |
+| `showIndex` | 是否自动生成全局连续的序号列 | `boolean` | `true` |
+| `resizable` | 是否支持拖拽调整列宽（需在 column 配置 `width`） | `boolean` | `true` |
 
-export default () => <CreekTableDemo />
-```
+

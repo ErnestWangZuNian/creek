@@ -71,7 +71,7 @@ export default () => {
   ];
 
   return (
-    <div style={{ height: '600px', display: 'flex', flexDirection: 'column' }}>
+    <div>
       {/* 
         在实际业务组件中，通常父容器是占满屏幕高度的，
         CreekTable 会利用 useTableScrollHeight 自动计算出剩余空间并给内部内容区域设置正确的高度和滚动条。

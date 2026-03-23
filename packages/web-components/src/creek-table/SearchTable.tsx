@@ -96,7 +96,6 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
   const {
     columns,
     prefixCls = 'ant',
-    autoAddFilterForColumn = true,
     className,
     optionsRender,
     tableViewRender,

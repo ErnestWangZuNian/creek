@@ -6,18 +6,12 @@ export type OptionRenderCustom = {
   onClick?: () => void;
 };
 
-export type CreekTableProps<T extends ParamsType, U extends ParamsType, ValueType = 'text'> = Omit<ProTableProps<T, U, ValueType>,  'options'> & {
+export type CreekTableProps<T extends ParamsType, U extends ParamsType, ValueType = 'text'> = ProTableProps<T, U, ValueType> & {
   pageFixedBottom?: boolean; // 是否固定分页在底部
   pageFixedBottomConfig?: {
     /** 底部保留空间（如固定在底部的元素高度），默认 0 */
     bottomFix?: number;
   };
-  options?: ProTableProps<T, U, ValueType>['options'] & {
-    importConfig?: OptionRenderCustom;
-    exportConfig?: OptionRenderCustom;
-  };
-  // 是否自动为列添加筛选功能，默认 true
-  autoAddFilterForColumn?: boolean;
   // 是否显示序号列，默认 true
   showIndex?: boolean;
   /** 是否可拖动列宽，默认 true */
