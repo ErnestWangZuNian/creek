@@ -33,8 +33,8 @@ log_error() {
 check_dependencies() {
     log_info "检查依赖工具..."
     
-    if ! command -v npm &> /dev/null; then
-        log_error "npm 未安装"
+    if ! command -v pnpm &> /dev/null; then
+        log_error "pnpm 未安装"
         exit 1
     fi
     
@@ -79,7 +79,7 @@ get_package_name() {
 # 检查 npm 上的最新版本
 get_npm_version() {
     local package_name=$1
-    npm view "$package_name" version 2>/dev/null || echo "0.0.0"
+    pnpm view "$package_name" version 2>/dev/null || echo "0.0.0"
 }
 
 # 版本比较和递增
@@ -177,10 +177,10 @@ build_package() {
     cd "$package_path"
     
     # 检查是否有构建脚本
-    if npm run | grep -q "father:build"; then
-        npm run father:build
-    elif npm run | grep -q "build"; then
-        npm run build
+    if grep -q "\"father:build\"" package.json; then
+        pnpm run father:build
+    elif grep -q "\"build\"" package.json; then
+        pnpm run build
     else
         log_warning "没有找到构建脚本，跳过构建"
     fi
@@ -220,13 +220,13 @@ publish_package() {
     cd "$package_path"
     
     # 检查是否需要登录
-    if ! npm whoami &> /dev/null; then
-        log_error "请先登录 npm: npm login"
+    if ! pnpm whoami &> /dev/null; then
+        log_error "请先登录 npm/pnpm: pnpm login"
         exit 1
     fi
     
     # 发布
-    if npm publish --access public; then
+    if pnpm publish --access public --no-git-checks; then
         log_success "成功发布 $package_name@$new_version"
         
         # 创建 git 标签

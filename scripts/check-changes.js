@@ -88,7 +88,7 @@ class ChangeDetector {
 
     async getNpmVersion(packageName) {
         try {
-            const output = execSync(`npm view ${packageName} version`, { encoding: 'utf8' });
+            const output = execSync(`pnpm view ${packageName} version`, { encoding: 'utf8' });
             return output.trim();
         } catch {
             return '0.0.0';
