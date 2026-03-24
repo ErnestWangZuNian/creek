@@ -64,14 +64,16 @@ export const CreekLayout = (props: LayoutProps) => {
   const colorPrimary = settingsStore.colorPrimary || token.colorPrimary;
   const actualKeepAlive = settingsStore.keepAlive ?? keepAlive;
 
-  console.log(actualKeepAlive, 'actualKeepAlive');
+  const _userConfig = { ...userConfig, ...runtimeConfig };
 
   const menuDataRender = useMemoizedFn((menuData: any[]) => {
+    const isLocaleEnabled = more.menu?.locale !== false && _userConfig.menu?.locale !== false;
+
     const mapMenu = (items: any[]): any[] => {
       return items.map((item) => {
         return {
           ...item,
-          name: <MenuName name={item.name} path={item.path} />,
+          name: isLocaleEnabled ? <MenuName name={item.name} path={item.path} /> : item.name,
           children: item.children ? mapMenu(item.children) : undefined,
         };
       });
@@ -122,8 +124,6 @@ export const CreekLayout = (props: LayoutProps) => {
   }
 
   const keepAliveProps = _.isBoolean(keepAlive) ? {} : keepAlive;
-
-  const _userConfig = { ...userConfig, ...runtimeConfig };
 
   const layoutContent = (
     <ProLayout

@@ -10,7 +10,7 @@ export default defineConfig({
     title: 'creekjs',
     iconFontCNs: ['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js'],
   },
-  mako: {},
+  vite: {},
   routes: [
     {
       path: '/',

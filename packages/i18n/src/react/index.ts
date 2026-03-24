@@ -1,11 +1,15 @@
-import { createIntl, createIntlCache, IntlShape, useIntl, IntlProvider, IntlContext, RawIntlProvider } from 'react-intl';
+import { createIntl, createIntlCache, IntlContext, IntlProvider, IntlShape, RawIntlProvider, useIntl } from 'react-intl';
 
 const cache = createIntlCache();
 
-export { IntlProvider, IntlContext, RawIntlProvider };
+export { IntlContext, IntlProvider, RawIntlProvider };
 
 export let globalIntl: IntlShape;
 export let appLocales: Record<string, Record<string, string>> = {};
+
+const defaultOnError = (err: any) => {
+  if (err.code === 'MISSING_TRANSLATION') return;
+};
 
 /**
  * Initialize i18n instance
@@ -16,6 +20,7 @@ export const initI18n = (defaultLocale: string, messages: Record<string, Record<
     {
       locale: defaultLocale,
       messages: appLocales[defaultLocale] || {},
+      onError: defaultOnError,
     },
     cache,
   );
@@ -33,6 +38,7 @@ export const setLocale = (locale: string, reload?: boolean) => {
     {
       locale,
       messages: appLocales[locale] || {},
+      onError: defaultOnError,
     },
     cache,
   );
@@ -49,6 +55,7 @@ export const setLocaleMessages = (locale: string, messages: Record<string, strin
     {
       locale,
       messages,
+      onError: defaultOnError,
     },
     cache,
   );
