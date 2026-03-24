@@ -5,8 +5,7 @@
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "start": "npm run dev",
-    "dev": "dumi dev",
+    "start": "dumi dev",
     "build": "father build",
     "build:watch": "father dev",
     "docs:build": "dumi build",

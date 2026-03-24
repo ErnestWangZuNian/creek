@@ -80,7 +80,11 @@ export default (api: IApi) => {
   const TEMPLATE_DIR = join(__dirname, 'template');
 
   const creekWebComponentsPath = winPath(getPkgPath(api, '@creekjs/web-components'));
-  const creekIconPath = require.resolve(`${creekWebComponentsPath}/dist/creek-icon`);
+  // Use src path directly when in monorepo, else use dist
+  const isMonorepo = existsSync(join(creekWebComponentsPath, 'src'));
+  const creekIconPath = isMonorepo 
+    ? winPath(join(creekWebComponentsPath, 'src', 'creek-icon'))
+    : require.resolve(`${creekWebComponentsPath}/dist/creek-icon`);
 
   api.describe({
     key: 'creekLayout',
@@ -110,16 +114,20 @@ export default (api: IApi) => {
   // 新增404页面
   api.modifyConfig((memo) => {
     const name = require(`${creekWebComponentsPath}/package.json`).name;
-    memo.alias[name] = creekWebComponentsPath;
+    memo.alias[name] = isMonorepo ? winPath(join(creekWebComponentsPath, 'src')) : creekWebComponentsPath;
 
     const routes = memo.routes as IRoute[];
     const hasNotFoundPage = routes?.find((item) => [item.name, item.path].includes('404'));
+    const notFoundComponentPath = isMonorepo 
+      ? winPath(join(creekWebComponentsPath, 'src', 'creek-layout', 'Exception', 'NotFoundPage.tsx'))
+      : require.resolve(`${creekWebComponentsPath}/dist/creek-layout/Exception/NotFoundPage`);
+      
     const defaultRoutes = [
       {
         name: '404',
         path: '*',
         hideInMenu: true,
-        component: require.resolve(`${creekWebComponentsPath}/dist/creek-layout/Exception/NotFoundPage`),
+        component: notFoundComponentPath,
       },
     ];
 
@@ -137,11 +145,13 @@ export default (api: IApi) => {
 
     const iconFontCNs = Array.isArray(api.userConfig.creekLayout?.iconFontCNs) ? api.userConfig.creekLayout?.iconFontCNs : [];
 
+    const importPath = isMonorepo ? winPath(join(creekWebComponentsPath, 'src')) : creekWebComponentsPath;
+
     api.writeTmpFile({
       path: 'Layout.tsx',
       tplPath: join(TEMPLATE_DIR, '/layout.tpl'),
       context: {
-        creekWebComponentsPath,
+        creekWebComponentsPath: importPath,
         hasInitialStatePlugin,
         hasLocalePlugin,
         access: api.config.access,
@@ -154,7 +164,7 @@ export default (api: IApi) => {
       path: 'types.d.ts',
       tplPath: join(TEMPLATE_DIR, '/type.tpl'),
       context: {
-        creekWebComponentsPath,
+        creekWebComponentsPath: importPath,
         hasInitialStatePlugin,
         access: api.config.access,
       },
@@ -181,7 +191,7 @@ export default (api: IApi) => {
       path: 'runtime.tsx',
       tplPath: join(TEMPLATE_DIR, '/runtime.tpl'),
       context: {
-        creekWebComponentsPath,
+        creekWebComponentsPath: importPath,
         hasIconFontCNs: iconFontCNs.length > 0,
         iconFontCNs: JSON.stringify(iconFontCNs),
       },
