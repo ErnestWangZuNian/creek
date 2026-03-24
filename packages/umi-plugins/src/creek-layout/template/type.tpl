@@ -19,6 +19,7 @@
       showDarkButton?: boolean;
       provider?:  React.ReactNode;
       keepAlive?: boolean | CreekKeepAliveProps;
+      showSettingsButton?: boolean;
       extraActions?: React.ReactNode[];
       showLocaleButton?: boolean;
       unAccessible?: JSX.Element;

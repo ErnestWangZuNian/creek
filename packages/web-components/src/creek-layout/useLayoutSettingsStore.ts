@@ -13,9 +13,9 @@ export const useLayoutSettingsStore = create<LayoutSettingsStore>()(
   persist(
     (set) => ({
       colorPrimary: undefined,
-      showFullScreen: true,
-      showLocaleButton: true,
-      keepAlive: true,
+      showFullScreen: false,
+      showLocaleButton: false,
+      keepAlive: false,
       setSettings: (settings) => set((state) => ({ ...state, ...settings })),
     }),
     {

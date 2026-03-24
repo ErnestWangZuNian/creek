@@ -38,7 +38,20 @@ const MenuName = ({ name, path }: { name: string; path?: string }) => {
 };
 
 export const CreekLayout = (props: LayoutProps) => {
-  const { route, userConfig, runtimeConfig, children, location, navigate, showFullScreen, showLocaleButton = true, showSettingsButton = true, keepAlive = true, extraActions = [], ...more } = props;
+  const {
+    route,
+    userConfig,
+    runtimeConfig,
+    children,
+    location,
+    navigate,
+    showFullScreen = false,
+    showLocaleButton = false,
+    showSettingsButton = false,
+    keepAlive = false,
+    extraActions = [],
+    ...more
+  } = props;
 
   const { useToken } = theme;
   const { token } = useToken();
@@ -46,10 +59,12 @@ export const CreekLayout = (props: LayoutProps) => {
   const { collapsed } = useCollapsedStore();
   const settingsStore = useLayoutSettingsStore();
 
-  const actualShowFullScreen = settingsStore.showFullScreen ?? showFullScreen ?? false;
-  const actualShowLocaleButton = settingsStore.showLocaleButton ?? showLocaleButton ?? true;
+  const actualShowFullScreen = settingsStore.showFullScreen ?? showFullScreen;
+  const actualShowLocaleButton = settingsStore.showLocaleButton ?? showLocaleButton;
   const colorPrimary = settingsStore.colorPrimary || token.colorPrimary;
-  const actualKeepAlive = settingsStore.keepAlive ?? keepAlive ?? true;
+  const actualKeepAlive = settingsStore.keepAlive ?? keepAlive;
+
+  console.log(actualKeepAlive, 'actualKeepAlive');
 
   const menuDataRender = useMemoizedFn((menuData: any[]) => {
     const mapMenu = (items: any[]): any[] => {
@@ -103,14 +118,7 @@ export const CreekLayout = (props: LayoutProps) => {
   }
 
   if (showSettingsButton) {
-    actions.push(
-      <LayoutSettings
-        key="settings"
-        defaultShowFullScreen={showFullScreen}
-        defaultShowLocaleButton={showLocaleButton}
-        defaultKeepAlive={_.isBoolean(keepAlive) ? keepAlive : true}
-      />
-    );
+    actions.push(<LayoutSettings key="settings" defaultShowFullScreen={showFullScreen} defaultShowLocaleButton={showLocaleButton} defaultKeepAlive={_.isBoolean(keepAlive) ? keepAlive : true} />);
   }
 
   const keepAliveProps = _.isBoolean(keepAlive) ? {} : keepAlive;

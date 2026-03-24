@@ -15,7 +15,7 @@ export async function getInitialState(): Promise<{ name: string }> {
 //  布局
 export const layout: RunTimeLayoutConfig = () => {
   return {
-    keepAlive: false,
+    showSettingsButton: true,
     logo: '/logo.svg',
     menu: {
       locale: false,
