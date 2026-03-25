@@ -1,6 +1,6 @@
 {
   "name": "@creekjs/i18n-extract",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "i18n extract tool for creekjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
