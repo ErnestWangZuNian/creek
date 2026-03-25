@@ -9,5 +9,8 @@
       "@@/*": ["src/.umi/*"]
     }
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "typings.d.ts"
+  ]
 }

@@ -44,7 +44,7 @@ function mergeIntoAst(ast: any, newEntries: Record<string, string>, cleanup: boo
                  // Check if import source is from ./zh-CN/ or ./en-US/
                  // This is a heuristic.
                  const source = path.node.source.value;
-                 if (source.startsWith('./zh-CN/') || source.startsWith('./en-US/')) {
+                 if (source.startsWith('./zh_CN/') || source.startsWith('./en_US/')) {
                      importsToRemove.push(path);
                  }
             }
@@ -190,14 +190,14 @@ async function writeLocaleFile(filePath: string, entries: Record<string, string>
 
 export async function generateLocales(collectedLocales: CollectedLocales, config: Config) {
   const localeRoot = path.dirname(path.resolve(process.cwd(), config.localePath)); // src/locales
-  const localeFileName = path.basename(config.localePath, path.extname(config.localePath)); // zh-CN
-  const enFileName = 'en-US'; 
+  const localeFileName = path.basename(config.localePath, path.extname(config.localePath)); // zh_CN
+  const enFileName = 'en_US'; 
 
   const zhEntryFile = path.resolve(process.cwd(), config.localePath);
   const enEntryFile = path.join(localeRoot, `${enFileName}.ts`);
   
-  const zhBaseDir = path.join(localeRoot, localeFileName); // src/locales/zh-CN
-  const enBaseDir = path.join(localeRoot, enFileName); // src/locales/en-US
+  const zhBaseDir = path.join(localeRoot, localeFileName); // src/locales/zh_CN
+  const enBaseDir = path.join(localeRoot, enFileName); // src/locales/en_US
 
   if (config.useDirectoryAsNamespace) {
       // Multiple files mode

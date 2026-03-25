@@ -15,7 +15,7 @@
   - 支持 `<script>` 块中的中文提取。
 - **智能合并**：生成的语言包文件会保留已有的翻译，只新增未翻译的词条，避免覆盖。
 - **目录结构镜像**：生成的语言包文件会严格镜像源代码的目录结构，方便管理。
-  - 例如：`src/pages/Demo/index.tsx` -> `src/locales/zh-CN/pages/Demo/index.ts`
+  - 例如：`src/pages/Demo/index.tsx` -> `src/locales/zh_CN/pages/Demo/index.ts`
 - **Excel 导出**：支持将所有提取到的词条导出为 Excel 文件，方便翻译人员使用。
 - **高度可配置**：支持自定义 key 生成规则、t 函数名称、导入语句等。
 
@@ -54,8 +54,8 @@ module.exports = {
   
   // 语言包输出的主入口文件路径
   // 注意：实际生成的翻译文件会存放在该文件同级目录下以文件名命名的文件夹中
-  // 例如：src/locales/zh-CN.ts -> 生成的文件在 src/locales/zh-CN/ 目录下
-  localePath: './src/locales/zh-CN.ts',
+  // 例如：src/locales/zh_CN.ts -> 生成的文件在 src/locales/zh_CN/ 目录下
+  localePath: './src/locales/zh_CN.ts',
   
   // 要扫描的文件路径 (Glob)
   path: 'src/**/*.{ts,tsx,js,jsx,vue}',
@@ -236,5 +236,5 @@ creek-i18n -c i18n.config.ts --excel ./translations.xlsx
 生成的 Excel 包含以下列：
 - `Namespace`: 命名空间（文件路径）
 - `Key`: 翻译键值
-- `zh-CN`: 中文原文
-- `en-US`: 英文翻译占位符
+- `zh_CN`: 中文原文
+- `en_US`: 英文翻译占位符

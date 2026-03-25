@@ -10,8 +10,8 @@ export function exportExcel(collectedLocales: CollectedLocales, excelPath: strin
           rows.push({
               Namespace: ns,
               Key: key,
-              'zh-CN': value,
-              'en-US': '' // Placeholder
+              'zh_CN': value,
+              'en_US': '' // Placeholder
           });
       });
   });

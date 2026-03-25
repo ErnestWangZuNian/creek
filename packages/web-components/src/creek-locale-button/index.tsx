@@ -12,14 +12,14 @@ export const CreekLocaleButton = () => {
 
   const items = [
     {
-      key: 'zh-CN',
+      key: 'zh_CN',
       label: t('creek-locale-button.index.jianTiZhongWen', '简体中文'),
-      disabled: locale === 'zh-CN',
+      disabled: locale === 'zh_CN',
     },
     {
-      key: 'en-US',
+      key: 'en_US',
       label: 'English',
-      disabled: locale === 'en-US',
+      disabled: locale === 'en_US',
     },
   ];
 

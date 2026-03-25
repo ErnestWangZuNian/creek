@@ -7,7 +7,12 @@ import merge from 'lodash/merge';
 import { AppProvider } from '../creek-hooks';
 import { useLayoutSettingsStore } from '../creek-layout/useLayoutSettingsStore';
 import { CreekConfigContext, CreekConfigContextProps } from './CreekConfigContext';
-import { CreekI18nProvider, CreekI18nProviderProps, LocaleContext, useAppLocale } from './CreekI18nProvider';
+import { CreekI18nProvider, CreekI18nProviderProps, LocaleCode, LocaleContext, useAppLocale } from './CreekI18nProvider';
+
+const ANTD_LOCALE_MAP: Record<LocaleCode, any> = {
+  zh_CN: zhCN_antd,
+  en_US: enUS_antd,
+};
 
 export type CreekConfigProviderProps = CreekConfigContextProps & Omit<ConfigProviderProps, 'locale'> & CreekI18nProviderProps;
 
@@ -33,12 +38,11 @@ const InnerConfigProvider = (props: Omit<CreekConfigProviderProps, 'locale' | 'm
             colorLinkActive: activeColorPrimary,
           },
         }
-      : {}
+      : {},
   );
 
-
   return (
-    <ConfigProvider locale={locale === 'en-US' ? enUS_antd : zhCN_antd} theme={finalTheme} {...more}>
+    <ConfigProvider locale={ANTD_LOCALE_MAP[locale] || zhCN_antd} theme={finalTheme} {...more}>
       <CreekConfigContext.Provider value={more as any}>
         <App>
           <AppProvider>{children}</AppProvider>

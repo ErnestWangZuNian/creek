@@ -18,7 +18,7 @@ export const initI18n = (defaultLocale: string, messages: Record<string, Record<
   appLocales = messages;
   globalIntl = createIntl(
     {
-      locale: defaultLocale,
+      locale: defaultLocale.replace('_', '-'),
       messages: appLocales[defaultLocale] || {},
       onError: defaultOnError,
     },
@@ -36,7 +36,7 @@ export const setLocale = (locale: string, reload?: boolean) => {
   }
   globalIntl = createIntl(
     {
-      locale,
+      locale: locale.replace('_', '-'),
       messages: appLocales[locale] || {},
       onError: defaultOnError,
     },
@@ -53,7 +53,7 @@ export const setLocale = (locale: string, reload?: boolean) => {
 export const setLocaleMessages = (locale: string, messages: Record<string, string>) => {
   globalIntl = createIntl(
     {
-      locale,
+      locale: locale.replace('_', '-'),
       messages,
       onError: defaultOnError,
     },

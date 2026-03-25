@@ -4,8 +4,8 @@ module.exports = {
   
   // 语言包输出的主入口文件路径
   // 注意：实际生成的翻译文件会存放在该文件同级目录下以文件名命名的文件夹中
-  // 例如：src/locales/zh-CN.ts -> 生成的文件在 src/locales/zh-CN/ 目录下
-  localePath: './src/locales/zh-CN.ts',
+  // 例如：src/locales/zh_CN.ts -> 生成的文件在 src/locales/zh_CN/ 目录下
+  localePath: './src/locales/zh_CN.ts',
   
   // 要扫描的文件路径 (Glob)
   path: 'src/**/*.{ts,tsx,js,jsx}',
@@ -24,4 +24,7 @@ module.exports = {
   
   // 开启 React Hooks 模式 (useT)
   useT: true,
+  
+  // useT 的导入语句
+  useTImportStatement: "import { useT } from '@creekjs/i18n/react'",
 };

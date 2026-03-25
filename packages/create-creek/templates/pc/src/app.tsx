@@ -15,11 +15,8 @@ export async function getInitialState(): Promise<{ name: string }> {
 //  布局
 export const layout: RunTimeLayoutConfig = () => {
   return {
-    keepAlive: false,
+    showSettingsButton: true,
     logo: '/logo.svg',
-    menu: {
-      locale: false,
-    },
     layout: 'mix',
     iconFontCNs: ['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js'],
     showLocaleButton: true,
@@ -31,6 +28,7 @@ export const rootContainer = (children: React.ReactNode) => {
   return (
     <CreekConfigProvider
       componentSize="small"
+      locale="en_US"
       theme={{
         token: {
           colorPrimary: '#00c07f',

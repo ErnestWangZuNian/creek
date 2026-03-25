@@ -10,7 +10,7 @@ const loadConfig = jiti(__filename);
 
 export const defaultConfig: Config = {
   localeFileType: 'ts',
-  localePath: './src/locales/zh-CN.ts',
+  localePath: './src/locales/zh_CN.ts',
   path: 'src/**/*.{ts,tsx,js,jsx,vue}',
   exclude: ['**/node_modules/**', '**/dist/**', '**/.umi/**', '**/locales/**'],
   tFunction: 't',
@@ -68,8 +68,8 @@ export function resolveConfig(cliOptions: any): Config {
       ...defaultConfig,
       ...userConfig,
       path: cliOptions.path || userConfig.path || defaultConfig.path,
-      localePath: cliOptions.out
-        ? path.join(cliOptions.out, 'zh-CN.ts')
+      localePath: cliOptions.out 
+        ? path.join(cliOptions.out, 'zh_CN.ts')
         : userConfig.localePath || defaultConfig.localePath,
       excelPath: cliOptions.excel || userConfig.excelPath,
     };

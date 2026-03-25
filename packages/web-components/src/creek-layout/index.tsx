@@ -2,10 +2,11 @@ import { ProLayout, ProLayoutProps } from '@ant-design/pro-components';
 import { useMemoizedFn } from 'ahooks';
 import { theme } from 'antd';
 import _ from 'lodash';
+import { useContext } from 'react';
 
 import classnames from 'classnames';
 
-import { useT } from '@creekjs/i18n/react';
+import { IntlContext, useT } from '@creekjs/i18n/react';
 
 import { CreekKeepAlive, CreekKeepAliveProps } from '../creek-keep-alive';
 import { CreekLocaleButton } from '../creek-locale-button';
@@ -66,8 +67,12 @@ export const CreekLayout = (props: LayoutProps) => {
 
   const _userConfig = { ...userConfig, ...runtimeConfig };
 
+  const intlContext = useContext(IntlContext);
+  const hasI18n = !!intlContext;
+
   const menuDataRender = useMemoizedFn((menuData: any[]) => {
-    const isLocaleEnabled = more.menu?.locale !== false && _userConfig.menu?.locale !== false;
+    // 根据当前是否开启了国际化（上下文是否存在）以及用户配置来判断是否包裹菜单翻译
+    const isLocaleEnabled = hasI18n;
 
     const mapMenu = (items: any[]): any[] => {
       return items.map((item) => {
