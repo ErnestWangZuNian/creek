@@ -11,13 +11,13 @@ module.exports = {
   path: 'src/**/*.{ts,tsx,js,jsx}',
   
   // 排除的文件/目录
-  exclude: ['**/node_modules/**', '**/dist/**', '**/.umi/**', '**/locales/**', '**/utils/i18n.ts'],
+  exclude: ['**/node_modules/**', '**/dist/**', '**/.umi/**', '**/locales/**'],
   
   // 国际化函数名称 (默认为 't')
   tFunction: 't',
   
   // 国际化函数的导入语句
-  importStatement: 'import { t } from "@/utils/i18n"',
+  importStatement: "import { t } from '@creekjs/i18n/react'",
   
   // 是否使用目录结构作为命名空间 (默认为 true)
   useDirectoryAsNamespace: false,

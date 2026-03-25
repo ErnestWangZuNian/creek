@@ -3,7 +3,7 @@ import { ProTableProps } from '@ant-design/pro-components';
 import { Dropdown, MenuProps, Tooltip } from 'antd';
 import React from 'react';
 
-import { useT } from '@/utils/i18n';
+import { useT } from '@creekjs/i18n/react';
 
 export type SizeType = ProTableProps<any, any>['size'];
 

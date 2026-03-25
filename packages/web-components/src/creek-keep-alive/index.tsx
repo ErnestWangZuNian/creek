@@ -4,7 +4,7 @@ import { isRegExp, isString, omit } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useOutlet } from 'react-router-dom';
 
-import { useT } from '@/utils/i18n';
+import { useT } from '@creekjs/i18n/react';
 
 export interface CreekKeepAliveProps {
   /**

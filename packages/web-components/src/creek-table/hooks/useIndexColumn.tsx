@@ -1,7 +1,7 @@
 import { ProColumns } from '@ant-design/pro-components';
 import { useMemo } from 'react';
 
-import { useT } from '@/utils/i18n';
+import { useT } from '@creekjs/i18n/react';
 
 export const useIndexColumn = <T = any, ValueType = 'text'>(columns: ProColumns<T, ValueType>[] = [], showIndex: boolean = true) => {
   const t = useT();

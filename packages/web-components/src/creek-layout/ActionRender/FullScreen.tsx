@@ -4,7 +4,7 @@ import { Tooltip } from 'antd';
 
 import { create } from 'zustand';
 
-import { useT } from '@/utils/i18n';
+import { useT } from '@creekjs/i18n/react';
 
 export type FullScreenStore = {
   isFullScreen: boolean;

@@ -3,7 +3,7 @@ import { ConfigProvider, Flex, Tooltip, Typography, message } from 'antd';
 import { createStyles } from 'antd-style';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
-import { useT } from '@/utils/i18n';
+import { useT } from '@creekjs/i18n/react';
 
 const useStyles = createStyles(({ css, token }) => {
   return {
