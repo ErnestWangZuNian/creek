@@ -1,6 +1,6 @@
 import { IApi, IRoute, RUNTIME_TYPE_FILE_NAME } from '@umijs/max';
 import { lodash, winPath } from '@umijs/max/plugin-utils';
-import { existsSync, readFileSync } from 'fs';
+import { existsSync, readFileSync, realpathSync } from 'fs';
 import { dirname, join } from 'path';
 
 import { withTmpPath } from '../utils';
@@ -81,7 +81,10 @@ export default (api: IApi) => {
 
   const creekWebComponentsPath = winPath(getPkgPath(api, '@creekjs/web-components'));
   // Use src path directly when in monorepo, else use dist
-  const isMonorepo = existsSync(join(creekWebComponentsPath, 'src'));
+  // Checking if the real path contains '/node_modules/' is more reliable than checking for 'src' folder
+  // because published packages might include the 'src' folder.
+  const realWebComponentsPath = winPath(realpathSync(creekWebComponentsPath));
+  const isMonorepo = !realWebComponentsPath.includes('/node_modules/');
   const creekIconPath = isMonorepo 
     ? winPath(join(creekWebComponentsPath, 'src', 'creek-icon'))
     : require.resolve(`${creekWebComponentsPath}/dist/creek-icon`);
