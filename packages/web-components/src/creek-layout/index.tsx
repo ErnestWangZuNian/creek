@@ -1,4 +1,4 @@
-import { ProLayout, ProLayoutProps } from '@ant-design/pro-components';
+import { MenuDataItem, ProLayout, ProLayoutProps } from '@ant-design/pro-components';
 import { useMemoizedFn } from 'ahooks';
 import { theme } from 'antd';
 import _ from 'lodash';
@@ -32,10 +32,10 @@ export type LayoutProps = ProLayoutProps & {
   extraActions?: React.ReactNode[];
 };
 
-const MenuName = ({ name, path }: { name: string; path?: string }) => {
+const MenuName = ({ name, path }: { name?: string; path?: string }) => {
   const t = useT();
   const key = !path || path === '/' ? 'menu.home' : `menu${path.replace(/\//g, '.')}`;
-  return <>{t(key, name)}</>;
+  return t(key, name);
 };
 
 export const CreekLayout = (props: LayoutProps) => {
@@ -68,17 +68,17 @@ export const CreekLayout = (props: LayoutProps) => {
   const _userConfig = { ...userConfig, ...runtimeConfig };
 
   const intlContext = useContext(IntlContext);
-  const hasI18n = !!intlContext;
+  const hasI18n = !!intlContext && actualShowLocaleButton;
 
-  const menuDataRender = useMemoizedFn((menuData: any[]) => {
+  const menuDataRender = useMemoizedFn((menuData: MenuDataItem[]) => {
     // 根据当前是否开启了国际化（上下文是否存在）以及用户配置来判断是否包裹菜单翻译
     const isLocaleEnabled = hasI18n;
 
-    const mapMenu = (items: any[]): any[] => {
+    const mapMenu = (items: MenuDataItem[]): MenuDataItem[] => {
       return items.map((item) => {
         return {
           ...item,
-          name: isLocaleEnabled ? <MenuName name={item.name} path={item.path} /> : item.name,
+          name: (isLocaleEnabled ? <MenuName name={item.name} path={item.path} /> : item.name) as string,
           children: item.children ? mapMenu(item.children) : undefined,
         };
       });
@@ -111,7 +111,13 @@ export const CreekLayout = (props: LayoutProps) => {
       }
       return undefined;
     };
-    return findTitle(route?.routes || []) || pathname;
+    const title = findTitle(route?.routes || []) || pathname;
+    
+    if (hasI18n && typeof title === 'string') {
+      return <MenuName name={title} path={pathname} />;
+    }
+    
+    return title;
   });
 
   const actions: React.ReactNode[] = [...extraActions];
