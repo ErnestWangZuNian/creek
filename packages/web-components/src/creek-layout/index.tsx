@@ -100,24 +100,22 @@ export const CreekLayout = (props: LayoutProps) => {
     );
   });
 
-  const getTabTitle = useMemoizedFn((pathname: string) => {
-    const findTitle = (routes: any[]): string | React.ReactNode | undefined => {
-      for (const r of routes) {
-        if (r.path === pathname) return r.name || r.title;
-        if (r.children) {
-          const found = findTitle(r.children);
+  const getTabTitle = useMemoizedFn((pathname: string): string | React.ReactNode => {
+    const routes = (route?.routes ?? []) as MenuDataItem[];
+
+    const findTitle = (items: MenuDataItem[]): string | undefined => {
+      for (const item of items) {
+        if (item.path === pathname) return item.name ?? item.title;
+        if (item.children) {
+          const found = findTitle(item.children);
           if (found) return found;
         }
       }
-      return undefined;
     };
-    const title = findTitle(route?.routes || []) || pathname;
-    
-    if (hasI18n && typeof title === 'string') {
-      return <MenuName name={title} path={pathname} />;
-    }
-    
-    return title;
+
+    const title = findTitle(routes) ?? pathname;
+
+    return hasI18n ? <MenuName name={title} path={pathname} /> : title;
   });
 
   const actions: React.ReactNode[] = [...extraActions];
