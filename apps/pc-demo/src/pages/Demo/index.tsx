@@ -1,4 +1,4 @@
-import { DownloadOutlined } from '@ant-design/icons';
+import { CaretRightOutlined, DownloadOutlined } from '@ant-design/icons';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, message, Typography } from 'antd';
 import { useRef } from 'react';
@@ -138,7 +138,25 @@ const PetList = () => {
     <div>
       <CreekTable
         actionRef={actionRef}
+        showIndex={false}
+        pagination={{
+          defaultPageSize:10,
+          pageSize:10,
+        }}
         rowKey={(row) => `${row.id}-${row.status}-${row.name}`}
+        // expandable={{
+        //   expandIcon: ({ expanded, onExpand, record }) => (
+        //     <CaretRightOutlined
+        //       onClick={(e) => onExpand(record, e)}
+        //       style={{
+        //         transition: 'transform 0.2s',
+        //         transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
+        //         color: '#8c8c8c',
+        //         fontSize: 14,
+        //       }}
+        //     />
+        //   ),
+        // }}
         search={{
           labelWidth: 120,
         }}
@@ -151,10 +169,52 @@ const PetList = () => {
           // 如果用户没有选择状态，则默认查询所有状态
           const status = params.status ? [params.status] : ['available', 'pending', 'sold'];
           const statusParam = (status as string[]).join(',');
-          return findPetsByStatus({
+          const res = await findPetsByStatus({
             status: statusParam as any,
             ...params,
           });
+          // 给前几条数据注入 children，测试展开效果
+          const list = (res as any)?.data ?? res ?? [];
+          const allData = (Array.isArray(list) ? list : []).map((item: any, index: number) => {
+            if (index === 0) {
+              return {
+                ...item,
+                children: Array.from({ length: 5 }).map((_, ci) => ({
+                  ...item,
+                  id: `${item.id}-child-${ci}`,
+                  name: `子记录 ${item.name}-${ci + 1}`,
+                  name1: `子记录名称1-${ci + 1}`,
+                })),
+              };
+            }
+            if (index === 1) {
+              return {
+                ...item,
+                children: Array.from({ length: 8 }).map((_, ci) => ({
+                  ...item,
+                  id: `${item.id}-child-${ci}`,
+                  name: `子记录 ${item.name}-${ci + 1}`,
+                  name2: `子记录名称2-${ci + 1}`,
+                })),
+              };
+            }
+            if (index === 2) {
+              return {
+                ...item,
+                children: Array.from({ length: 12 }).map((_, ci) => ({
+                  ...item,
+                  id: `${item.id}-child-${ci}`,
+                  name: `子记录 ${item.name}-${ci + 1}`,
+                })),
+              };
+            }
+            return item;
+          });
+          // ProTable 的 request 是服务端分页模式，需要自己根据 current/pageSize 切片数据
+          const { current = 1, pageSize = 20 } = params;
+          const start = (current - 1) * pageSize;
+          const data = allData.slice(start, start + pageSize);
+          return { data, total: allData.length, success: true };
         }}
         columns={columns}
       />

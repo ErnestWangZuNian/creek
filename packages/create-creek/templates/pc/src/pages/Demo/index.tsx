@@ -1,4 +1,4 @@
-import { DownloadOutlined } from '@ant-design/icons';
+import { CaretRightOutlined, DownloadOutlined } from '@ant-design/icons';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, message, Typography } from 'antd';
 import { useRef } from 'react';
@@ -139,6 +139,19 @@ const PetList = () => {
       <CreekTable
         actionRef={actionRef}
         rowKey={(row) => `${row.id}-${row.status}-${row.name}`}
+        expandable={{
+          expandIcon: ({ expanded, onExpand, record }) => (
+            <CaretRightOutlined
+              onClick={(e) => onExpand(record, e)}
+              style={{
+                transition: 'transform 0.2s',
+                transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                color: '#8c8c8c',
+                fontSize: 14,
+              }}
+            />
+          ),
+        }}
         search={{
           labelWidth: 120,
         }}

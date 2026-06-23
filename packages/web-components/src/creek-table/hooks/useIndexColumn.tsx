@@ -13,7 +13,7 @@ export const useIndexColumn = <T = any, ValueType = 'text'>(columns: ProColumns<
     const indexColumn: ProColumns<T, ValueType> = {
       title: t('creek-table.hooks.useIndexColumn.xuHao', '序号'),
       dataIndex: 'index',
-      width: 48,
+      width: 56,
       fixed: 'left',
       disable: true,
       hideInSearch: true,

@@ -17,6 +17,11 @@ export const useEllipsisColumns = <T extends ParamsType, ValueType = 'text'>(
       if (col.valueType === 'option') {
         return col;
       }
+      // 对于 disable 的列（如序号列），不包裹 EllipsisTooltip
+      // 避免 EllipsisTooltip 的 width:100% div 与展开图标争抢空间导致重叠
+      if (col.disable) {
+        return col;
+      }
       // 其他列默认开启 ellipsis，并使用自定义渲染
       return {
         ...col,

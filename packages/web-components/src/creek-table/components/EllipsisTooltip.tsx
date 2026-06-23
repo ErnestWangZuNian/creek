@@ -8,12 +8,15 @@ import { useT } from '@creekjs/i18n/react';
 const useStyles = createStyles(({ css, token }) => {
   return {
     text: css`
-      width: 100%;
+      max-width: 100%;
       margin: 0;
       padding: 0;
-      // Ensure the wrapper behaves like a block/inline-block that can have width
       display: block;
       overflow: hidden;
+      // flex: 1 确保在树形表格的 flex 单元格中填充剩余空间（展开图标/层级缩进之后）
+      // min-width: 0 允许收缩以配合 Typography.Text 的 ellipsis 截断
+      flex: 1;
+      min-width: 0;
     `,
     tooltipContent: css`
       max-width: 500px;

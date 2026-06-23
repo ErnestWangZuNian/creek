@@ -2,7 +2,7 @@ import { ParamsType, ProTable } from '@ant-design/pro-components';
 import { useSafeState } from 'ahooks';
 import { createStyles } from 'antd-style';
 import classnames from 'classnames';
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 
 import { GlobalScrollbarStyle } from '../creek-style';
 import { useAutoWidthColumns, useEllipsisColumns, useIndexColumn, useResizableColumns, useTableOptions, useTableScrollHeight } from './hooks';
@@ -76,6 +76,12 @@ const useStyles = createStyles(({ token }, options: SearchTableStyleOptions) => 
         },
       },
 
+      // 树形数据展开图标样式
+      [`.${prefixCls}-table-row-expand-icon`]: {
+        marginInlineEnd: 4,
+        flexShrink: 0,
+      },
+
       // 如果没有 headerTitle，toolbar 展示在 headerTitle 的区域
       [`.${prefixCls}-pro-table-list-toolbar-right`]: !hasHeaderTitle
         ? {
@@ -108,8 +114,21 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
     size,
     headerTitle,
     showIndex = true,
+    expandable,
     ...restProps
   } = props;
+
+  // 当序号列存在时，将树形展开控件从序号列（第一列 pos=0）移到第一个数据列（pos=1），
+  // 避免序号列宽度不足以容纳树形缩进和展开图标导致显示异常
+  // 即使 expandable 未提供，也预设 columnPos，因为 Ant Design Table 会自动检测 children 字段开启树形模式
+  const finalExpandable = useMemo(() => {
+    if (!showIndex) return expandable;
+    if (!expandable) return { columnPos: 1 };
+    if ((expandable as any).columnPos === undefined) {
+      return { ...expandable, columnPos: 1 };
+    }
+    return expandable;
+  }, [expandable, showIndex]);
 
   const proTableRef = useRef<HTMLDivElement>(null);
 
@@ -144,6 +163,8 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
         optionsRender={finalOptionsRender}
         size={tableSize}
         {...restProps}
+        pagination={pagination}
+        expandable={finalExpandable}
         className={classnames(styles['creek-table-container'], className)}
         columns={resizableColumns}
         bordered={bordered}
