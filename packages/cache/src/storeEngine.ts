@@ -41,7 +41,6 @@ export function createCreekStore<T>(storage: CreekStorage, options: StorageOptio
     const result: Store<T> = {
         get: (key: string) => {
             const value = storage.read(generateKeyByNamespace(key, namespace));
-            console.log(value, deserialize(value), 'value');
             return deserialize(value);
         },
 

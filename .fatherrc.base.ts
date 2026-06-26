@@ -9,4 +9,7 @@ export default defineConfig({
   },
   // 开发模式下不 clean，避免并行启动时 dist 被删除导致依赖报错
   sourcemap: true,
+  extraBabelPlugins: [
+    ['transform-remove-console', { exclude: ['error'] }],
+  ],
 });
