@@ -18,19 +18,18 @@ const generateServiceMap = {
     [OpenApiChannel.swagger]: swaggerOpenApi.generateService
 }
 
-export const generateService = (openApiGenerateServiceProps: OpenApiGenerateServiceProps | OpenApiGenerateServiceProps[]) => {
+export const generateService = async (openApiGenerateServiceProps: OpenApiGenerateServiceProps | OpenApiGenerateServiceProps[]) => {
     let arrayOpenApiGenerateService = Array.isArray(openApiGenerateServiceProps) ? openApiGenerateServiceProps : [openApiGenerateServiceProps];
 
     arrayOpenApiGenerateService = arrayOpenApiGenerateService.map(item => {
-        item.openApiChannel = item.openApiChannel || OpenApiChannel.swagger;
-        item.projectName = item.projectName || '';
-        const _item = item;
-        return _item;
+        item.openApiChannel = item.openApiChannel ?? OpenApiChannel.swagger;
+        item.projectName = item.projectName ?? '';
+        return item;
     });
 
-    arrayOpenApiGenerateService.forEach(generateservice => {
-        generateServiceMap[generateservice.openApiChannel](generateservice)
-    })
+    for (const generateservice of arrayOpenApiGenerateService) {
+        await generateServiceMap[generateservice.openApiChannel](generateservice);
+    }
 }
 
 
