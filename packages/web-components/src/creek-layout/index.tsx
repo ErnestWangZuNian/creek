@@ -31,6 +31,7 @@ export type LayoutProps = ProLayoutProps & {
   };
   keepAlive?: boolean | CreekKeepAliveProps;
   extraActions?: React.ReactNode[];
+  clientRoutes?: any[];
 };
 
 const MenuName = ({ name, path }: { name?: string; path?: string }) => {
@@ -53,6 +54,7 @@ export const CreekLayout = (props: LayoutProps) => {
     showThemeColor = true,
     keepAlive = false,
     extraActions = [],
+    clientRoutes,
     ...more
   } = props;
 
@@ -176,7 +178,7 @@ export const CreekLayout = (props: LayoutProps) => {
       {...more}
     >
       <GlobalScrollbarStyle />
-      <Exception>{actualKeepAlive ? <CreekKeepAlive getTabTitle={getTabTitle} {...keepAliveProps} /> : children}</Exception>
+      <Exception>{actualKeepAlive ? <CreekKeepAlive getTabTitle={getTabTitle} routes={clientRoutes ?? route?.routes} {...keepAliveProps} /> : children}</Exception>
     </ProLayout>
   );
 

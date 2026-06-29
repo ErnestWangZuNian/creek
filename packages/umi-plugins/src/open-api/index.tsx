@@ -35,6 +35,7 @@ export default (api: IApi) => {
                     templatesFolder: zod.string().optional(),
                     dataFields: zod.array(zod.string()).optional(),
                     isCamelCase: zod.boolean().optional(),
+                    useOperationId: zod.boolean().optional(),
                 });
 
                 return zod.union([

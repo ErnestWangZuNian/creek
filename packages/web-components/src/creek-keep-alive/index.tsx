@@ -1,8 +1,8 @@
 import { useMemoizedFn } from 'ahooks';
 import { Dropdown, MenuProps, Tabs } from 'antd';
-import { isRegExp, isString, omit } from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate, useOutlet } from 'react-router-dom';
+import { isRegExp, isString } from 'lodash';
+import React, { useEffect, useState } from 'react';
+import { matchRoutes, useLocation, useNavigate } from 'react-router-dom';
 
 import { useT } from '@creekjs/i18n/react';
 
@@ -23,6 +23,10 @@ export interface CreekKeepAliveProps {
    * 最大缓存数量，默认为 20
    */
   maxTabCount?: number;
+  /**
+   * 路由配置（含 element），用于解析每个路径对应的页面组件
+   */
+  routes?: any[];
 }
 
 interface TabItem {
@@ -32,20 +36,28 @@ interface TabItem {
 }
 
 export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
-  const { exclude = [], getTabTitle, tabBarStyle, maxTabCount = 20 } = props;
+  const { exclude = [], getTabTitle, tabBarStyle, maxTabCount = 20, routes = [] } = props;
 
   const t = useT();
-  const outlet = useOutlet();
   const location = useLocation();
   const navigate = useNavigate();
 
   const [tabItems, setTabItems] = useState<TabItem[]>([]);
   const [activeKey, setActiveKey] = useState<string>('');
-  const [cachedPages, setCachedPages] = useState<Record<string, React.ReactNode>>({});
 
-  // 用 ref 存储 outlet，避免 outlet 引用变化导致 useEffect 无限循环
-  const outletRef = useRef(outlet);
-  outletRef.current = outlet;
+  // 缓存每个路径对应的 React element，保证同一页面始终复用同一个 element 引用
+  // 这样 React reconciler 不会卸载/重新挂载组件，从而实现 keep-alive
+  // 使用 state 以便缓存变化时触发重新渲染
+  const [cachedElements, setCachedElements] = useState<Record<string, React.ReactNode>>({});
+
+  // 根据路由配置，解析指定路径对应的叶子路由 element
+  const resolveElement = (path: string): React.ReactNode | null => {
+    if (!routes?.length) return null;
+    const matches = matchRoutes(routes, path);
+    if (!matches?.length) return null;
+    // 取最后一个 match（叶子路由），即实际页面组件
+    return matches[matches.length - 1].route.element ?? null;
+  };
 
   // 判断是否不需要缓存
   const isPathExcluded = (path: string) => {
@@ -65,73 +77,60 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
     const currentPath = location.pathname;
     setActiveKey(currentPath);
 
-    // 更新页面内容缓存
-    setCachedPages((prev) => {
-      if (prev[currentPath]) {
-        return prev;
+    // 缓存当前路径的 element（仅首次缓存，后续复用同一个 element 引用）
+    if (!cachedElements[currentPath] && !isPathExcluded(currentPath)) {
+      const element = resolveElement(currentPath);
+      if (element) {
+        setCachedElements((prev) => ({ ...prev, [currentPath]: element }));
       }
-      return {
-        ...prev,
-        [currentPath]: outletRef.current,
-      };
-    });
+    }
 
     // 更新 Tab 列表
     setTabItems((prev) => {
       if (prev.find((i) => i.key === currentPath)) {
         // 更新现有 tab 的 closable 状态（只有最后一个 tab 时不可关闭）
-        const updated = prev.map((i) => ({ ...i, closable: prev.length > 1 }));
-        return updated;
+        return prev.map((i) => ({ ...i, closable: prev.length > 1 }));
       }
       const title = getTabTitle?.(currentPath) || currentPath;
       const newItems = [...prev, { key: currentPath, label: title, closable: prev.length > 0 }];
 
-      // 更新所有 tab 的 closable 状态：只有1个 tab 时全部不可关闭
+      // 只有1个 tab 时不可关闭
       if (newItems.length === 1) {
         newItems[0].closable = false;
       }
 
-      // 超过最大数量限制
+      // 超过最大数量限制，移除最早的可关闭 tab
       if (newItems.length > maxTabCount) {
-        // 找到第一个可以关闭的 Tab（非首页、非当前页）
-        // 这里策略是移除最早加入的那个可关闭 Tab。prev[0] 是最早的。
-        // 但要注意不要移除当前页（currentPath），虽然 currentPath 是刚加进去的，但在极端情况下（比如 max=1）
-        // 简单策略：移除第一个 closable 且 key !== currentPath 的 item
         const indexToRemove = newItems.findIndex((item) => item.closable && item.key !== currentPath);
         if (indexToRemove !== -1) {
           const itemToRemove = newItems[indexToRemove];
-          // 顺便移除缓存
-          setCachedPages((currentCached) => omit(currentCached, [itemToRemove.key]));
+          setCachedElements((prev) => {
+            const next = { ...prev };
+            delete next[itemToRemove.key];
+            return next;
+          });
           newItems.splice(indexToRemove, 1);
         }
       }
       return newItems;
     });
-  }, [location.pathname, getTabTitle, maxTabCount]);
-
-  // 清理不需要缓存的页面
-  useEffect(() => {
-    // 监听路由离开
-    // 这里比较 tricky，因为 useEffect 拿到的 activeKey 已经是新的了
-    // 我们需要知道"上一个"路径
-    // 简化处理：每次 render 时，检查 pages 里哪些是不需要缓存且不处于 active 状态的，将其移除？
-    // 但如果在 setState 里做会导致死循环。
-    // 另一种策略：不缓存 = 离开时销毁。
-    // 我们可以在 pages 渲染时控制。
-  }, []);
+  }, [location.pathname, getTabTitle, maxTabCount, cachedElements]);
 
   const closeTab = useMemoizedFn((targetKey: string) => {
     const targetIndex = tabItems.findIndex((item) => item.key === targetKey);
     const newTabItems = tabItems.filter((item) => item.key !== targetKey);
 
-    // 移除缓存
-    setCachedPages((prev) => omit(prev, [targetKey]));
+    // 移除缓存，组件将卸载
+    setCachedElements((prev) => {
+      const next = { ...prev };
+      delete next[targetKey];
+      return next;
+    });
     setTabItems(newTabItems);
 
     // 如果关闭的是当前页，跳转到临近页
     if (targetKey === activeKey) {
       if (newTabItems.length > 0) {
-        // 尝试跳到右边，没有则左边
         const nextIndex = targetIndex >= newTabItems.length ? newTabItems.length - 1 : targetIndex;
         const nextKey = newTabItems[nextIndex].key;
         navigate(nextKey);
@@ -145,13 +144,14 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
     const newTabItems = [{ ...currentTab, closable: false }];
     setTabItems(newTabItems);
 
-    const keepKeys = newTabItems.map((i) => i.key);
-    setCachedPages((prev) => {
-      const newCachedPages: Record<string, React.ReactNode> = {};
+    // 仅保留当前 tab 的缓存
+    const keepKeys = new Set(newTabItems.map((i) => i.key));
+    setCachedElements((prev) => {
+      const next: Record<string, React.ReactNode> = {};
       keepKeys.forEach((k) => {
-        if (prev[k]) newCachedPages[k] = prev[k];
+        if (prev[k]) next[k] = prev[k];
       });
-      return newCachedPages;
+      return next;
     });
 
     if (activeKey !== currentKey) {
@@ -162,14 +162,19 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
   const closeRightTabs = useMemoizedFn((currentKey: string) => {
     const currentIndex = tabItems.findIndex((i) => i.key === currentKey);
     const rightItems = tabItems.slice(currentIndex + 1);
-    const rightKeys = rightItems.map((i) => i.key);
+    const rightKeys = new Set(rightItems.map((i) => i.key));
 
-    const newTabItems = tabItems.filter((i) => !rightKeys.includes(i.key));
+    const newTabItems = tabItems.filter((i) => !rightKeys.has(i.key));
     setTabItems(newTabItems);
 
-    setCachedPages((prev) => omit(prev, rightKeys));
+    // 移除右侧 tab 的缓存
+    setCachedElements((prev) => {
+      const next = { ...prev };
+      rightKeys.forEach((key) => { delete next[key]; });
+      return next;
+    });
 
-    if (rightKeys.includes(activeKey)) {
+    if (rightKeys.has(activeKey)) {
       navigate(currentKey);
     }
   });
@@ -225,12 +230,7 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
           label: renderTabLabel(item),
           children: (
             <div key={item.key} style={{ height: '100%', display: activeKey === item.key ? 'block' : 'none' }}>
-              {/* 当前激活页渲染实时outlet，非激活页渲染缓存 */}
-              {activeKey === item.key
-                ? outlet
-                : !isPathExcluded(item.key)
-                  ? cachedPages[item.key]
-                  : null}
+              {cachedElements[item.key] ?? null}
             </div>
           ),
         }))}

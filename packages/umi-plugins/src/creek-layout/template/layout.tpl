@@ -122,6 +122,7 @@ const Layout = (props: CreekLayoutProps) => {
         navigate={navigate}
         userConfig={userConfig}
         route={route}
+        clientRoutes={clientRoutes}
         formatMessage={formatMessage}
         initialInfo={initialInfo}
         {...layoutRestProps}
