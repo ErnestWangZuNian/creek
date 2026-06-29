@@ -16,10 +16,6 @@ export interface CreekKeepAliveProps {
    */
   getTabTitle?: (pathname: string) => React.ReactNode;
   /**
-   * 默认首页路径
-   */
-  homePath?: string;
-  /**
    * Tabs的样式
    */
   tabBarStyle?: React.CSSProperties;
@@ -36,7 +32,7 @@ interface TabItem {
 }
 
 export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
-  const { exclude = [], getTabTitle, homePath = '/', tabBarStyle, maxTabCount = 20 } = props;
+  const { exclude = [], getTabTitle, tabBarStyle, maxTabCount = 20 } = props;
 
   const t = useT();
   const outlet = useOutlet();
@@ -79,10 +75,17 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
     // 更新 Tab 列表
     setTabItems((prev) => {
       if (prev.find((i) => i.key === currentPath)) {
-        return prev;
+        // 更新现有 tab 的 closable 状态（只有最后一个 tab 时不可关闭）
+        const updated = prev.map((i) => ({ ...i, closable: prev.length > 1 }));
+        return updated;
       }
       const title = getTabTitle?.(currentPath) || currentPath;
-      const newItems = [...prev, { key: currentPath, label: title, closable: currentPath !== homePath }];
+      const newItems = [...prev, { key: currentPath, label: title, closable: prev.length > 0 }];
+
+      // 更新所有 tab 的 closable 状态：只有1个 tab 时全部不可关闭
+      if (newItems.length === 1) {
+        newItems[0].closable = false;
+      }
 
       // 超过最大数量限制
       if (newItems.length > maxTabCount) {
@@ -100,7 +103,7 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
       }
       return newItems;
     });
-  }, [location.pathname, outlet, getTabTitle, homePath, maxTabCount]);
+  }, [location.pathname, outlet, getTabTitle, maxTabCount]);
 
   // 清理不需要缓存的页面
   useEffect(() => {
@@ -128,14 +131,14 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
         const nextIndex = targetIndex >= newTabItems.length ? newTabItems.length - 1 : targetIndex;
         const nextKey = newTabItems[nextIndex].key;
         navigate(nextKey);
-      } else {
-        navigate(homePath);
       }
     }
   });
 
   const closeOtherTabs = useMemoizedFn((currentKey: string) => {
-    const newTabItems = tabItems.filter((item) => item.key === currentKey || item.key === homePath);
+    const currentTab = tabItems.find((item) => item.key === currentKey);
+    if (!currentTab) return;
+    const newTabItems = [{ ...currentTab, closable: false }];
     setTabItems(newTabItems);
 
     const keepKeys = newTabItems.map((i) => i.key);
@@ -182,7 +185,7 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
       {
         key: 'close',
         label: t('creek-keep-alive.index.guanBiDangQian', '关闭当前'),
-        disabled: item.key === homePath,
+        disabled: tabItems.length <= 1,
         onClick: () => closeTab(item.key),
       },
       {

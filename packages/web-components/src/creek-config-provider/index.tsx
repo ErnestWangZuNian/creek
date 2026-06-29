@@ -2,7 +2,6 @@ import type { ConfigProviderProps } from 'antd';
 import { App, ConfigProvider } from 'antd';
 import enUS_antd from 'antd/locale/en_US';
 import zhCN_antd from 'antd/locale/zh_CN';
-import merge from 'lodash/merge';
 
 import { AppProvider } from '../creek-hooks';
 import { useLayoutSettingsStore } from '../creek-layout/useLayoutSettingsStore';
@@ -26,20 +25,22 @@ const InnerConfigProvider = (props: Omit<CreekConfigProviderProps, 'locale' | 'm
 
   const activeColorPrimary = settingsStore.colorPrimary || theme?.token?.colorPrimary;
 
-  let finalTheme = merge(
-    {},
-    theme,
-    activeColorPrimary
-      ? {
-          token: {
-            colorPrimary: activeColorPrimary,
-            colorLink: activeColorPrimary,
-            colorLinkHover: activeColorPrimary,
-            colorLinkActive: activeColorPrimary,
-          },
-        }
-      : {},
-  );
+  const colorPrimaryToken = activeColorPrimary
+    ? {
+        colorPrimary: activeColorPrimary,
+        colorLink: activeColorPrimary,
+        colorLinkHover: activeColorPrimary,
+        colorLinkActive: activeColorPrimary,
+      }
+    : {};
+
+  let finalTheme: ConfigProviderProps['theme'] = {
+    ...theme,
+    token: {
+      ...theme?.token,
+      ...colorPrimaryToken,
+    },
+  };
 
   return (
     <ConfigProvider locale={ANTD_LOCALE_MAP[locale] || zhCN_antd} theme={finalTheme} {...more}>

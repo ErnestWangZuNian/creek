@@ -6,7 +6,7 @@ import { useT } from '@creekjs/i18n/react';
 import { useApp } from '../../creek-hooks';
 import { useLayoutSettingsStore } from '../useLayoutSettingsStore';
 
-const SettingsForm = ({ defaultShowFullScreen, defaultShowLocaleButton, defaultKeepAlive }: { defaultShowFullScreen?: boolean; defaultShowLocaleButton?: boolean; defaultKeepAlive?: boolean }) => {
+const SettingsForm = ({ defaultShowFullScreen, defaultShowLocaleButton, defaultShowThemeColor, defaultKeepAlive }: { defaultShowFullScreen?: boolean; defaultShowLocaleButton?: boolean; defaultShowThemeColor?: boolean; defaultKeepAlive?: boolean }) => {
   const t = useT();
   const { colorPrimary, showFullScreen, showLocaleButton, keepAlive, setSettings } = useLayoutSettingsStore();
 
@@ -16,24 +16,32 @@ const SettingsForm = ({ defaultShowFullScreen, defaultShowLocaleButton, defaultK
 
   return (
     <Form layout="vertical">
-      <Form.Item label={t('creek-layout.ActionRender.LayoutSettings.themeColor', '主题色')}>
-        <ColorPicker
-          value={colorPrimary}
-          onChange={(color, hex) => {
-            setSettings({ colorPrimary: hex || undefined });
-          }}
-          allowClear
-        />
-      </Form.Item>
-      <Form.Item label={t('creek-layout.ActionRender.LayoutSettings.showFullScreen', '展示全屏按钮')}>
-        <Switch checked={currentShowFullScreen} onChange={(checked) => setSettings({ showFullScreen: checked })} />
-      </Form.Item>
-      <Form.Item label={t('creek-layout.ActionRender.LayoutSettings.showLocaleButton', '展示国际化按钮')}>
-        <Switch checked={currentShowLocaleButton} onChange={(checked) => setSettings({ showLocaleButton: checked })} />
-      </Form.Item>
-      <Form.Item label={t('creek-layout.ActionRender.LayoutSettings.keepAlive', '开启页面缓存 (Keep Alive)')}>
-        <Switch checked={currentKeepAlive} onChange={(checked) => setSettings({ keepAlive: checked })} />
-      </Form.Item>
+      {defaultShowThemeColor && (
+        <Form.Item label={t('creek-layout.ActionRender.LayoutSettings.themeColor', '主题色')}>
+          <ColorPicker
+            value={colorPrimary}
+            onChange={(color, hex) => {
+              setSettings({ colorPrimary: hex || undefined });
+            }}
+            allowClear
+          />
+        </Form.Item>
+      )}
+      {defaultShowFullScreen && (
+        <Form.Item label={t('creek-layout.ActionRender.LayoutSettings.showFullScreen', '展示全屏按钮')}>
+          <Switch checked={currentShowFullScreen} onChange={(checked) => setSettings({ showFullScreen: checked })} />
+        </Form.Item>
+      )}
+      {defaultShowLocaleButton && (
+        <Form.Item label={t('creek-layout.ActionRender.LayoutSettings.showLocaleButton', '展示国际化按钮')}>
+          <Switch checked={currentShowLocaleButton} onChange={(checked) => setSettings({ showLocaleButton: checked })} />
+        </Form.Item>
+      )}
+      {defaultKeepAlive && (
+        <Form.Item label={t('creek-layout.ActionRender.LayoutSettings.keepAlive', '开启页面缓存 (Keep Alive)')}>
+          <Switch checked={currentKeepAlive} onChange={(checked) => setSettings({ keepAlive: checked })} />
+        </Form.Item>
+      )}
     </Form>
   );
 };
@@ -41,10 +49,12 @@ const SettingsForm = ({ defaultShowFullScreen, defaultShowLocaleButton, defaultK
 export const LayoutSettings = ({
   defaultShowFullScreen,
   defaultShowLocaleButton,
+  defaultShowThemeColor,
   defaultKeepAlive,
 }: {
   defaultShowFullScreen?: boolean;
   defaultShowLocaleButton?: boolean;
+  defaultShowThemeColor?: boolean;
   defaultKeepAlive?: boolean;
 }) => {
   const t = useT();
@@ -55,7 +65,7 @@ export const LayoutSettings = ({
       title: t('creek-layout.ActionRender.LayoutSettings.title', '系统设置'),
       placement: 'right',
 
-      content: <SettingsForm defaultShowFullScreen={defaultShowFullScreen} defaultShowLocaleButton={defaultShowLocaleButton} defaultKeepAlive={defaultKeepAlive} />,
+      content: <SettingsForm defaultShowFullScreen={defaultShowFullScreen} defaultShowLocaleButton={defaultShowLocaleButton} defaultShowThemeColor={defaultShowThemeColor} defaultKeepAlive={defaultKeepAlive} />,
     });
   };
 

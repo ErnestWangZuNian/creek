@@ -19,7 +19,9 @@ export const layout: RunTimeLayoutConfig = () => {
     logo: '/logo.svg',
     layout: 'mix',
     iconFontCNs: ['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js'],
-    showLocaleButton: true,
+    showLocaleButton: false,
+    showThemeColor: false,
+    keepAlive: true,
   };
 };
 
@@ -28,7 +30,6 @@ export const rootContainer = (children: React.ReactNode) => {
   return (
     <CreekConfigProvider
       componentSize="small"
-      locale="en_US"
       theme={{
         token: {
           colorPrimary: '#00c07f',

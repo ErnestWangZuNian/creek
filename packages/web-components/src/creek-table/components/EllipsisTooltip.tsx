@@ -26,6 +26,7 @@ const useStyles = createStyles(({ css, token }) => {
     tooltipText: css`
       word-break: break-all;
       white-space: pre-wrap;
+      color: #fff;
     `,
     copyIcon: css`
       cursor: pointer;

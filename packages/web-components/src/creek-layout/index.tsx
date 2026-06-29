@@ -23,6 +23,7 @@ export type LayoutProps = ProLayoutProps & {
   showFullScreen?: boolean;
   showLocaleButton?: boolean;
   showSettingsButton?: boolean;
+  showThemeColor?: boolean;
   initialInfo?: {
     initialState: any;
     loading: boolean;
@@ -49,6 +50,7 @@ export const CreekLayout = (props: LayoutProps) => {
     showFullScreen = false,
     showLocaleButton = false,
     showSettingsButton = false,
+    showThemeColor = true,
     keepAlive = false,
     extraActions = [],
     ...more
@@ -60,10 +62,10 @@ export const CreekLayout = (props: LayoutProps) => {
   const { collapsed } = useCollapsedStore();
   const settingsStore = useLayoutSettingsStore();
 
-  const actualShowFullScreen = settingsStore.showFullScreen ?? showFullScreen;
-  const actualShowLocaleButton = settingsStore.showLocaleButton ?? showLocaleButton;
+  const actualShowFullScreen = showFullScreen && (settingsStore.showFullScreen ?? true);
+  const actualShowLocaleButton = showLocaleButton && (settingsStore.showLocaleButton ?? true);
   const colorPrimary = settingsStore.colorPrimary || token.colorPrimary;
-  const actualKeepAlive = settingsStore.keepAlive ?? keepAlive;
+  const actualKeepAlive = keepAlive && (settingsStore.keepAlive ?? true);
 
   const _userConfig = { ...userConfig, ...runtimeConfig };
 
@@ -129,7 +131,7 @@ export const CreekLayout = (props: LayoutProps) => {
   }
 
   if (showSettingsButton) {
-    actions.push(<LayoutSettings key="settings" defaultShowFullScreen={showFullScreen} defaultShowLocaleButton={showLocaleButton} defaultKeepAlive={_.isBoolean(keepAlive) ? keepAlive : true} />);
+    actions.push(<LayoutSettings key="settings" defaultShowFullScreen={showFullScreen} defaultShowLocaleButton={showLocaleButton} defaultShowThemeColor={showThemeColor} defaultKeepAlive={_.isBoolean(keepAlive) ? keepAlive : true} />);
   }
 
   const keepAliveProps = _.isBoolean(keepAlive) ? {} : keepAlive;
