@@ -1,7 +1,7 @@
 import { useMemoizedFn } from 'ahooks';
 import { Dropdown, MenuProps, Tabs } from 'antd';
 import { isRegExp, isString, omit } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useOutlet } from 'react-router-dom';
 
 import { useT } from '@creekjs/i18n/react';
@@ -43,6 +43,10 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
   const [activeKey, setActiveKey] = useState<string>('');
   const [cachedPages, setCachedPages] = useState<Record<string, React.ReactNode>>({});
 
+  // 用 ref 存储 outlet，避免 outlet 引用变化导致 useEffect 无限循环
+  const outletRef = useRef(outlet);
+  outletRef.current = outlet;
+
   // 判断是否不需要缓存
   const isPathExcluded = (path: string) => {
     return exclude.some((item) => {
@@ -68,7 +72,7 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
       }
       return {
         ...prev,
-        [currentPath]: outlet,
+        [currentPath]: outletRef.current,
       };
     });
 
@@ -103,7 +107,7 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
       }
       return newItems;
     });
-  }, [location.pathname, outlet, getTabTitle, maxTabCount]);
+  }, [location.pathname, getTabTitle, maxTabCount]);
 
   // 清理不需要缓存的页面
   useEffect(() => {
@@ -221,9 +225,12 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
           label: renderTabLabel(item),
           children: (
             <div key={item.key} style={{ height: '100%', display: activeKey === item.key ? 'block' : 'none' }}>
-              {/* 如果是不缓存的页面，且不是当前页，则不渲染(销毁) */}
-              {/* 如果是缓存页面，或者是当前页，则渲染 */}
-              {!isPathExcluded(item.key) || activeKey === item.key ? cachedPages[item.key] : null}
+              {/* 当前激活页渲染实时outlet，非激活页渲染缓存 */}
+              {activeKey === item.key
+                ? outlet
+                : !isPathExcluded(item.key)
+                  ? cachedPages[item.key]
+                  : null}
             </div>
           ),
         }))}

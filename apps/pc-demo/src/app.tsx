@@ -22,6 +22,7 @@ export const layout: RunTimeLayoutConfig = () => {
     showLocaleButton: false,
     showThemeColor: false,
     keepAlive: true,
+    showFullScreen: true,
   };
 };
 
