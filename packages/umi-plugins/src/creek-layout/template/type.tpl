@@ -13,16 +13,17 @@
      type InitDataType = any;
     {{/hasInitialStatePlugin}}
     import type { IConfigFromPlugins } from '@@/core/pluginConfig';
-    import { CreekKeepAliveProps } from '{{{creekWebComponentsPath}}}';
+    import type { CreekKeepAliveProps, UserInfoProps } from '{{{creekWebComponentsPath}}}';
 
     export type RunTimeLayoutConfig = (initData: InitDataType) => ProLayoutProps & {
-      showDarkButton?: boolean;
-      provider?:  React.ReactNode;
-      keepAlive?: boolean | CreekKeepAliveProps;
-      showSettingsButton?: boolean;
-      extraActions?: React.ReactNode[];
+      showFullScreen?: boolean;
       showLocaleButton?: boolean;
+      showSettingsButton?: boolean;
+      showThemeColor?: boolean;
+      keepAlive?: boolean | CreekKeepAliveProps;
+      extraActions?: React.ReactNode[];
       unAccessible?: JSX.Element;
       iconFontCNs?: string[];
+      renderUser?: UserInfoProps | (() => React.ReactNode | UserInfoProps);
     };
     

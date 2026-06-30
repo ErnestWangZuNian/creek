@@ -75,15 +75,20 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
   // 初始化或路由变化时更新
   useEffect(() => {
     const currentPath = location.pathname;
-    setActiveKey(currentPath);
+
+    // 不需要缓存的路径，不创建 tab
+    if (isPathExcluded(currentPath)) return;
+
+    // 如果路由配置中没有对应的 element（如纯 redirect 路由），不创建 tab
+    const element = resolveElement(currentPath);
+    if (!element) return;
 
     // 缓存当前路径的 element（仅首次缓存，后续复用同一个 element 引用）
-    if (!cachedElements[currentPath] && !isPathExcluded(currentPath)) {
-      const element = resolveElement(currentPath);
-      if (element) {
-        setCachedElements((prev) => ({ ...prev, [currentPath]: element }));
-      }
+    if (!cachedElements[currentPath]) {
+      setCachedElements((prev) => ({ ...prev, [currentPath]: element }));
     }
+
+    setActiveKey(currentPath);
 
     // 更新 Tab 列表
     setTabItems((prev) => {

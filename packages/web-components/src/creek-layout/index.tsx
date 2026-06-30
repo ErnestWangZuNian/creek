@@ -11,12 +11,12 @@ import { IntlContext, useT } from '@creekjs/i18n/react';
 import { CreekKeepAlive, CreekKeepAliveProps } from '../creek-keep-alive';
 import { CreekLocaleButton } from '../creek-locale-button';
 import { GlobalScrollbarStyle } from '../creek-style/scrollbar';
-import { FullScreen, LayoutSettings } from './ActionRender';
+import { FullScreen, LayoutSettings, UserInfo, UserInfoProps } from './ActionRender';
 import { CollapsedButton, useCollapsedStore } from './CollapseButton';
 import { Exception } from './Exception';
 import { useLayoutSettingsStore } from './useLayoutSettingsStore';
 
-export type LayoutProps = ProLayoutProps & {
+export type CreekLayoutProps = ProLayoutProps & {
   runtimeConfig: ProLayoutProps;
   userConfig?: ProLayoutProps;
   navigate?: (path?: string | number) => void;
@@ -32,6 +32,13 @@ export type LayoutProps = ProLayoutProps & {
   keepAlive?: boolean | CreekKeepAliveProps;
   extraActions?: React.ReactNode[];
   clientRoutes?: any[];
+  iconFontCNs?: string[];
+  /**
+   * 用户信息区域，支持传入配置对象（名称、头像、下拉菜单）或自定义渲染函数
+   * - 传对象：自动使用 UserInfo 组件渲染
+   * - 传函数：返回 ReactNode 直接渲染，返回 UserInfoProps 对象则使用 UserInfo 组件渲染
+   */
+  renderUser?: UserInfoProps | (() => React.ReactNode | UserInfoProps);
 };
 
 const MenuName = ({ name, path }: { name?: string; path?: string }) => {
@@ -40,7 +47,7 @@ const MenuName = ({ name, path }: { name?: string; path?: string }) => {
   return t(key, name);
 };
 
-export const CreekLayout = (props: LayoutProps) => {
+export const CreekLayout = (props: CreekLayoutProps) => {
   const {
     route,
     userConfig,
@@ -55,6 +62,8 @@ export const CreekLayout = (props: LayoutProps) => {
     keepAlive = false,
     extraActions = [],
     clientRoutes,
+    iconFontCNs,
+    renderUser,
     ...more
   } = props;
 
@@ -124,6 +133,14 @@ export const CreekLayout = (props: LayoutProps) => {
 
   const actions: React.ReactNode[] = [...extraActions];
 
+  if (renderUser) {
+    let result = typeof renderUser === 'function' ? renderUser() : renderUser;
+    const isUserInfoProps = (val: unknown): val is UserInfoProps =>
+      val !== null && typeof val === 'object' && ('name' in val || 'avatar' in val || 'menu' in val);
+    const userInfoNode = isUserInfoProps(result) ? <UserInfo {...result} /> : result;
+    actions.push(<span key="user-info">{userInfoNode}</span>);
+  }
+
   if (actualShowFullScreen) {
     actions.push(<FullScreen key="full-screen" />);
   }
@@ -186,3 +203,4 @@ export const CreekLayout = (props: LayoutProps) => {
 };
 
 export * from './Exception';
+export { UserInfo, type UserInfoProps } from './ActionRender';

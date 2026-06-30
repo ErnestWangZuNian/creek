@@ -1,4 +1,4 @@
-import { Avatar, Dropdown, DropDownProps, Space } from "antd";
+import { Avatar, Dropdown, DropDownProps, Space, Typography } from "antd";
 import { createStyles } from "antd-style";
 
 const useStyles = createStyles(({ token}) => ({
@@ -34,9 +34,9 @@ export const UserInfo = (props: UserInfoProps) => {
     <Dropdown arrow placement="bottom" overlayClassName={styles.userInfoDropdownOverlay} menu={menu}>
       <Space size={4} align="center">
         <Avatar className={styles.avatarContainer} src={avatar}>
-          {name}
+          {typeof name === 'string' ? name.charAt(0).toUpperCase() : name}
         </Avatar>
-        <span>{name}</span>
+        <Typography.Text strong>{name}</Typography.Text>
       </Space>
     </Dropdown>
   );
