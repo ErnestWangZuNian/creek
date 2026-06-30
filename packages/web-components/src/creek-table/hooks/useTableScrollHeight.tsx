@@ -1,6 +1,22 @@
 import { useDebounceFn, useEventListener } from 'ahooks';
 import { useEffect, useState } from 'react';
 
+/**
+ * 获取最近的可滚动父容器
+ */
+const getScrollParent = (element: HTMLElement): HTMLElement | Window => {
+  let parent: HTMLElement | null = element.parentElement;
+  while (parent) {
+    const style = window.getComputedStyle(parent);
+    const overflowY = style.overflowY;
+    if (overflowY === 'auto' || overflowY === 'scroll') {
+      return parent;
+    }
+    parent = parent.parentElement;
+  }
+  return window;
+};
+
 export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObject<HTMLDivElement>, pageFixedBottom: boolean = true, offsetBottom: number = 0) => {
   const [scrollY, setScrollY] = useState<number | undefined>(undefined);
   const [tableHeight, setTableHeight] = useState<number | undefined>(undefined);
@@ -59,7 +75,16 @@ export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObjec
       const windowHeight = window.innerHeight;
 
       let height = windowHeight - top - currentContentPadding - currentCardContentPadding - offsetBottom;
-      let currentTableHeight = windowHeight - tableEl.getBoundingClientRect().top;
+
+      // 计算表格容器高度：相对于滚动父容器的位置，而非视口位置
+      // 这样即使表格上方有其他内容，高度计算也不会受页面滚动影响
+      const scrollParent = getScrollParent(tableEl);
+      let parentTop = 0;
+      if (scrollParent instanceof HTMLElement) {
+        parentTop = scrollParent.getBoundingClientRect().top;
+      }
+      const tableTopRelativeToParent = tableEl.getBoundingClientRect().top - parentTop;
+      let currentTableHeight = windowHeight - tableTopRelativeToParent - offsetBottom;
 
       const pagination = tableEl.querySelector(`.${prefixCls}-pagination`);
 
@@ -70,11 +95,13 @@ export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObjec
         const totalPaginationMargin = parseFloat(styles.marginTop) + parseFloat(styles.marginBottom);
 
         height = height - paginationHeight - totalPaginationMargin;
+        currentTableHeight = currentTableHeight - paginationHeight - totalPaginationMargin;
         setTableHeight(0);
       } else {
         // 如果没有找到分页，预留一个高度（假设分页高度为 24px + margin 16px = 40px）
         // 这样可以避免初始加载时高度过大，导致出现滚动条，然后分页出现后高度又变小
         height = height - 40;
+        currentTableHeight = currentTableHeight - 40;
 
         setTableHeight(currentTableHeight);
       }
@@ -108,6 +135,8 @@ export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObjec
   }, [tableRef, pageFixedBottom, prefixCls]);
 
   useEventListener('resize', calcHeight);
+  // 监听滚动事件，确保页面滚动时也能正确计算高度
+  useEventListener('scroll', calcHeight, { target: window });
 
   return {
     scrollY,
