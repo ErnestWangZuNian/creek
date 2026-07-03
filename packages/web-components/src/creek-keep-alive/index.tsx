@@ -1,10 +1,77 @@
 import { useMemoizedFn } from 'ahooks';
 import { Dropdown, MenuProps, Tabs } from 'antd';
+import { createStyles } from 'antd-style';
 import { isRegExp, isString } from 'lodash';
-import React, { useEffect, useState } from 'react';
-import { matchRoutes, useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { matchRoutes, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { useT } from '@creekjs/i18n/react';
+
+const useStyles = createStyles(({ token, css }) => ({
+  container: css`
+    .ant-tabs-nav {
+      margin: 0;
+      padding: 0;
+      background: ${token.colorBgLayout};
+      border-bottom: 1px solid ${token.colorBorderSecondary};
+      min-height: auto;
+      &::before {
+        display: none;
+      }
+    }
+
+    .ant-tabs-nav-list {
+      .ant-tabs-tab {
+        margin: 2px 1px;
+        padding: 2px 10px;
+        background: transparent;
+        border: none;
+        border-radius: ${token.borderRadiusSM}px;
+        transition: all 0.2s;
+        font-size: 12px;
+        line-height: 20px;
+
+        .ant-tabs-tab-remove {
+          margin-left: 4px;
+          margin-right: -4px;
+          font-size: 9px;
+          color: ${token.colorTextQuaternary};
+          transition: color 0.2s;
+          &:hover {
+            color: ${token.colorTextSecondary};
+          }
+        }
+
+        &:hover {
+          background: ${token.colorFillQuaternary};
+          .ant-tabs-tab-remove {
+            color: ${token.colorTextTertiary};
+          }
+        }
+      }
+
+      .ant-tabs-tab-active {
+        background: ${token.colorBgContainer};
+        box-shadow: none;
+        .ant-tabs-tab-btn {
+          color: ${token.colorPrimary};
+          font-weight: 600;
+        }
+        &:hover {
+          background: ${token.colorBgContainer};
+        }
+      }
+    }
+  `,
+  tabLabel: css`
+    display: inline-flex;
+    align-items: center;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  `,
+}));
 
 export interface CreekKeepAliveProps {
   /**
@@ -27,6 +94,10 @@ export interface CreekKeepAliveProps {
    * 路由配置（含 element），用于解析每个路径对应的页面组件
    */
   routes?: any[];
+  /**
+   * redirect 路由路径映射，key 为 redirect 路径，value 为目标路径，用于过滤和跳转
+   */
+  redirectPaths?: Record<string, string>;
 }
 
 interface TabItem {
@@ -36,9 +107,10 @@ interface TabItem {
 }
 
 export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
-  const { exclude = [], getTabTitle, tabBarStyle, maxTabCount = 20, routes = [] } = props;
+  const { exclude = [], getTabTitle, tabBarStyle, maxTabCount = 20, routes = [], redirectPaths = {} } = props;
 
   const t = useT();
+  const { styles } = useStyles();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -49,14 +121,21 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
   // 这样 React reconciler 不会卸载/重新挂载组件，从而实现 keep-alive
   // 使用 state 以便缓存变化时触发重新渲染
   const [cachedElements, setCachedElements] = useState<Record<string, React.ReactNode>>({});
+  // 使用 ref 追踪 cachedElements，避免 useEffect 依赖 cachedElements 导致循环触发
+  const cachedElementsRef = useRef(cachedElements);
+  cachedElementsRef.current = cachedElements;
 
   // 根据路由配置，解析指定路径对应的叶子路由 element
   const resolveElement = (path: string): React.ReactNode | null => {
     if (!routes?.length) return null;
     const matches = matchRoutes(routes, path);
     if (!matches?.length) return null;
-    // 取最后一个 match（叶子路由），即实际页面组件
-    return matches[matches.length - 1].route.element ?? null;
+    // 取最后一个有 element 的 match
+    for (let i = matches.length - 1; i >= 0; i--) {
+      const el = matches[i].route.element;
+      if (el != null) return el;
+    }
+    return null;
   };
 
   // 判断是否不需要缓存
@@ -76,15 +155,21 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
   useEffect(() => {
     const currentPath = location.pathname;
 
+    // redirect 路由不创建 tab，直接 navigate 到目标路径
+    if (currentPath in redirectPaths) {
+      navigate(redirectPaths[currentPath], { replace: true });
+      return;
+    }
+
     // 不需要缓存的路径，不创建 tab
     if (isPathExcluded(currentPath)) return;
 
-    // 如果路由配置中没有对应的 element（如纯 redirect 路由），不创建 tab
-    const element = resolveElement(currentPath);
-    if (!element) return;
+    // 如果路由配置中没有对应的 element，使用 Outlet 作为 fallback
+    const element = resolveElement(currentPath) ?? <Outlet />;
 
     // 缓存当前路径的 element（仅首次缓存，后续复用同一个 element 引用）
-    if (!cachedElements[currentPath]) {
+    // 使用 ref 读取最新值，避免将 cachedElements 加入依赖数组导致循环触发
+    if (!cachedElementsRef.current[currentPath]) {
       setCachedElements((prev) => ({ ...prev, [currentPath]: element }));
     }
 
@@ -119,7 +204,7 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
       }
       return newItems;
     });
-  }, [location.pathname, getTabTitle, maxTabCount, cachedElements]);
+  }, [location.pathname]);
 
   const closeTab = useMemoizedFn((targetKey: string) => {
     const targetIndex = tabItems.findIndex((item) => item.key === targetKey);
@@ -216,20 +301,20 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
 
     return (
       <Dropdown menu={{ items: menuItems }} trigger={['contextMenu']}>
-        <span>{item.label}</span>
+        <span className={styles.tabLabel}>{item.label}</span>
       </Dropdown>
     );
   };
 
   return (
-    <div className="creek-keep-alive">
+    <div className={`creek-keep-alive ${styles.container}`}>
       <Tabs
         activeKey={activeKey}
         type="editable-card"
         hideAdd
         onChange={handleTabClick}
         onEdit={handleTabEdit}
-        tabBarStyle={{ margin: 0, ...tabBarStyle }}
+        tabBarStyle={tabBarStyle}
         items={tabItems.map((item) => ({
           ...item,
           label: renderTabLabel(item),

@@ -1,9 +1,9 @@
 import { CaretRightOutlined, DownloadOutlined } from '@ant-design/icons';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Button, message, Typography } from 'antd';
+import { Button, Card, Col, message, Row, Statistic, Typography } from 'antd';
 import { useRef } from 'react';
 
-import { CreekTable, useApp } from '@creekjs/web-components';
+import { CreekPageContainer, CreekTable, useApp } from '@creekjs/web-components';
 
 import { addPet, deletePet, findPetsByStatus, updatePet } from '@/service/pet';
 import { useT } from '@/utils/i18n';
@@ -135,7 +135,29 @@ const PetList = () => {
     },
   ];
   return (
-    <div>
+    <CreekPageContainer>
+      <Row gutter={16} style={{ marginBottom: 16 }}>
+        <Col span={6}>
+          <Card size="small">
+            <Statistic title={t('pages.Demo.index.zongShu', '总数')} value={128} />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card size="small">
+            <Statistic title={t('pages.Demo.index.keYong', '可用')} value={86} valueStyle={{ color: '#3f8600' }} />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card size="small">
+            <Statistic title={t('pages.Demo.index.daiChuLi', '待处理')} value={28} valueStyle={{ color: '#cf1322' }} />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card size="small">
+            <Statistic title={t('pages.Demo.index.yiShouChu', '已售出')} value={14} />
+          </Card>
+        </Col>
+      </Row>
       <CreekTable
         actionRef={actionRef}
         showIndex={false}
@@ -218,7 +240,7 @@ const PetList = () => {
         }}
         columns={columns}
       />
-    </div>
+    </CreekPageContainer>
   );
 };
 export default PetList;

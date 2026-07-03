@@ -44,10 +44,8 @@ const useStyles = createStyles(({ token }, options: SearchTableStyleOptions) => 
         borderRight: (bordered && hasScroll) ? `1px solid ${token.colorBorderSecondary}` : 'none',
       },
       // 兼容非 scroll.y 模式下的 table 容器
-      [`.${prefixCls}-table-content`]: {
-        overflowY: 'hidden',
-        maxHeight: scrollY ? `${scrollY}px` : undefined,
-      },
+      // 注意：不要在此处设置 maxHeight + overflowY: hidden，否则会裁剪分页组件
+      // 滚动行为由 .ant-table-body 的 maxHeight 和 scroll.y 控制
 
       [`.${prefixCls}-table-cell-scrollbar`]: {
         boxShadow: bordered ? 'none!important' : 'inherit',
@@ -169,7 +167,7 @@ export const SearchProTable = <T extends ParamsType, U extends ParamsType, Value
         columns={resizableColumns}
         bordered={bordered}
         scroll={{
-          y: hasScroll ? scrollY || restProps.scroll?.y : undefined,
+          y: scrollY || restProps.scroll?.y,
           x: totalWidth ?? restProps.scroll?.x,
         }}
         toolbar={{

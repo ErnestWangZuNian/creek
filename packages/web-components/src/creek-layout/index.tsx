@@ -39,6 +39,10 @@ export type CreekLayoutProps = ProLayoutProps & {
    * - 传函数：返回 ReactNode 直接渲染，返回 UserInfoProps 对象则使用 UserInfo 组件渲染
    */
   renderUser?: UserInfoProps | (() => React.ReactNode | UserInfoProps);
+  /**
+   * redirect 路由路径映射，key 为 redirect 路径，value 为目标路径，用于过滤和跳转
+   */
+  redirectPaths?: Record<string, string>;
 };
 
 const MenuName = ({ name, path }: { name?: string; path?: string }) => {
@@ -64,6 +68,7 @@ export const CreekLayout = (props: CreekLayoutProps) => {
     clientRoutes,
     iconFontCNs,
     renderUser,
+    redirectPaths = {},
     ...more
   } = props;
 
@@ -133,14 +138,6 @@ export const CreekLayout = (props: CreekLayoutProps) => {
 
   const actions: React.ReactNode[] = [...extraActions];
 
-  if (renderUser) {
-    let result = typeof renderUser === 'function' ? renderUser() : renderUser;
-    const isUserInfoProps = (val: unknown): val is UserInfoProps =>
-      val !== null && typeof val === 'object' && ('name' in val || 'avatar' in val || 'menu' in val);
-    const userInfoNode = isUserInfoProps(result) ? <UserInfo {...result} /> : result;
-    actions.push(<span key="user-info">{userInfoNode}</span>);
-  }
-
   if (actualShowFullScreen) {
     actions.push(<FullScreen key="full-screen" />);
   }
@@ -151,6 +148,15 @@ export const CreekLayout = (props: CreekLayoutProps) => {
 
   if (showSettingsButton) {
     actions.push(<LayoutSettings key="settings" defaultShowFullScreen={showFullScreen} defaultShowLocaleButton={showLocaleButton} defaultShowThemeColor={showThemeColor} defaultKeepAlive={_.isBoolean(keepAlive) ? keepAlive : true} />);
+  }
+
+  // 用户信息放在最右侧
+  if (renderUser) {
+    let result = typeof renderUser === 'function' ? renderUser() : renderUser;
+    const isUserInfoProps = (val: unknown): val is UserInfoProps =>
+      val !== null && typeof val === 'object' && ('name' in val || 'avatar' in val || 'menu' in val);
+    const userInfoNode = isUserInfoProps(result) ? <UserInfo {...result} /> : result;
+    actions.push(<span key="user-info">{userInfoNode}</span>);
   }
 
   const keepAliveProps = _.isBoolean(keepAlive) ? {} : keepAlive;
@@ -195,7 +201,7 @@ export const CreekLayout = (props: CreekLayoutProps) => {
       {...more}
     >
       <GlobalScrollbarStyle />
-      <Exception>{actualKeepAlive ? <CreekKeepAlive getTabTitle={getTabTitle} routes={clientRoutes ?? route?.routes} {...keepAliveProps} /> : children}</Exception>
+      <Exception>{actualKeepAlive ? <CreekKeepAlive getTabTitle={getTabTitle} routes={clientRoutes ?? route?.routes} redirectPaths={redirectPaths} {...keepAliveProps} /> : children}</Exception>
     </ProLayout>
   );
 

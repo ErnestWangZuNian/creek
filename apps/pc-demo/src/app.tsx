@@ -22,6 +22,8 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     iconFontCNs: ['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js'],
     showLocaleButton: false,
     showThemeColor: false,
+    showSettingsButton: true,
+keepAlive: true,
     // 支持函数渲染，可访问 initialState 等运行时数据
     // 返回对象：自动使用 UserInfo 组件渲染（支持 name、avatar、menu）
     // 返回 ReactNode：直接渲染自定义组件

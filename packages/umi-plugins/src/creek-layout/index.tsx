@@ -150,6 +150,15 @@ export default (api: IApi) => {
 
     const importPath = isMonorepo ? winPath(join(creekWebComponentsPath, 'src')) : creekWebComponentsPath;
 
+    // 从路由配置中提取所有 redirect 路径及其目标路径的映射
+    const redirectPaths: Record<string, string> = {};
+    const routesMap = api.appData.routes as Record<string, IRoute>;
+    Object.values(routesMap).forEach((route) => {
+      if ((route as any).redirect && route.path) {
+        redirectPaths[route.path] = (route as any).redirect;
+      }
+    });
+
     api.writeTmpFile({
       path: 'Layout.tsx',
       tplPath: join(TEMPLATE_DIR, '/layout.tpl'),
@@ -160,6 +169,7 @@ export default (api: IApi) => {
         access: api.config.access,
         creekLocaleConfig: api.config.creekLocaleConfig ? JSON.stringify(api.config.glocale, null, 2) : 'undefined',
         userConfig: JSON.stringify(api.config.creekLayout, null, 2),
+        redirectPaths: `{${JSON.stringify(redirectPaths)}}`,
       },
     });
     // 写入类型, RunTimeLayoutConfig 是 app.tsx 中 layout 配置的类型

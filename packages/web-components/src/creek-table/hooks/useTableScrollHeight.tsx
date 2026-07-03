@@ -1,22 +1,6 @@
 import { useDebounceFn, useEventListener } from 'ahooks';
 import { useEffect, useState } from 'react';
 
-/**
- * 获取最近的可滚动父容器
- */
-const getScrollParent = (element: HTMLElement): HTMLElement | Window => {
-  let parent: HTMLElement | null = element.parentElement;
-  while (parent) {
-    const style = window.getComputedStyle(parent);
-    const overflowY = style.overflowY;
-    if (overflowY === 'auto' || overflowY === 'scroll') {
-      return parent;
-    }
-    parent = parent.parentElement;
-  }
-  return window;
-};
-
 export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObject<HTMLDivElement>, pageFixedBottom: boolean = true, offsetBottom: number = 0) => {
   const [scrollY, setScrollY] = useState<number | undefined>(undefined);
   const [tableHeight, setTableHeight] = useState<number | undefined>(undefined);
@@ -35,36 +19,6 @@ export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObjec
       const tableHeader = tableEl.querySelector(`.${prefixCls}-table-thead`);
       const tableBody = tableEl.querySelector(`.${prefixCls}-table-tbody`);
 
-      // 尝试动态获取 layout content padding
-      // Ant Design Pro Layout 的 content 容器通常有 class 包含 'pro-layout-content'
-      // 例如：ant-pro-layout-content, my-prefix-pro-layout-content
-      let currentContentPadding = 0; // 默认使用传入的
-
-      const layoutContentEl = tableEl.closest(`div[class*="pro-layout-content"]`);
-      if (layoutContentEl) {
-        const style = window.getComputedStyle(layoutContentEl);
-        // 我们主要关心底部的 padding，因为它影响到底部留白
-        const paddingBottom = parseFloat(style.paddingBottom);
-        if (!isNaN(paddingBottom)) {
-          currentContentPadding = paddingBottom;
-        }
-      }
-
-      // 尝试动态获取 layout content padding
-      // Ant Design Pro Layout 的 content 容器通常有 class 包含 'pro-layout-content'
-      // 例如：ant-pro-layout-content, my-prefix-pro-layout-content
-      let currentCardContentPadding = 0; // 默认使用传入的
-
-      const cardContentEl = tableEl.querySelector(`.${prefixCls}-pro-card-body`);
-      if (cardContentEl) {
-        const style = window.getComputedStyle(cardContentEl);
-        // 我们主要关心底部的 padding，因为它影响到底部留白
-        const paddingBottom = parseFloat(style.paddingBottom);
-        if (!isNaN(paddingBottom)) {
-          currentCardContentPadding = paddingBottom;
-        }
-      }
-
       let top = 0;
       if (tableHeader) {
         top = tableHeader.getBoundingClientRect().bottom;
@@ -74,17 +28,46 @@ export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObjec
 
       const windowHeight = window.innerHeight;
 
-      let height = windowHeight - top - currentContentPadding - currentCardContentPadding - offsetBottom;
-
-      // 计算表格容器高度：相对于滚动父容器的位置，而非视口位置
-      // 这样即使表格上方有其他内容，高度计算也不会受页面滚动影响
-      const scrollParent = getScrollParent(tableEl);
-      let parentTop = 0;
-      if (scrollParent instanceof HTMLElement) {
-        parentTop = scrollParent.getBoundingClientRect().top;
+      // 策略：以 window.innerHeight 为基准，向上遍历所有祖先扣除 paddingBottom
+      // 这样不依赖任何容器的固定高度（因为布局内容 height 可能是 auto，会随内容变化）
+      // 避免循环依赖：表格高度依赖容器底部 → 容器高度依赖表格高度
+      let availableBottom = windowHeight;
+      let el: HTMLElement | null = tableEl.parentElement;
+      while (el) {
+        const style = window.getComputedStyle(el);
+        const paddingBottom = parseFloat(style.paddingBottom) || 0;
+        availableBottom -= paddingBottom;
+        if (el.tagName === 'BODY') break;
+        el = el.parentElement;
       }
-      const tableTopRelativeToParent = tableEl.getBoundingClientRect().top - parentTop;
-      let currentTableHeight = windowHeight - tableTopRelativeToParent - offsetBottom;
+
+      availableBottom -= offsetBottom;
+
+      // 扣除 tableEl 内部容器的 paddingBottom（如 ant-pro-card-body）
+      // 这些容器包裹着 thead/tbody/pagination，其 padding 会让 tableEl 实际高度超出计算值
+      // 从 pagination（或 tbody）向上遍历到 tableEl，扣除路径上所有容器的 paddingBottom
+      const bottomRef = tableEl.querySelector(`.${prefixCls}-pagination`) || tableBody;
+      if (bottomRef) {
+        let innerEl: HTMLElement | null = bottomRef.parentElement;
+        while (innerEl && innerEl !== tableEl) {
+          const innerStyle = window.getComputedStyle(innerEl);
+          availableBottom -= parseFloat(innerStyle.paddingBottom) || 0;
+          innerEl = innerEl.parentElement;
+        }
+      }
+
+      // 确保不小于 top，防止负值
+      if (availableBottom < top) availableBottom = top;
+
+      // 核心公式：
+      // availableBottom - thead.bottom = thead 底部到可用区域底部的距离
+      // thead.bottom 是视口绝对坐标，天然包含了上方所有元素
+      // （tabs 导航栏、搜索区域、统计卡片、header 等）的高度
+      let height = availableBottom - top;
+
+      // 计算表格容器高度（用于分页未出现时撑开容器，防止初始加载出现滚动条）
+      const tableTop = tableEl.getBoundingClientRect().top;
+      let currentTableHeight = availableBottom - tableTop;
 
       const pagination = tableEl.querySelector(`.${prefixCls}-pagination`);
 
@@ -106,20 +89,22 @@ export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObjec
         setTableHeight(currentTableHeight);
       }
 
+      // 确保 height 不为负
+      if (height < 0) height = 0;
+
       let currentHasScroll = false;
       if (tableBody) {
         currentHasScroll = tableBody.scrollHeight > height;
       }
       setHasScroll(currentHasScroll);
 
-      // Minimum height to avoid crashes or ugly rendering
       setScrollY(height);
 
       if (tableHeader) {
         setTableContainerHeight(height + tableHeader?.clientHeight);
       }
     },
-    { wait: 16,leading: true },
+    { wait: 16, leading: true },
   );
 
   useEffect(() => {
@@ -135,8 +120,6 @@ export const useTableScrollHeight = (prefixCls: string, tableRef: React.RefObjec
   }, [tableRef, pageFixedBottom, prefixCls]);
 
   useEventListener('resize', calcHeight);
-  // 监听滚动事件，确保页面滚动时也能正确计算高度
-  useEventListener('scroll', calcHeight, { target: window });
 
   return {
     scrollY,

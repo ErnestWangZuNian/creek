@@ -125,6 +125,7 @@ const Layout = (props: CreekLayoutProps) => {
         clientRoutes={clientRoutes}
         formatMessage={formatMessage}
         initialInfo={initialInfo}
+        redirectPaths={{{redirectPaths}}}
         {...layoutRestProps}
         children={
           runtimeConfig.childrenRender ? (
