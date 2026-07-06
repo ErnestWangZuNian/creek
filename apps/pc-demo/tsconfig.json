@@ -6,7 +6,8 @@
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"],
-      "@@/*": ["src/.umi/*"]
+      "@@/*": ["src/.umi/*"],
+      "umi": ["src/.umi/exports.ts"]
     }
   },
   "include": [

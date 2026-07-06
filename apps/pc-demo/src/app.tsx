@@ -23,7 +23,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     showLocaleButton: false,
     showThemeColor: false,
     showSettingsButton: true,
-keepAlive: true,
+    keepAlive: { silentRoutes: ['/home/:id'] },
     // 支持函数渲染，可访问 initialState 等运行时数据
     // 返回对象：自动使用 UserInfo 组件渲染（支持 name、avatar、menu）
     // 返回 ReactNode：直接渲染自定义组件

@@ -11,18 +11,6 @@ export default defineConfig({
     iconFontCNs: ['//at.alicdn.com/t/c/font_4756000_mbo4n1jtw7m.js'],
   },
   mako: {},
-  // vite: {
-  //   server: {
-  //     watch: {
-  //       usePolling: true,
-  //       ignored: ['!**/packages/**']
-  //     }
-  //   },
-  //   // 将 components 包从预构建依赖中排除，让 Vite 将其当做源码处理
-  //   optimizeDeps: {
-  //     exclude: ['@creekjs/web-components', '@creekjs/i18n', '@creekjs/cache', '@creekjs/request', '@creekjs/openapi', '@creekjs/umi-plugins']
-  //   }
-  // },
   routes: [
     {
       path: '/',
@@ -32,6 +20,14 @@ export default defineConfig({
       path: '/home',
       name: '首页',
       component: './Demo',
+      routes: [
+        {
+          path: '/home/:id',
+          name: '宠物详情',
+          component: './DemoDetail',
+          hideInMenu: true,
+        },
+      ],
     },
     {
       path: '/test',

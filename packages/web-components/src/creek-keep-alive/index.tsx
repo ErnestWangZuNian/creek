@@ -3,7 +3,7 @@ import { Dropdown, MenuProps, Tabs } from 'antd';
 import { createStyles } from 'antd-style';
 import { isRegExp, isString } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
-import { matchRoutes, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { matchPath, matchRoutes, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { useT } from '@creekjs/i18n/react';
 
@@ -79,6 +79,10 @@ export interface CreekKeepAliveProps {
    */
   exclude?: (string | RegExp)[];
   /**
+   * 不创建新Tab的路由模式（匹配时复用最近的父级Tab，内容在隐藏Tab中渲染）
+   */
+  silentRoutes?: string[];
+  /**
    * 自定义Tab标题获取方法
    */
   getTabTitle?: (pathname: string) => React.ReactNode;
@@ -107,7 +111,7 @@ interface TabItem {
 }
 
 export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
-  const { exclude = [], getTabTitle, tabBarStyle, maxTabCount = 20, routes = [], redirectPaths = {} } = props;
+  const { exclude = [], silentRoutes = [], getTabTitle, tabBarStyle, maxTabCount = 20, routes = [], redirectPaths = {} } = props;
 
   const t = useT();
   const { styles } = useStyles();
@@ -164,6 +168,53 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
     // 不需要缓存的路径，不创建 tab
     if (isPathExcluded(currentPath)) return;
 
+    // 静默路由：不创建可见 tab，复用最近的父级 tab 高亮
+    const matchedSilentPattern = silentRoutes.find((pattern) => matchPath(pattern, currentPath));
+    if (matchedSilentPattern) {
+      // 找到最近的已存在父级 tab（路径是当前路径的前缀）
+      const parentTab = tabItems
+        .filter((item) => currentPath !== item.key && !silentRoutes.some((p) => matchPath(p, item.key)) && currentPath.startsWith(item.key))
+        .sort((a, b) => b.key.length - a.key.length)[0];
+
+      const parentKey = parentTab?.key || '/';
+
+      // 替换同模式的旧幽灵 tab（如从 /home/123 导航到 /home/456）
+      const oldGhost = tabItems.find((i) => i.key !== currentPath && silentRoutes.some((p) => matchPath(p, i.key)) && matchPath(matchedSilentPattern, i.key));
+      if (oldGhost) {
+        setTabItems((prev) => prev.filter((i) => i.key !== oldGhost.key));
+        setCachedElements((prev) => {
+          const next = { ...prev };
+          delete next[oldGhost.key];
+          return next;
+        });
+      }
+
+      // 缓存静默路由的 element（幽灵 tab 需要）
+      const element = resolveElement(currentPath) ?? <Outlet />;
+      if (!cachedElementsRef.current[currentPath]) {
+        setCachedElements((prev) => ({ ...prev, [currentPath]: element }));
+      }
+
+      // 确保父级 tab 存在
+      if (!parentTab && !tabItems.find((i) => i.key === parentKey)) {
+        const title = getTabTitle?.(parentKey) || parentKey;
+        setTabItems((prev) => {
+          if (prev.find((i) => i.key === parentKey)) return prev;
+          return [...prev, { key: parentKey, label: title, closable: prev.length > 0 }];
+        });
+      }
+
+      // 添加幽灵 tab（tab 按钮通过 CSS 隐藏，但内容会渲染）
+      setTabItems((prev) => {
+        if (prev.find((i) => i.key === currentPath)) return prev;
+        const title = getTabTitle?.(currentPath) || currentPath;
+        return [...prev, { key: currentPath, label: title, closable: false }];
+      });
+
+      setActiveKey(currentPath);
+      return;
+    }
+
     // 如果路由配置中没有对应的 element，使用 Outlet 作为 fallback
     const element = resolveElement(currentPath) ?? <Outlet />;
 
@@ -207,22 +258,29 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
   }, [location.pathname]);
 
   const closeTab = useMemoizedFn((targetKey: string) => {
-    const targetIndex = tabItems.findIndex((item) => item.key === targetKey);
+    const visibleItems = tabItems.filter((i) => !silentRoutes.some((p) => matchPath(p, i.key)));
+    const targetIndex = visibleItems.findIndex((item) => item.key === targetKey);
     const newTabItems = tabItems.filter((item) => item.key !== targetKey);
 
-    // 移除缓存，组件将卸载
+    // 同时移除关联的静默路由缓存
     setCachedElements((prev) => {
       const next = { ...prev };
       delete next[targetKey];
+      Object.keys(next).forEach((key) => {
+        if (key.startsWith(targetKey + '/') && !newTabItems.find((i) => i.key === key)) {
+          delete next[key];
+        }
+      });
       return next;
     });
     setTabItems(newTabItems);
 
-    // 如果关闭的是当前页，跳转到临近页
+    // 如果关闭的是当前页，跳转到临近的可见 tab
     if (targetKey === activeKey) {
-      if (newTabItems.length > 0) {
-        const nextIndex = targetIndex >= newTabItems.length ? newTabItems.length - 1 : targetIndex;
-        const nextKey = newTabItems[nextIndex].key;
+      const remainingVisible = newTabItems.filter((i) => !silentRoutes.some((p) => matchPath(p, i.key)));
+      if (remainingVisible.length > 0) {
+        const nextIndex = targetIndex >= remainingVisible.length ? remainingVisible.length - 1 : targetIndex;
+        const nextKey = remainingVisible[nextIndex].key;
         navigate(nextKey);
       }
     }
@@ -232,14 +290,16 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
     const currentTab = tabItems.find((item) => item.key === currentKey);
     if (!currentTab) return;
     const newTabItems = [{ ...currentTab, closable: false }];
+    const keepKeys = new Set(newTabItems.map((i) => i.key));
     setTabItems(newTabItems);
 
-    // 仅保留当前 tab 的缓存
-    const keepKeys = new Set(newTabItems.map((i) => i.key));
+    // 仅保留当前 tab 的缓存（包括其关联的静默路由缓存）
     setCachedElements((prev) => {
       const next: Record<string, React.ReactNode> = {};
-      keepKeys.forEach((k) => {
-        if (prev[k]) next[k] = prev[k];
+      Object.entries(prev).forEach(([key, value]) => {
+        if (keepKeys.has(key) || (Array.from(keepKeys).some((k) => key.startsWith(k + '/')))) {
+          next[key] = value;
+        }
       });
       return next;
     });
@@ -257,10 +317,15 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
     const newTabItems = tabItems.filter((i) => !rightKeys.has(i.key));
     setTabItems(newTabItems);
 
-    // 移除右侧 tab 的缓存
+    // 移除右侧 tab 的缓存（包括关联的静默路由缓存）
+    const keepKeys = new Set(newTabItems.map((i) => i.key));
     setCachedElements((prev) => {
       const next = { ...prev };
-      rightKeys.forEach((key) => { delete next[key]; });
+      Object.keys(next).forEach((key) => {
+        if (!keepKeys.has(key) && !Array.from(keepKeys).some((k) => key.startsWith(k + '/'))) {
+          delete next[key];
+        }
+      });
       return next;
     });
 
@@ -279,12 +344,16 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
     navigate(key);
   };
 
+  const visibleTabs = tabItems.filter((item) =>
+    !silentRoutes.some((pattern) => matchPath(pattern, item.key)),
+  );
+
   const renderTabLabel = (item: TabItem) => {
     const menuItems: MenuProps['items'] = [
       {
         key: 'close',
         label: t('creek-keep-alive.index.guanBiDangQian', '关闭当前'),
-        disabled: tabItems.length <= 1,
+        disabled: visibleTabs.length <= 1,
         onClick: () => closeTab(item.key),
       },
       {
@@ -306,25 +375,36 @@ export const CreekKeepAlive: React.FC<CreekKeepAliveProps> = (props) => {
     );
   };
 
+  // 当前是否在静默路由上（用于高亮父级 tab）
+  const isOnSilentRoute = silentRoutes.some((pattern) => matchPath(pattern, activeKey));
+  const visualActiveKey = isOnSilentRoute
+    ? visibleTabs.find((tab) => activeKey.startsWith(tab.key))?.key || activeKey
+    : activeKey;
+
   return (
     <div className={`creek-keep-alive ${styles.container}`}>
       <Tabs
-        activeKey={activeKey}
+        activeKey={visualActiveKey}
         type="editable-card"
         hideAdd
         onChange={handleTabClick}
         onEdit={handleTabEdit}
         tabBarStyle={tabBarStyle}
-        items={tabItems.map((item) => ({
+        items={visibleTabs.map((item) => ({
           ...item,
           label: renderTabLabel(item),
           children: (
-            <div key={item.key} style={{ height: '100%', display: activeKey === item.key ? 'block' : 'none' }}>
+            <div key={item.key} style={{ height: '100%', display: visualActiveKey === item.key && !isOnSilentRoute ? 'block' : 'none' }}>
               {cachedElements[item.key] ?? null}
             </div>
           ),
         }))}
       />
+      {isOnSilentRoute && (
+        <div style={{ height: '100%' }}>
+          {cachedElements[activeKey] ?? null}
+        </div>
+      )}
     </div>
   );
 };

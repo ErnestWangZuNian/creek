@@ -1,7 +1,8 @@
-import { CaretRightOutlined, DownloadOutlined } from '@ant-design/icons';
+import { CaretRightOutlined, DownloadOutlined, EyeOutlined } from '@ant-design/icons';
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Card, Col, message, Row, Statistic, Typography } from 'antd';
 import { useRef } from 'react';
+import { useNavigate } from 'umi';
 
 import { CreekPageContainer, CreekTable, useApp } from '@creekjs/web-components';
 
@@ -12,6 +13,7 @@ import CreateUpdateForm from './components/CreateUpdateForm';
 
 const PetList = () => {
   const t = useT();
+  const navigate = useNavigate();
 
   const actionRef = useRef<ActionType>();
   const { modal } = useApp();
@@ -120,6 +122,9 @@ const PetList = () => {
       dataIndex: 'option',
       valueType: 'option',
       render: (_, record) => [
+        <Typography.Link key="view" onClick={() => navigate(`/home/${record.id}?name=${record.name}&status=${record.status}`)}>
+          <EyeOutlined /> {t('pages.Demo.index.chaKan', '查看')}
+        </Typography.Link>,
         <Typography.Link key="config" onClick={() => openEditModal(record)}>
           {t('pages.Demo.index.bianJi', '编辑')}
         </Typography.Link>,

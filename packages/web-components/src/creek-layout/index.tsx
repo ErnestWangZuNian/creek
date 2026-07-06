@@ -3,6 +3,7 @@ import { useMemoizedFn } from 'ahooks';
 import { theme } from 'antd';
 import _ from 'lodash';
 import { useContext } from 'react';
+import { matchPath } from 'react-router-dom';
 
 import classnames from 'classnames';
 
@@ -105,6 +106,11 @@ export const CreekLayout = (props: CreekLayoutProps) => {
   });
 
   const menuItemRender: ProLayoutProps['menuItemRender'] = useMemoizedFn((itemProps, defaultDom) => {
+    // 如果路由路径包含动态参数（如 :id），则不直接导航，避免导航到 /path/:id 这样的无效路径
+    const hasDynamicParam = itemProps.path?.includes(':');
+    if (hasDynamicParam) {
+      return defaultDom;
+    }
     return (
       <span
         onClick={() => {
@@ -123,7 +129,10 @@ export const CreekLayout = (props: CreekLayoutProps) => {
 
     const findTitle = (items: MenuDataItem[]): string | undefined => {
       for (const item of items) {
-        if (item.path === pathname) return item.name ?? item.title;
+        // 使用 matchPath 支持动态路由参数匹配（如 /path/:id）
+        if (item.path && matchPath(item.path, pathname)) {
+          return item.name ?? item.title;
+        }
         if (item.children) {
           const found = findTitle(item.children);
           if (found) return found;
